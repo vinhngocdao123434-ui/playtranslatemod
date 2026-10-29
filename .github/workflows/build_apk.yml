@@ -2,7 +2,7 @@ name: Build Debug APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
@@ -11,12 +11,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-          fetch-depth: 0
 
-      - name: Force Update Submodules
-        run: git submodule update --init --recursive
+      - name: Fix Submodules for ZIP downloads
+        run: |
+          if [ -f .gitmodules ]; then
+            git config --file .gitmodules --get-regexp path | awk '{ print $2 }' > paths.txt
+            git config --file .gitmodules --get-regexp url | awk '{ print $2 }' > urls.txt
+            paste paths.txt urls.txt | while read path url; do
+              if [ ! -d "$path/.git" ]; then
+                echo "Manually cloning $url to $path"
+                rm -rf "$path"
+                git clone --recursive "$url" "$path"
+              fi
+            done
+          fi
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
