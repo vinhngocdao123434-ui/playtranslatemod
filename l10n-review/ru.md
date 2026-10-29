@@ -1,0 +1,1282 @@
+# Russian (values-ru) localization review
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| settings_header_ocr | ❌ | «Изображение в текст (OCR)» | «Распознавание текста (OCR)» | Calque flagged on the hotlist; the fix also matches `status_ocr` («Распознавание текста…») already in this file. |
+| label_region_drag_hint | ❌ | «Перетаскивайте верхний или нижний край либо середину, чтобы переместить всю рамку.» | «Перетаскивайте верхний или нижний край, а чтобы переместить всю рамку — тяните за середину.» | Exactly the merge the hotlist warns about: the purpose clause «чтобы переместить всю рамку» now scopes over the edges too. In EN only the middle moves the whole box; edges resize. |
+| pack_upgrade_progress_format | ❌ | «Скачивание %1$s…» | «Скачивается %1$s…» | `pack_name` arrives nominative («японский»); «Скачивание японский…» is ungrammatical — «Скачивание» requires genitive. The verb form takes a nominative subject. |
+| pack_upgrade_progress_format_with_bytes | ❌ | «Скачивание %1$s… %2$s из %3$s» | «Скачивается %1$s… %2$s из %3$s» | Same break as above. The «X из Y» bytes part is fine. |
+| lang_section_offline_models_subtitle | ❌ | «Офлайн-перевод для %1$s → %2$s не скачан.» | «Офлайн-перевод (%1$s → %2$s) не скачан.» | «для японский» — «для» demands genitive; the arrow doesn't rescue it. Parenthetical matches the file's own pattern (`pack_upgrade_label_source` etc.). |
+| hotkey_show_hint_title | ❌ | «удерживайте для показа %1$s» | «удерживайте для показа подсказок (%1$s)» | Slot is filled with «Фуригана»/«Пиньинь» in nominative; «для показа Фуригана» needs genitive («фуриганы»). Parenthetical echoes onboarding's «подсказки для чтения (фуригана, пиньинь)». |
+| hotkey_show_hint_dialog_title | ❌ | «Показать %1$s» | «Показать: %1$s» | «Показать Фуригана» — feminine accusative would be «фуригану»; nominative fill breaks it («Пиньинь» survives only by acc=nom luck). |
+| translate_button_subtitle_hold_to_show_translations_instead_of_hint | ❌ | «показать перевод вместо %1$s» | «показать перевод вместо подсказок (%1$s)» | «вместо» requires genitive; «вместо фуригана» is broken (needs «фуриганы»). |
+| translate_button_subtitle_hold_to_show_hint | ❌ | «чтобы показать %1$s на экране игры» | «чтобы показать подсказки (%1$s) на экране игры» | Same accusative break for «фуригана». |
+| translate_button_prefix_translate, translate_button_prefix_reload | ⚠ | «Перевести» / «Обновить» (+ space + region label) | «Перевести:» / «Обновить:» | Composed «Перевести Карта» breaks for user-named feminine regions (acc «Карту» ≠ nom). Default «Весь экран» only works by acc=nom coincidence. The trailing colon is the robust fix. |
+| custom_region_edit_title | ⚠ | «Изменить %1$s» | «Изменить «%1$s»» | Same feminine-region-name accusative problem; quoting turns the label into a citation form. |
+| pack_upgrade_mandatory_message | ⚠ | «Обновите сейчас или удалите, чтобы выбрать другой язык.» | «…или удалите пакет, чтобы выбрать другой язык.» | Hotlist item: bare «удалите» has no object; nearest noun is «версия», which isn't what gets deleted. |
+| anki_sort_field_empty | ⚠ | «пустые значения вызывают ошибки отклонения дубликатов при отправке» | «из-за пустого значения карточка при отправке будет отклонена как дубликат» | «ошибки отклонения дубликатов» is the predicted calque — it reads as "errors in rejecting duplicates" and inverts the mechanism (the card itself is rejected as a duplicate). |
+| accessibility_dialog_message, overlay_icon_a11y_required_message | ⚠ | «…Специальные возможности → Установленные приложения → …» | «…Специальные возможности → Скачанные приложения → …» | From stock Android Russian (AOSP/Pixel), the accessibility app-list section is «Скачанные приложения»; the RU copies the EN drift ("Installed apps"). OEM skins vary — flagged per hotlist, moderately confident. |
+| qwen_mnn / qwen35_2b / gemma_e2b / hymt `_metered_warning_title` + `_message` (8 strings) | ⚠ | «Скачать через лимитную сеть?» / «Эта сеть отмечена как лимитная.» | «Скачать по лимитному подключению?» / «Это подключение отмечено как лимитное.» | Android's own Russian toggle is «Лимитное подключение»; «лимитная сеть» is understandable but not the system's wording. Recommend «лимитное подключение» as the agreed term. |
+| overlay_hide_for_now (+ its quote inside overlay_hide_controls_message) | ⚠ | «Скрыть пока» | «Скрыть на время» | Postposed «пока» reads awkwardly (almost like the colloquial "bye"); «Скрыть на время» is natural and the same length. Keep the in-message quote in sync. |
+| hymt_legal_message | 💬 | «Нажимая «Согласен»…» vs button «Согласен — включить Hunyuan» | optionally quote the full label | Partial match mirrors the EN source exactly ("Agree" vs "I Agree — Enable Hunyuan") and is unambiguous (the only other button is «Отмена»). Noted per hotlist; not a blocking defect. |
+| hymt_legal_message | 💬 | «результаты этой модели» | «результаты работы этой модели» | "Outputs of this model" — slightly elliptical as is; legal meaning preserved either way. |
+| live_mode_auto_with_hint | 💬 | «Авто %1$s» | «Авто: %1$s» | «Авто Фуригана» is grammatical apposition and word order is correct; the colon just reads cleaner. |
+| quick_tile_add_row_title, quick_tile_added_row_subtitle | 💬 | «…в быстрые настройки» | «…в «Быстрые настройки»» | Android's panel is named «Быстрые настройки»; capitalizing/quoting the feature name helps users find it. |
+| quick_tile_add_row_subtitle | 💬 | «Включайте PlayTranslate из строки состояния» | «Включайте и выключайте PlayTranslate из строки состояния» | EN "Toggle" covers both directions; «Включайте» alone narrows it. |
+| crash_dialog_discard | 💬 | «Отклонить» | «Не отправлять» | Passes the hotlist test (not «Отмена», not «Удалить»), but «Не отправлять» states the outcome more plainly next to «Отправить»/«Позже». |
+| qwen_mnn / qwen35_2b / gemma_e2b / hymt `_disable_message` (4 strings) | 💬 | «Модель %1$s установлена.» | «Модель размером %1$s установлена.» | Bare size apposition («Модель 1,2 ГБ установлена») is telegraphic; «размером» smooths it. |
+| settings_ocr_footer | 💬 | «с трудом точно распознаёт текст» | «неточно распознаёт текст» | «с трудом» + «точно» collide; minor style. |
+| anki_card_type_basic_no_mapping | 💬 | ««Лицевая» и «Оборотная»» | ««Лицевая сторона» и «Обратная сторона»» | Anki's own Russian field names are likely «Лицевая сторона»/«Обратная сторона» (not «Оборотная»). Uncertain — verify against AnkiDroid ru before changing. |
+
+Hotlist items that came back clean: `status_idle`/`status_hold_hint` (button names «Перевести», «Области», «Авто» quoted and exactly matching the actual labels), `tts_language_unsupported_*` («не поддерживает японский» — CLDR Russian language names are inanimate masculine adjectives/nouns, so acc=nom holds for every value), `anki_permission_rationale_message`/`anki_settings_grant_access_subtitle` («приложению PlayTranslate» cleanly separates the two brands; «Продолжить» matches `btn_continue`), `settings_capture_interval_hint` (uses «с.», agreement-proof for "1" and "0.5"), `backend_cooldown_status_fmt`+`retry_at/_on` («Недоступно · Повтор в 15:42» reads naturally), `btn_clear` («Очистить» — correct), `hymt_legal_message` mechanics (negation «не проживаете **и** не находитесь» — the strong form; §5(b), the EU/UK/South-Korea list, and «подтверждаете и гарантируете» all intact).
+
+## Coverage appendix
+
+**Plurals (all four categories one/few/many/other verified, incl. one=21, few=22–24, many=11–14, other=fractions·gen.sg):**
+- word_detail_senses_count — значение/значения/значений/значения ✓
+- word_detail_chars_count — символ/символа/символов/символа ✓
+- lang_search_match_count — совпадение/совпадения/совпадений/совпадения ✓
+
+**Placeholder sites** (✓ = construction avoids oblique case of the runtime value, or no case demand exists; otherwise pointer to finding row):
+
+- Brand-only `<xliff:g>` fills (app/brand names in Latin script, no declension demanded — all ✓): accessibility_service_description, status_accessibility_needed, notif_title, notif_text, onboarding_welcome_title, onboarding_welcome_body, onboarding_notif_body, onboarding_a11y_hint, onboarding_a11y_body, restricted_settings_message («приложения PlayTranslate» — genitive marker noun ✓), btn_open_app_settings, word_detail_tatoeba_attribution, settings_capture_display_footer, hint_deepl_key, anki_not_installed_message, anki_not_installed_get, anki_permission_rationale_title/_message ✓, anki_permission_denied, anki_no_deck_selected, anki_added_no_audio, anki_added_success, anki_adding_in_progress, anki_send_failed_message, anki_sheet_title_new_card, anki_save_button_label, anki_words_helper, anki_card_type_row_empty, anki_card_type_no_models, anki_models_unavailable, anki_long_press_footer, anki_content_none_desc, anki_content_examples_desc, anki_content_words_table_desc, anki_content_flag_vocabulary/_sentence/_targeted_sentence_desc, deepl_settings_get_key_title, deepl_settings_about, deepl_api_key_field_label, tr_service_offline_footer, qwen_mnn/qwen35_2b/gemma_e2b/hymt `_disable_title` ✓, hymt_legal_agree, legacy_engines_removed_message, mp_overlay_permission_message, a11y_required_displays/_hotkey/_enhanced_message, anki_settings_get_ankidroid_title, anki_settings_grant_access_title/_subtitle ✓, settings_support_discord_title, settings_debug_export_logs_subject, crash_dialog_title/_message, overlay_turn_off_title («Выключить X?» acc=nom ✓), overlay_turn_off_message («в приложении X» ✓), overlay_hide_controls_title, overlay_hide_controls_message
+- Language-name slots: status_no_text ✓ (label «X: текст не найден в «Y»»), lang_setup_requires_64bit_msg ✓ (parenthetical), pack_upgrade_label_source ✓, pack_upgrade_label_target ✓, anki_section_description ✓ (parenthetical), target_pack_migration_title ✓, target_pack_migration_message ✓ (two parentheticals), tts_voices_section_header ✓ (reordered «ГОЛОСА: X»), tts_language_unsupported_with_engine_message ✓, tts_language_unsupported_unknown_engine_message ✓ (acc=nom safe), lang_section_offline_models_subtitle → ❌ row, pack_upgrade_progress_format → ❌ row, pack_upgrade_progress_format_with_bytes → ❌ row
+- Hint-label (furigana/pinyin) slots: hotkey_show_hint_title → ❌ row, hotkey_show_hint_dialog_title → ❌ row, translate_button_subtitle_hold_to_show_translations_instead_of_hint → ❌ row, translate_button_subtitle_hold_to_show_hint → ❌ row, live_mode_auto_with_hint → 💬 row
+- Free-form user labels: custom_region_edit_title → ⚠ row; anki_field_mapping_title ✓ (foreign card-type names undeclined), anki_sort_field_empty → ⚠ row (placeholder itself ✓, prose calque flagged), anki_content_source_pick_title ✓, anki_deck_label_format ✓, settings_anki_digest ✓, word_anki_deck_badge_cd ✓, word_detail_not_found ✓
+- Counts/sizes/numbers: word_anki_in_decks ✓ («Колод Anki: N» — agreement-proof reorder), anki_group_words_count ✓, settings_capture_displays_count ✓ («Экранов: N»), word_detail_numbered_definition ✓, tts_voice_numbered ✓, tts_voice_region_numbered ✓, settings_capture_interval_hint ✓ («с.»), dialog_hotkey_setup_countdown ✓ (terse, matches EN), llm_hardware_unsupported_ram ✓ («не менее N ГБ» — genitive-safe for all N), llm_low_memory_message ✓, tr_service_status_quota_fmt ✓, tr_service_status_quota_with_reset_fmt ✓, settings_footer_version ✓, crash_email_subject ✓, update_dialog_message ✓ («доступен» agrees with brand ✓)
+- Byte-progress lines (all «X из Y» / «X / Y» — ✓): pack_upgrade_progress_format_with_bytes (bytes part ✓; prefix ❌ above), bergamot_status_downloading, bergamot_warmup_downloading, bergamot_warmup_downloading_multi, install_downloading_with_bytes, lang_setup_downloading_ocr_model, install_downloading_definitions_with_bytes, qwen_mnn/qwen35_2b/gemma_e2b/hymt `_status_downloading` ✓
+- Model stat/status lines: qwen_mnn/qwen35_2b/gemma_e2b/hymt `_status_not_downloaded`/`_ready` ✓ («Требуется X памяти, Y в хранилище»), `_downloaded_disabled` ✓, `_disable_message` → 💬 row, `_download_failed` ✓, `_metered_warning_message` ✓ grammatically («Размер X — Y» is a good label construction; term → ⚠ row), offline_backend_row_a11y_fmt ✓, offline_backend_row_a11y_no_speed_fmt ✓ (the «Качество: Хорошее качество» doubling mirrors the EN source)
+- Misc: status_error ✓, word_detail_label_format ✓, word_detail_mt_banner_named ✓, word_detail_char_meanings_mt ✓, translation_source_label ✓ («Перевод: X»), llm_backend_get_key_title_fmt ✓, llm_backend_invalid_key_alert_message_fmt ✓, backend_cooldown_status_fmt ✓, capture_display_row_label ✓, settings_ocr_delete_cd/_title/_msg/_shared_msg/_downloading_title ✓ (Latin engine brands decline invisibly), settings_debug_export_logs_failed ✓, quick_tile_add_row_subtitle → 💬 row, pack_upgrade_mandatory_message → ⚠ row (placeholder ✓; prose object flagged), accessibility_dialog_message / overlay_icon_a11y_required_message → ⚠ row (placeholders ✓; nav-path wording flagged), hymt_legal_message → 💬 rows (placeholders ✓)
+
+## Verdicts
+
+- **Register:** PASS — consistent formal lowercase «вы», no «ты» anywhere.
+- **Terminology:** PASS with one miss — core terms (скачать, колода, карточка, языковой пакет, захват экрана, горячая клавиша, синтез речи, наложение) are consistent; `settings_header_ocr` is the outlier.
+- **Android-settings wording:** mostly correct («Специальные возможности», «Поверх других приложений», «строка состояния», «плитка»); fix metered («лимитное подключение») and the accessibility app-list section («Скачанные приложения»).
+- **Plurals:** PASS — all three blocks correct in all four categories including the fractional `other`.
+- **Cases around placeholders:** the translator's label/parenthetical strategy is well executed overall, but 9 strings genuinely break (pack-download progress ×2, offline-models pair line, the four furigana/pinyin slots) plus 2 latent feminine-region-name traps — this is the must-fix cluster.
+- **Truncation:** PASS — Авто/Пауза/Настройки/Области fit the 8sp bar; «Область\nзахвата» fits the 9sp two-line button.
+- **Legal text:** PASS — §5(b), the EU/UK/South-Korea list, «и»-scoped negation, and «подтверждаете и гарантируете» all faithfully preserved; two cosmetic nits only.
+- **Overall:** **fix-then-ship** — no build-breakers, strong overall quality, but the 9 ❌ case/scoping errors (several on the flagship Japanese path) must land before release.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; four-way plural CLDR sets; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_import_summary_count (`one`) | ❌ | «Импортирован %1$d из %2$d словаря.» | «Импортировано %1$d из %2$d словаря.» | The `<plurals>` category is keyed to the **total** %2$d (`getQuantityString(…, tally.totalSelected, importedCount, totalSelected)`), but the predicate participle agrees with the **imported** count %1$d. «Импортирован» (masc sing) only fits %1$d == 1. The reachable break: select **one** already-installed dict → importedCount=0, totalSelected=1 → `one` fires → «**Импортирован 0** из 1 словаря.» (zero demands neuter). Neuter impersonal «Импортировано» is invariant for every %1$d while the noun «словаря» (gen. sg. after «из 1») stays correct. The `few/many/other` forms already use «Импортировано». |
+| yomitan_import_summary_duplicates | ⚠️ | «Уже импортированы: %1$s» | «Уже импортировано: %1$s» | %1$s is a 1-to-N comma-list of dict names; a single duplicate is reachable (`group.examples` can be one item) → «Уже импортированы: JMdict» mis-agrees (plural participle, one name). EN "Already imported:" is number-neutral. Neuter impersonal «Уже импортировано:» reads correctly for 1 **and** many, and mirrors the `summary_count` fix. The colon keeps the nominative name-list safe. (`_invalid/_no_space/_failed` are already number-neutral — «Не удалось прочитать:», «Недостаточно места:», «Сбой:».) |
+| yomitan_import_summary_more (`one`,`few`,`many`,`other`) | 💬 | «+%1$d ещё» | «+ещё %1$d» (or «ещё %1$d») | Postposed «ещё» after the count reads slightly off as a list tail («…, broken.zip, +3 ещё»); «ещё N» is the idiomatic order. «ещё» is invariant, so all four forms are grammatically fine and identical-but-for-the-number — correct as a plural set; purely word-order polish. |
+
+## Clean areas (delta)
+
+**The four plural forms of `yomitan_import_summary_count`** — verified band-by-band, read aloud with the strongest test value. The noun follows «из %2$d», i.e. the count phrase is the **object of «из» (genitive)**, which shifts the `few` band off the file's usual bare-numeral pattern: `one` (total ends 1≠11) «из 1/21 словаря» = gen. sg. ✓; `few` (ends 2–4≠12–14) «из 3/22 словарей» = gen. **pl.** ✓ — correct *because* the numeral two/three/four is itself in genitive after «из» («из трёх словарей», NOT «из трёх словаря»); the translator rightly diverged here from `word_detail_senses_count`'s «2 значения» (gen. sg., bare-numeral frame); `many` (0·5–9·11–14) «из 5/11 словарей» = gen. pl. ✓; `other` (fractions, unreachable — total is integer) «из 1,5 словаря» = gen. sg. ✓. Noun agreement with the total %2$d is right in all four; the **only** defect is the `one`-form participle (row above), which is a predicate-vs-selector mismatch, not a noun-case error.
+
+**`yomitan_import_summary_more`** — selector and arg are the same value (`group.overflow`, `group.overflow`), so the displayed number always matches the chosen category (no total-vs-shown split). «ещё» doesn't inflect, so every band is correct; `other` is unreachable (overflow is an integer ≥1). Only the word-order nit above.
+
+**Placeholder noun-case (runtime values arrive nominative).** All six Yomitan summary lines that take a name/file list (`_duplicates/_invalid/_no_space/_failed` + the two desc field-name slots) use the «Label: %1$s» colon construction — citation/nominative after the colon, exactly the prescribed pattern; **no oblique-case demand on any raw placeholder**. `yomitan_importing_progress` «Импорт %1$d из %2$d…» is noun-headed ("Import N of M") with bare integers under «из» — no agreement trap (the EN deliberately omits the noun and the RU follows). `yomitan_no_space_message` (neighbor) and the audio cells carry no placeholder case risk. The Anki `*_desc` field-name slots («PitchPosition», «PAOverride», «Frequency», «FrequenciesStylized», «FreqSort», «FrequencySort») are restructured as «для поля «X» в Lapis/JPMN», sidestepping the English genitive-'s cleanly.
+
+**Terminology reuse (vs the file).** частот- → «частотность» consistent with the pre-existing `anki_content_frequency`/`_desc` (567–568) and `yomitan_page_description` (1192). Pitch accent → «тональное ударение» matches `yomitan_category_pitch_accent` (1204) and the page description — no competing «высотное ударение»/«питч-акцент». словарь declensions in the new plurals fit the file-wide «словарь». Скачать/Установить both present and consistent in `yomitan_auto_update_subtitle` («скачивать и устанавливать»). Синтез речи (`audio_source_tts_name`) matches the agreed TTS term. Импорт/импортировать consistent across the summary block. «Дополнительно» (`llm_backend_advanced_header`) is Android's standard "Advanced" header; «Свой URL» is tight for a row label.
+
+**Register.** Formal-вы held throughout: «Используйте» imperatives in `anki_content_frequency_stylized_desc` and `llm_backend_base_url_invalid`; no «ты»/«твой» anywhere (whole-file grep clean). Impersonal «Не удалось…» pattern reused consistently (`_title_none`, `audio_error_loading`).
+
+**Short-label truncation (~30% RU expansion).** `audio_source_picker_title` «Аудио», `audio_loading` «Загрузка…», `audio_no_results` «Нет результатов», `yomitan_auto_update_label` «Автообновление», `llm_backend_advanced_header` «Дополнительно», `llm_backend_base_url_label` «Свой URL» are all compact — no toolbar/row truncation risk. The two picker option labels (`anki_content_frequency_harmonic` «Число для сортировки по частотности», `_frequency_stylized` «Список частотности (стиль JPMN)») are longer but live in a full-width dialog option row, not a tight chip. `llm_backend_base_url_invalid` is an inline EditText error (wraps) — length OK; «http:// допустим только для…» reads naturally with no calque.
+
+**The `Example:`/quoted-field-name as-is rule.** `anki_content_pitch_position_desc` keeps «Пример: 0,2» and the ★ glyph / quoted field names verbatim; `_frequency_values_desc` keeps «★» and «Frequency»; `_frequency_stylized_desc` keeps «FrequenciesStylized»; `_frequency_harmonic_desc` keeps «FreqSort»/«FrequencySort» and the «(меньше = чаще)» parenthetical — all correctly left in their original shape, only the surrounding explanation localized. «среднее гармоническое» is the correct math term for "harmonic mean".
+
+**Brands & quotes.** «Wikimedia Commons» (`audio_source_commons_name`), Lapis, JPMN left untranslated; all field-name citations use «» typographic quotes (no escaping needed, matches the file convention); no raw `'`/`"` in any of the 29 scope lines.
+
+---
+
+## Delta review — 2026-07-14 sync
+
+Scope: the 174 delta keys (170 new + 4 changed English). Independent review; the
+rest of the file was read only as the established style guide.
+
+Mechanical layer verified programmatically across all 174: every `%n$s`/`%d`
+present and matching EN; all `<xliff:g>` inner contents byte-identical; the bare
+`{text} {source} {source_code} {target} {target_code} {context} {N} {strings}`
+tokens byte-identical Latin in running prose; `\n` preserved
+(`floating_menu_capture_screen` = «Захват\nэкрана», two lines); no raw `'`/`"`;
+no double spaces; trailing-period parity with EN on all 174; `name=` untouched;
+`<plurals>` carries the full RU CLDR set (one/few/many/other).
+**No 🛑 build-breaking issues.**
+
+**Counts: 0 🛑 · 3 ❌ · 6 ⚠️ · 8 💬**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_prompt_invalid_title | ❌ | «Не удалось сохранить этот промпт» | «Этот промпт нельзя сохранить» | Modality inverted. EN "Can't save this prompt" is a **permanent capability** statement — the dialog is non-bypassable because the prompt has *fatal* problems. «Не удалось» is past-tense transient failure ("the attempt failed"), which tells the user to **retry** when the truth is "fix your template". The file proves the translator knows the difference: `update_error_signature` correctly renders "can't be installed" as «**нельзя** установить». Contrast the sibling `llm_prompt_warning_title` «Проверьте этот промпт» ✓. |
+| llm_prompt_discard_title | ❌ | «Отменить изменения?» | «Не сохранять изменения?» | Breaks a cross-reference with its own dialog's buttons. This dialog's negative button is `btn_cancel` = «**Отмена**» (returns to the editor, **keeps** the edits) and its destructive button is `llm_prompt_discard_confirm` = «Не сохранять». A title asking «**Отменить** изменения?» primes «Отмена» as the *affirmative* answer — but «Отмена» does the opposite. One tap from data loss. Retitling to match the confirm button makes «Отмена» unambiguously "no". |
+| misc_slur | ❌ | «Бранное» | «Дискриминационное» | Wrong lexicographic category, and it collapses the cluster the glossary says must stay distinct. Russian «бран.» (бранное) marks **swearing / abuse** («сволочь», «дурак») — it lands squarely inside the вульгарное/оскорбительное space, so `Уничижительное · Оскорбительное · Вульгарное · Бранное` gives a reader three chips that all just read "rude word". A slur is a demeaning label for a *group*; «Дискриминационное» is instantly and categorically distinct. 17 ch — inside the existing chip range (committed `pos_auxiliary` = «Вспомогательный глагол», 22 ch). Russian lexicography has **no native помета** for "slur", so this is necessarily a coinage; alternative: «Оскорбительное прозвище». |
+| settings_ocr_use_manga_subtitle | ⚠️ | «…Не рекомендуется для **авто**. MangaOCR дополняет…» | «…Не рекомендуется для **автоперевода**. MangaOCR дополняет…» | Bare «авто» in Russian prose reads as *car* (авто = автомобиль). The committed file's established prose form is «для автоперевода» — verbatim in `tr_service_offline_footer`: «…будьте осторожны при их использовании **для автоперевода**». When the file does reference the *button label* it quotes it (`status_hold_hint`: «Удерживайте «Области» или «Авто»…»). |
+| anki_game_audio_row_subtitle | ⚠️ | «**Сохраняет** последние несколько минут звука игры, чтобы…» | «**Сохранять** последние несколько минут звука игры, чтобы…» | Grammatical form disagrees with its **own row title**: `anki_game_audio_row_title` = «Записыв**ать** звук игры» (infinitive), and with the sibling switch subtitle `history_toggle_subtitle` = «Сохран**ять** захваченные предложения…» (infinitive). EN uses one form for both. 3sg «Сохраняет» is the odd one out. |
+| misc_informal | ⚠️ | «Неофициальное» | «Неформальное» | «Неофициальное» means *unofficial* (of a document, a statement) — it is not a speech-**register** label. Russian for informal register is «неформальное» («неформальный стиль речи»). As written it reads as a bare antonym of `misc_formal` = «Официальное» rather than as a помета, and it weakens the informality cluster against «Разговорное»/«Фамильярное». (`misc_formal` = «Официальное» should **stay** — «Формальное» is a Russian false friend meaning *perfunctory*.) |
+| misc_dated | ⚠️ | «Старомодное» | «Устаревающее» | A gloss of the English, not a Russian помета — «старомодное» judges *fashion* (of clothes, of a hat), not word currency. Russian has an exact distinct pair sitting right there: `misc_obsolete` «Устаревшее» (out of use) vs `misc_dated` «Устаревающее» (on its way out). Keeps the obsolescence cluster native and correctly ordered against «Архаичное» / «Историческое». |
+| update_unknown_sources_message | ⚠️ | «…разрешите PlayTranslate устанавливать обновления приложений **на открывшемся экране настроек**.» | «Чтобы завершить обновление, **на открывшемся экране настроек** разрешите **приложению** <xliff:g …>PlayTranslate</xliff:g> устанавливать обновления. Android может перезапустить…» | Two problems, one fix. (1) Word order: the locative lands at the far end of the clause and misattaches to «устанавливать обновления», so it reads "install app updates **onto** the settings screen". (2) «разрешите PlayTranslate устанавливать» leaves the brand bare in a **dative** slot; the params doc's own technique (head noun «приложению») carries the case. Dropping «приложений» from «обновления приложений» avoids «приложению … приложений». |
+| stream_kind_prompt_message | ⚠️ | «**Перевод в реальном времени** работает по-разному…» | «**Автоперевод** работает по-разному для одного приложения и для всего экрана, а система не сообщает, что именно было показано.» | Terminology drift: this is the **only** occurrence of «в реальном времени» in the whole file. The RU file names this feature «Автоперевод» seven times over (`live_mode_auto_translate_label`, `settings_header_auto_translate`, `enhanced_auto_translate_title`, `hotkey_auto_translation_dialog_title`) and «авторежим» twice. The dialog fires *immediately after* the user tapped «Авто» — a third name for it here reads like a different feature. |
+| error_single_app_not_fullscreen | 💬 | «…не занимает весь **экран**. **Он** возобновится, когда…» | «…не занимает весь экран. **Перевод** возобновится, когда…» | «Он» is two nouns away from its antecedent «Перевод», and the nearer noun «экран» is *also* masculine — momentarily reads "the screen will resume". Semantics rescue it, so this is polish, not a defect. |
+| llm_prompt_row_system_subtitle, settings_llm_context_subtitle | 💬 | «переводчикам LLM» / «онлайн-переводчикам LLM» | «LLM-переводчикам» / «онлайн-переводчикам на базе LLM» | Acceptable Russian tech apposition (cf. «протокол HTTP»), but the hyphenated attributive is the more idiomatic modern form. Two keys, one fix. Low priority — do not churn if the orchestrator prefers the current shape. |
+| misc_manga_slang | 💬 | «Сленг манги» | «Манга-сленг» | Parallel with `misc_internet_slang` = «Интернет-сленг» (hyphenated compound, not a genitive phrase), and 3 ch shorter on a width-constrained chip. |
+| misc_yojijukugo | 💬 | «Идиома из 4 иероглифов» | «Идиома из 4 кандзи» | Correctly *described* rather than romanized, per the glossary ✓. 21 ch is fine against `pos_auxiliary` (22 ch), but «кандзи» is 3 ch shorter and reuses the loanword already committed at `misc_kanji_only` («Только кандзи»). |
+| llm_prompt_row_translation_subtitle | 💬 | «Запрос, в **который** оборачивается каждая фраза, **которую** вы ищете.» | «Запрос, в который оборачивается каждая искомая фраза.» | The «который…которую» chain is the classic Russian style flaw; the participial form is tighter and matches the sibling subtitles' length. |
+| tr_service_status_usage_today_fmt | 💬 | «Сегодня токенов: %1$s» | «Токенов сегодня: %1$s» | The restructure is **correct and necessary** — the runtime passes a pre-formatted string («12 345»), so `<plurals>` is unavailable and a trailing «токенов» would break on 1/2/5. Fronting the genitive noun is the right dodge; «Токенов сегодня:» is just the more natural word order for a stat line. |
+| probe_initializing | 💬 | «Инициализация…» (14 ch) | «Запуск…» (7 ch) if the chip is tight | Truncation watch only, per brief item 7 — the chip is explicitly "keep short" and rides beside a checker glyph for ~1.5 s. The committed `settings_ocr_downloading_msg` already uses «Запуск…» for a comparable start-up slot. Leave as-is if the chip measures fine on Thor. |
+| audio_source_game_ready | 💬 | «Из вашей недавней игры» | «Из недавней игры» | «вашей» is redundant in a row subtitle and costs width; the possessive adds nothing EN's "your recent gameplay" doesn't already imply from context. |
+| llm_backend_preset_custom | 💬 | «Свой» | «Другой» (only if it reads poorly in the catalog list) | Fine as a Provider dropdown value and pill. Flagged only because it also lands inside the composed catalog subtitle «OpenAI (DeepSeek, Mistral, Свой)», where «Другой» would read marginally better. Leave if intentional. |
+
+### Clean areas (delta) — checked, no findings
+
+**`settings_yomitan_count_summary` — the plurals. Clean; the previous cycle's bug
+class does not recur.** Verified structurally *and* by reading every category with
+a real number. The prior defect (`yomitan_import_summary_count`, fixed last cycle)
+was a **selector-vs-argument split** — the category was keyed to one quantity while
+the participle agreed with another, yielding «Импортирован **0**…». That split is
+structurally impossible here: the call site is
+`RootSettingsViewModel.kt:346` → `getQuantityString(R.plurals.settings_yomitan_count_summary, count, count)`
+— **selector and format arg are the same value**. Category by category:
+`one` (ends 1, ≠11) «Импортирован **1** словарь» / «Импортирован **21** словарь» — masc. sg. short participle + nom. sg. noun ✓ correct for *every* member of the band;
+`few` (ends 2–4, ≠12–14) «Импортировано **2** словаря» / «…**23** словаря» — impersonal neuter + gen. sg. ✓;
+`many` (0, 5–9, 11–14) «Импортировано **5** словарей» / «…**11** словарей» / «…**0** словарей» ✓;
+`other` (fractions) «Импортировано **1,5** словаря» — gen. sg., correct for Russian fractions ✓ (unreachable anyway: `count` is an `Int`, and `count == 0` short-circuits to `settings_yomitan_empty_summary` at line 344). The four `xliff:g example=` values (1 / 2 / 5 / 1.5) correctly diverge from EN's (1 / 3) because `few`/`many` **have no English counterpart** and EN's `other`="3" would be flatly wrong for a Russian fraction band — the same practice `values-ar` uses for its six categories (0/3/11/100). `example` is stripped by AAPT2 and has no runtime effect.
+
+**Share-scope buttons — verified against AOSP source, not from memory.** Fetched
+`aosp-mirror/platform_frameworks_base` → `packages/SystemUI/res/values-ru/strings.xml`:
+`screen_share_permission_dialog_option_single_app` = «**Показать приложение**» and
+`_entire_screen` = «**Показать весь экран**». Both `stream_kind_share_one_app` and
+`stream_kind_share_entire_screen` are **byte-identical to AOSP** ✓. (I had suspected
+the single-app one was missing «одно» — it is not; AOSP genuinely omits it. Recorded
+so a future reviewer doesn't re-raise it.)
+
+**The 38 `misc_*` chips — cluster distinctness.** Both traps named in the brief were
+**avoided**: `misc_nonstandard` is «Нестандартное», *not* «Ненормативное» (which
+means *obscene*) ✓; and «Уничижительное» is used **only** at `misc_derogatory` — it
+does **not** collide into the humble slot, where `misc_humble` correctly reads
+«Скромное» ✓. Honorifics (`Почтительное · Скромное · Вежливое`) are three-way
+distinct ✓. Obsolescence (`Архаичное · Устаревшее · Старомодное · Историческое`) is
+four-way distinct — the `misc_dated` finding above is about *register*, not about a
+collision. Several chips are the genuinely canonical Russian пометы and should be
+left alone: «Переносное» (перен.), «Книжное» (книжн.), «Разговорное» (разг.),
+«Ласкательное» (ласк.), «Шутливое» (шутл.), «Фамильярное» (фам.), «Звукоподражание»,
+«Деликатное» (correctly dodges the «Чувствительное» calque). Adjective-vs-noun mix
+(«Сленг», «Идиома», «Эвфемизм») is correct lexicographic practice and is *not* a
+defect — the sibling `pos_*` family is all nouns because POS tags are nouns, while
+register пометы are adjectives. Chip widths (14–17 ch) sit inside the committed
+range (`pos_auxiliary` = 22 ch): **no truncation risk**.
+
+**Noun case around every `<xliff:g>` — read with real values dropped in.** No raw
+placeholder is left in an oblique-case slot. Colon/parenthesis restructures used
+exactly where the params doc prescribes: `ocr_source_label` «Распознано: PaddleOCR»
+(mirrors the committed `translation_source_label` «Перевод: DeepL» — the glossary's
+prescribed structure, matched ✓); `update_dialog_size_note` «Размер загрузки: 128 МБ»;
+`hotkey_show_hint_title` «…показа подсказок (Фуригана)» and `hotkey_auto_hint_title`
+«…/остановки: Авто Фуригана» (both reproduce the committed
+`translate_button_subtitle_hold_to_show_hint` / `hotkey_show_hint_dialog_title`
+patterns ✓); `settings_ocr_disable_manga_msg` «…модель (68 МБ) или удалить **её**…»
+— «её» correctly agrees with fem. «модель» ✓; `update_error_no_space`
+«(требуется 230 МБ)»; `tr_service_remove_title_fmt` «Убрать OpenAI?» (indeclinable
+brand, acc = nom ✓); `game_audio_trim_duration` «Выбрано 2.4 с · записано 147 с»
+(fully restructured out of the numeral-agreement trap ✓);
+`tr_service_status_usage_today_fmt` fronts the genitive to dodge «12 345 токенов» vs
+«1 токен» ✓; `update_error_wrong_package` «не является обновлением PlayTranslate»
+(instrumental ✓). `hotkey_auto_hint_dialog_title` «Авто %1$s» is **not** a new
+invention — it reproduces the committed `live_mode_auto_with_hint` verbatim ✓.
+
+**Terminology — grepped against the committed file, not invented.** Every one of
+these matches an existing precedent: «Поставщик» (Provider) ← `tr_service_order_footer`
+«…каждого поставщика»; «инструмент OCR» ← `settings_ocr_footer` «Разные инструменты
+OCR…»; «Синтез речи» (TTS) ← `settings_cell_tts`; «лимитное подключение» (metered) ←
+the four `*_metered_warning_*` strings; «Наложения» (overlays) ←
+`settings_hide_overlays_during_auto_mode`; «Вкл.»/«Выкл.» ← `capture_lifecycle_state_on/off`;
+«захваченные/захватывает» (captured) ← `tr_service_order_footer` «получают захваченный
+текст»; «Удалить» for models ← `settings_ocr_delete_confirm`; «Проверка…» ←
+`settings_ocr_verifying`. The **Remove vs Delete** split the glossary asks for is
+executed cleanly and deliberately: services are «Убрать» (`tr_service_remove_*`,
+`tr_service_delete_cd`), history entries and models are «Удалить» — and
+`tr_service_remove_message` uses *both* in one sentence exactly as EN does
+(«Сервис будет **убран** из списка, а сохранённый API-ключ **удалён**») ✓. «Очистить»
+is reserved for Clear-all ✓. `service_llm_badge` keeps Latin «LLM» ✓. «Промпт» is one
+noun across all 22 `llm_prompt_*` keys ✓; «Ключевые слова» (keyword) is distinct from
+placeholder ✓.
+
+**Register & the deliberate decisions.** Formal lowercase **вы** held throughout
+(«вашего сервера», «вашей недавней игры», «которую вы ищете»); no «ты» anywhere in
+the delta. Sibling buttons share a form: «Оставить модель»/«Удалить модель»,
+«Воспроизвести фрагмент»/«Остановить», «Использовать фрагмент»/«Использовать синтез
+речи» — and «фрагмент» is used consistently for the glossary's *selection* ✓. The
+brief's four carve-outs were checked and left alone: the AOSP share buttons (above),
+the Latin «Japanese»/«English» in `llm_prompt_kw_source_desc`/`_target_desc` ✓,
+`llm_status_low_memory_badge` untouched ✓, and em dashes (тире) treated as native
+punctuation throughout ✓.
+
+---
+
+## Delta review round 2 — 2026-07-14
+
+Fresh independent re-derivation of all 174 delta keys against EN + the committed
+file. Primary target per the brief: **regressions introduced by the round-1
+fixes**.
+
+Mechanical layer re-verified programmatically across all 174: placeholders,
+`<xliff:g>` inner text + `id` attrs, the bare `{token}` literals, `\n`, markup,
+escaping, trailing-period parity, no double spaces, `name=` untouched, full RU
+CLDR plural set. **All clean — no 🛑.**
+
+**Counts: 0 🛑 · 1 ❌ · 1 ⚠️ · 3 💬**
+
+### Findings (delta round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| game_audio_trim_use_tts + game_audio_trim_save | ❌ | «Использовать синтез речи» / «Использовать фрагмент» | «Синтез речи» / «Использовать» | **The trim button row overflows by 1.38×.** `activity_game_audio_trim.xml:80–116` is a horizontal `LinearLayout` (padding 12dp) holding three `wrap_content` MaterialButtons — two TextButtons (12dp side padding) and the filled primary (24dp) — separated by a weighted `Space`. At 14sp the three RU labels need **~464dp** of button against **~336dp** available on a 360dp phone. The `Space` collapses to 0 first, then the **last** child — `btnTrimSave`, the *primary* «Использовать фрагмент» — is clipped. The model calibrates on EN, which lands at **335dp vs 336dp** — i.e. EN is exactly at the limit, which is precisely why pt-BR was granted a measured width exception on this same row (`game_audio_trim_use_tts` = "Usar TTS"). RU is the widest locale in the set and got no such trim. The fix lands at **317dp (19dp headroom)**; «Синтез речи» keeps the `settings_cell_tts` term, and the "…instead" contrast is carried by the adjacent primary exactly as pt-BR's sanctioned label does. *Computed, not measured on-device — worth a Thor confirmation, but the EN calibration makes the direction unambiguous.* |
+| llm_status_low_memory_badge | ⚠️ | «…перевод через **резервный** вариант» | «…перевод через **запасной** вариант» | Terminology drift on "fallback". The committed file renders it **«запасной вариант»** twice — `tr_service_offline_footer` («используются как запасной вариант») and `yomitan_single_dict_subtitle` («последний запасной вариант») — and all three EN strings use the one word *fallback*. The delta introduces a third synonym for the same mechanism. One-word fix. (The em dash stays — settled.) |
+| misc_yojijukugo | 💬 | «Идиома из 4 иероглифов» | `misc_idiomatic` → «Идиоматическое», or `misc_yojijukugo` → «Из 4 иероглифов» | Prefix stutter against `misc_idiomatic` = «Идиома». `build_jmdict.py:526–540` collects **every** `<misc>` tag on a sense (`for m in sense.findall("misc")`), `renderMisc` maps each independently, and `.distinct()` only dedupes *identical* labels — so a sense tagged both `id` and `yoji` renders «**Идиома** · **Идиома** из 4 иероглифов». EN doesn't stutter because it contrasts an adjective ("Idiomatic") with a noun ("Four-character compound"); RU leads both with the same noun. Moving `misc_idiomatic` to «Идиоматическое» also joins the dominant adjectival pattern (Разговорное / Книжное / Переносное). **Caveat: I could not verify how often JMdict actually co-tags `id`+`yoji` — no JMdict on hand. The render path permits it; the corpus frequency is unverified.** Round 1 cleared the noun «Идиома» on lexicographic grounds and was right to — it simply didn't consider the yojijukugo collision. |
+| misc_dated | 💬 | «Устаревающее» | (keep — or revert to «Старомодное») | The round-1 fix is *linguistically correct*: the imperfective present participle («becoming obsolete») against `misc_obsolete`'s perfective «Устаревшее» («already obsolete») encodes exactly the EN Dated/Obsolete split. The cost it introduced: the two chips are now a near-minimal pair differing only mid-stem (устарев**ш**ее / устарев**аю**щее), where «Старомодное» was instantly distinct — and EN's own comment glosses *dated* as "old-fashioned". **Not a defect; flagged only so the trade is a conscious one.** Leave as-is if aspectual precision beats glance-legibility. |
+| llm_prompt_discard_message | 💬 | «Ваши изменения в этом промпте не сохранены.» | «Изменения в этом промпте пока не сохранены.» | The discard dialog now carries «сохран-» three times (title / body / button). The **title↔button** repetition is load-bearing and must stay — it is what kills the «Отмена» ambiguity (see below) — so only the body can vary, and EN does vary it ("Discard" / "edits" / "saved"). «пока» ("not yet") additionally removes the momentary "already lost?" reading of the bare short passive «не сохранены». Low priority; do not churn. |
+
+### The discard dialog, read as a whole — the round-1 fix holds ✓
+
+Traced against the real call site (`LlmPromptEditorActivity.kt:102–118`), which is
+the only thing that settles it:
+
+```
+Не сохранять изменения?                    ← llm_prompt_discard_title
+Ваши изменения в этом промпте не сохранены. ← llm_prompt_discard_message
+                    [Отмена]  [Не сохранять] ← btn_cancel · llm_prompt_discard_confirm (ptDanger → finish())
+```
+
+Round 1's defect was that the old title «**Отменить** изменения?» shared a root with
+`btn_cancel` = «**Отмена**», priming the *cancel* button as the affirmative answer
+when it in fact **keeps** the edits — one tap from data loss. **The fix resolves it
+and creates no new ambiguity:**
+
+- The word «Отмен-» no longer appears anywhere in the dialog, so the root collision
+  is gone outright — not merely weakened.
+- The confirm button label «Не сохранять» is now a **byte-exact restatement of the
+  title's predicate**. That is the strongest disambiguation available: the button
+  matching the title's verb *is* the affirmative, so the negative-polarity question
+  («Не сохранять…?») cannot be mis-answered.
+- «Отмена» is left with exactly one reading — "cancel this discard" → back to the
+  editor. This mirrors EN's own Cancel/Discard shape, so no locale-specific hazard
+  is introduced.
+
+The two sibling dialogs on the same screen were checked with it and are coherent:
+`showFatalAlert` is title «Этот промпт нельзя сохранить» + a lone **[ОК]** (`btn_ok`)
+— the permanent-capability «нельзя» is right for a dead-end dialog with no save path
+(«Не удалось» would have invited a pointless retry), and it matches the delta's own
+`update_error_signature` («нельзя установить») ✓; `showAdvisoryAlert` is «Проверьте
+этот промпт» + [Отмена] / [Всё равно сохранить] ✓.
+
+The **modality split is consistent across the whole delta**: permanent «нельзя»
+(`llm_prompt_invalid_title`, `update_error_signature`); one-shot past «не удалось»
+(`tr_service_status_check_failed`, `update_error_verification`, `update_error_install_launch`);
+ongoing present «не удаётся» (`error_capture_blocked_secure` — correct, live mode
+keeps polling).
+
+### Plurals — read at each count band ✓
+
+`settings_yomitan_count_summary`. Call site verified myself at
+`RootSettingsViewModel.kt:343–346`: `getQuantityString(…, count, count)` — **selector
+and format arg are the same value**, so last cycle's selector-vs-argument split
+(`yomitan_import_summary_count`) is structurally impossible here; and `count == 0`
+short-circuits to `settings_yomitan_empty_summary` at line 344, so `many`'s zero case
+is unreachable.
+
+- `one` (n≡1 mod 10, ≠11) → «Импортирован **1** словарь» / «Импортирован **21** словарь» — masc. sg. short participle + nom. sg. noun. Correct for *every* member of the band, precisely because selector == arg ✓
+- `few` (n≡2–4, ≠12–14) → «Импортировано **2** словаря» / «…**23** словаря» — impersonal neuter + gen. sg. ✓ (the neuter impersonal is the standard quantity-statement form, cf. «Продано 3 билета»)
+- `many` (0, 5–9, 11–14) → «Импортировано **5** словарей» / «…**11** словарей» — gen. pl. ✓
+- `other` (fractions) → «Импортировано **1,5** словаря» — gen. sg., correct for RU fractions ✓ (unreachable; `count` is an `Int`)
+
+The four `example=` values (1 / 2 / 5 / 1.5) rightly diverge from EN's (1 / 3): `few`
+and `many` have no English counterpart, and EN's `other`="3" would be flatly wrong for
+a Russian fraction band. `example` is stripped by AAPT2 — no runtime effect.
+
+### The 38 `misc_*` labels after the edits ✓
+
+Checked programmatically: **all 38 are distinct** — no two collapse under
+`renderMisc`'s `.distinct()` (`MiscLabels.kt:31`) — and none collides with the
+`pos_*` or `inflection_*` families that render in the same card. No label contains
+the `" · "` join separator (`MiscLabels.kt:37`).
+
+The four clusters survive round 1's three edits and remain internally distinguishable:
+
+- **Offensiveness** — Уничижительное · Оскорбительное · Вульгарное · **Дискриминационное** · Деликатное. The `misc_slur` fix is right: «Бранное» (swearing/abuse) sat squarely inside the vulgar/offensive space and gave the reader three chips that all just read "rude word". Russian lexicography has no native помета for *slur*, so a coinage is forced; «Дискриминационное» is categorically distinct (a slur demeans a *group*), is unambiguous in Russian, and «дискриминационная лексика» is attested usage. ✓
+- **Obsolescence** — Архаичное · Устаревшее · **Устаревающее** · Историческое ✓ (see the 💬 above).
+- **Informality** — Разговорное · **Неформальное** · Фамильярное · Сленг · Интернет-сленг · Манга-сленг · Официальное · Книжное. The `misc_informal` fix is right: «Неофициальное» means *unofficial* (of a document), not a speech register. The resulting **root asymmetry** «Официальное» / «Неформальное» is the accepted cost of keeping `misc_formal` off the «Формальное» false friend (settled) — it costs nothing functionally, since the two never co-occur and both are distinct, correct register terms. ✓
+- **Honorifics** — Почтительное · Скромное · Вежливое ✓ three-way distinct; «Уничижительное» is still used *only* at `misc_derogatory` and has not leaked into the humble slot.
+
+`misc_manga_slang` → «Манга-сленг» now parallels «Интернет-сленг» (hyphenated compound, not a genitive phrase) ✓.
+
+### Case agreement around every `<xliff:g>`, read with real values ✓
+
+No raw placeholder sits in an oblique-case slot. The round-1 restructures hold:
+
+- `ocr_source_label` → «**Распознавание:** PaddleOCR». The change from «Распознано:» is
+  right and is the *better* structure: it is now a noun + colon + name, an exact
+  structural mirror of `translation_source_label` «Перевод: DeepL» — the two lines sit
+  next to each other on the result screen, so the parallel is *visible*. It also reuses
+  the file's established OCR term (`status_ocr` «Распознавание текста…», `settings_header_ocr`
+  «Распознавание текста (OCR)») ✓
+- `update_unknown_sources_message` → the locative now precedes the verb («…на открывшемся
+  экране настроек **разрешите**…»), so it can no longer misattach as "install updates
+  *onto* the settings screen"; and the brand sits in apposition to the dative head noun
+  «приложению», which carries the case for the indeclinable Latin name ✓. Dropping
+  «приложений» avoids «приложению … приложений» without losing the pointer (the button
+  opens the screen anyway) ✓
+- `tr_service_status_usage_today_fmt` → «Токенов сегодня: 12 345» fronts the genitive
+  plural, which is agreement-proof for 1 / 2 / 5 (the runtime passes a *pre-formatted*
+  string, so `<plurals>` is unavailable). This is a genuinely idiomatic RU stat-line
+  shape («Шагов сегодня: 8 421») ✓
+- Nominative/citation fills: `hotkey_show_hint_title` «…показа подсказок (Фуригана)»,
+  `hotkey_show_hint_dialog_title` «Показать: Фуригана», `hotkey_auto_hint_title` «…/остановки:
+  Авто Фуригана», `update_dialog_size_note`, `settings_ocr_disable_manga_msg` («…или удалить
+  **её**» — fem., agrees with «модель» ✓), `update_error_no_space`, `tr_service_key_tail_fmt` ✓
+- Indeclinable-brand slots (acc = gen = nom): `tr_service_remove_title_fmt` «Убрать OpenAI?»,
+  `update_progress_title` «Обновление PlayTranslate», `cd_add_to_anki`, `floating_menu_panel_open_app`,
+  `update_error_wrong_package` («не является обновлением PlayTranslate» — instrumental ✓) ✓
+- `history_empty_off` — PlayTranslate is the nominative **subject** of «захватывает» ✓
+- `llm_prompt_advisory_foreign_token` — EN has `{text}` in *subject* position; RU flips to
+  active («Этот промпт не заполняет {text} — ключевое слово будет…»), which keeps the token
+  as an object where its indeclinability is harmless ✓. «без него» in `llm_prompt_fatal_missing_text`
+  /`_missing_strings` is safe for both masc. and neut. antecedents (same form) and matches the
+  neuter «ключевое слово» used in the sibling ✓
+
+### Other things checked, no finding
+
+- **`cd_change_source_language` / `cd_change_target_language`** = «Изменить язык **оригинала**» /
+  «…язык **перевода**». These look like a term drift against the delta's own
+  `llm_prompt_kw_source_desc` («исходного языка») — they are **not**. They are
+  contentDescriptions for the *tappable result-screen section headers*, and the visible
+  headers are `section_original` = «**Оригинал**» and `section_translation` = «**Перевод**».
+  Binding the a11y label to the label the user actually sees is exactly right (and is better
+  than the EN, whose headers say Original/Translation while its cd says source/target).
+  «исходный/целевой язык» is correct in its own place — the keyword legend explaining the
+  literal `{source}`/`{target}` tokens. Recorded so a future reviewer doesn't "fix" it.
+- **`probe_initializing`** — round 1's truncation watch was a **false positive**. The chip
+  measures its own localized string (`StreamKindProbe.kt:576–580`:
+  `labelPaint.measureText(labelText) + 2 * labelPadding`, code comment: *"Width is MEASURED
+  from the localized string — every locale fits exactly, no fixed guess"*). «Инициализация…»
+  cannot truncate. Leave it.
+- **`anki_game_audio_row_subtitle`** — the «Сохраняет» → «Сохранять» fix is right: the row
+  title `anki_game_audio_row_title` is the infinitive «Записывать звук игры», and the sibling
+  switch subtitle `history_toggle_subtitle` is the infinitive «Сохранять захваченные
+  предложения…». The 3sg was the odd one out; it now matches the file's dominant switch-row shape ✓
+- **`error_capture_blocked_secure`** — «захватываемое приложение» is right (EN's "this app" is
+  ambiguous between PlayTranslate and the capture target) and it now matches its panel sibling
+  `error_single_app_not_fullscreen` verbatim ✓. Ongoing-present «не удаётся» is correct — live
+  mode keeps polling.
+- **`settings_ocr_use_manga_subtitle`** — «для автоперевода» is right («авто» alone reads as
+  *car*) and matches the file's established «Автоперевод» (`hotkey_auto_translation_dialog_title`,
+  `settings_header_auto_translate`) ✓
+- **`llm_prompt_row_system_subtitle` / `settings_llm_context_subtitle`** — «LLM-переводчикам» vs
+  «онлайн-переводчикам на базе LLM» is a *motivated* variation, not a drift: the second stacks a
+  second modifier ("online") that would otherwise force the triple-hyphen «онлайн-LLM-переводчикам».
+  «облачным и локальным» correctly takes dative to agree with «LLM-переводчикам» ✓
+- **Seconds abbreviation** — `game_audio_trim_duration` uses «с» (no period), matching
+  `settings_capture_interval_seconds_suffix` = «с»; the period in `settings_capture_interval_hint`
+  is a sentence-final stop, not part of the symbol. Consistent ✓
+- **`stream_kind_*`** — «Какой вариант **демонстрации**…» + AOSP's «Показать приложение» /
+  «Показать весь экран» + «…что именно было **показано**» form one coherent set on Android's own
+  «демонстрация экрана» term ✓ (the AOSP buttons and `stream_kind_prompt_message`'s «в реальном
+  времени» are settled and were not re-litigated).
+- **`settings_ocr_disable_manga_*`** — the body's verbs («**Оставить** скачанную модель … или
+  **удалить** её») byte-match the button labels («Оставить модель» / «Удалить модель») ✓
+- **Remove vs Delete** — «Убрать» for services, «Удалить» for models/history entries, «Очистить»
+  for clear-all, with `tr_service_remove_message` using both in one sentence exactly as EN does ✓
+- **Truncation, remaining surfaces** — `service_account_required_free` (35 ch) renders in a
+  `match_parent` wrapping subtitle (`item_add_online_service.xml`, only the *title* has
+  `maxLines=1`), no risk ✓; `floating_menu_capture_screen` «Захват\nэкрана» (6/6 per line) is
+  shorter than the committed, known-fitting `floating_menu_btn_capture_region` «Область\nзахвата»
+  (7/7) ✓; the `misc_*` chips wrap (settled) ✓
+- **Known code defects (not locale bugs, per the brief; noted once)** — `game_audio_trim_duration`
+  will render «Выбрано 2**.**4 с» because `GameAudioTrimActivity` formats with `Locale.US`; Russian
+  wants a decimal comma. The RU *string* is structurally correct and needs no change.
+- **Register** — formal lowercase «вы» throughout; no «ты» anywhere in the delta.
+
+### Verdict
+
+**FIX FIRST.** One ❌ (the trim button row clips its primary action in RU — a two-string
+fix) and one ⚠️ (a one-word "fallback" term alignment). Everything round 1 changed
+re-derives as correct, including all three of its ❌ calls; **no regression was
+introduced by any of the fixes**, and the discard-dialog ambiguity it targeted is
+genuinely gone.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly one/few/many/other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "Быстрый даже при обилии текста на экране" | "Отзывчивый даже при обилии текста на экране" | The English comment forbids reusing the literal Fast tier label; the first pass reused «быстрый», the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+| `hotkey_capture_screen_title` | 💬 | "Нажмите, чтобы захватить экран" | "Нажмите для захвата экрана" | Its two siblings in the same list (`hotkey_auto_translation_title`, `hotkey_show_translations_title`) both use «Нажмите/Удерживайте для + genitive»; the subordinate-clause form broke the column's rhythm for no gain. |
+
+### Clean areas (delta) — checked, no findings
+
+All four new `<plurals>` written out at every band and read with a real count: `history_line_count` (строка / строки / строк), `settings_yomitan_outdated_summary`, `yomitan_collection_imported_count`, `yomitan_collection_skipped_count` — none is a copied English one/other pair, and `other` carries the fractional example the file already uses. Every placeholder is left in the nominative: `update_none_message` hangs the version off a dash predicate («PlayTranslate 2.4.1 — последняя версия»), and `image_import_no_text` / `camera_snapshot_no_text` reuse the colon frame `status_no_text` already established («%1$s: текст не найден…») rather than forcing an oblique case. «модуль» was chosen for *engine* to match Android's own Russian for a pluggable engine («Модуль синтеза речи») and because «движок» is below this file's register; it also stays clear of «модель» (the downloaded OCR model, `settings_ocr_delete_msg`) and «инструмент» (tool) — all three meet in `settings_ocr_delete_camera_import_note`. «Камера» inside `settings_ocr_delete_camera_note` byte-matches `settings_cell_camera`. `settings_support_check_updates_title_available` byte-matches `update_dialog_title`. «снимок» for the camera freeze-frame stays distinct from «снимок экрана» (`anki_group_screenshot`). Formal lowercase «вы» throughout; « » quotes; no «ты».
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ and one 💬 found and fixed, no ❌.
+
+---
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Scope: the eight keys added to `values-ru/strings.xml` by the working-tree diff —
+`card_words_in_sentence`, `anki_added_sentence_success`, `anki_added_word_success`,
+`game_audio_zoom_hint`, `anki_first_field_unmapped`, `anki_first_field_empty`,
+`history_hide_translations_toggle_title`, `history_hide_translations_toggle_subtitle`.
+Reviewed by a second pair of eyes; nothing else in the file was touched.
+
+Mechanical layer verified programmatically over the eight: file is well-formed XML; all
+eight names present, no extras anywhere in the locale and no `translatable="false"`
+orphans; placeholder multisets identical to EN (`%1$s` in the two first-field strings,
+none elsewhere); every `<xliff:g>` span byte-identical to EN including `id` and `example`
+(`field_name`/`Key`, `brand_anki`/`Anki`); `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts
+match; no unescaped `'` or `"` in any text node; « » balanced and used in place of EN's
+curly “ ”, per the locale's quote convention. `./gradlew :app:processDebugResources` is
+green. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | 💬 | «Сведите или разведите пальцы, чтобы показать больше или меньше **аудио**» | «…больше или меньше **записи**» | This file already names the thing being zoomed: `audio_source_game_name` is «Звук игры» and `anki_game_audio_row_title` «Записывать звук игры». «аудио» is a second noun for it, borrowed from `anki_added_no_audio` («аудио недоступно»). A straight swap to «звука» would be worse, not better — «больше или меньше звука» reads as *volume*. «записи» names what the waveform actually is (the buffered recording), dodges the volume reading, keeps the game-audio family intact, and is 7 characters shorter. Optional: the current wording is correct and clear as it stands. |
+| `anki_first_field_unmapped`, `anki_first_field_empty` | 💬 | «…<xliff:g>Anki</xliff:g> определяет **заметку**…» (both) | keep — the note is on the neighbour | «заметка» is the right word: it is AnkiDroid's own Russian for *note*, so it byte-matches what the user sees in the app being written to, and the note-vs-card distinction is exactly what these two strings are about (Anki checksums the **note's** first field, not the card). Worth recording that this is its first appearance in a file that says «карточка» ~25 times — including `anki_card_type_row_label` «Тип карточки», which renders AnkiDroid's «Тип заметки». That collision is inherited from the English source (EN likewise says "Card Type" in the row and "the note" here); RU merely makes it visible, because Russian users have the AnkiDroid term in front of them. Not a defect in the delta — flagged so the EN row is on the record if the pair is ever revisited. |
+
+No ❌ and no ⚠️ in these eight.
+
+### Clean areas (delta) — checked, no findings
+
+**The two first-field strings hold under a real field name.** Both front the head noun
+«поле» and leave the free-form AnkiDroid field name inside « » as an undeclined citation,
+which is the technique this locale's parameters prescribe and the only thing that survives
+a user-defined name of unknown gender and declinability. `anki_first_field_unmapped`:
+«Сопоставьте поле «X»» — «поле» carries the accusative, so "Key", "Expression",
+"Слово" or "Выражение" all drop in unchanged. `anki_first_field_empty`: «Поле «X» пусто» —
+«поле» carries the nominative subject. Read with each of those four values, neither
+sentence bends. The anaphor «по нему» in the first string binds to «поле» (neuter,
+dative after «по»), correct; «оно» in the second binds to «первому полю», the nearest
+neuter and the intended referent — «заметку» is feminine and «Anki» is a brand, so there
+is no competing antecedent.
+
+**«пусто», not «пустое», is the right predicative.** The short-form neuter states a
+condition of this card ("is empty on this card"); the long form «пустое» would be
+attributive and read as a property of the field itself — wrong, since the same field is
+non-empty on other cards. The string's own «на этой карточке» confirms the state reading.
+Word order mirrors EN (field first, locative last), which is a deliberate scanability
+choice in a full alert: the user needs the field name before the condition.
+
+**Dropping "a value" from `anki_first_field_unmapped` does not cost the action.** EN maps
+value → field ("Map a value to X"); RU maps field → (source implied) («Сопоставьте поле
+«X»»). The RU direction is the one the app's own UI uses: the picker that opens
+immediately after this toast is titled `anki_content_source_pick_title` «Сопоставить
+«X»» — the same verb, the same object. The toast therefore names the verb the user is
+about to see, and the missing argument is supplied by the screen one tap later. If
+anything RU tracks the app's model more closely than EN does. `anki_field_mapping_unconfigured`
+keeps its distinct verb («Настройте поля…»), matching EN's own "Configure" on that
+different surface.
+
+**The «—» in a toast is fine, and it is sanctioned here.** Russian тире before a fronted
+explanatory clause («…— по нему Anki определяет заметку») is idiomatic and reads more
+naturally than a colon would, because the second clause justifies the imperative rather
+than stating its cause. The project's em-dash hook (`.claude/hooks/check-em-dash.py`) is
+scoped to `values/strings.xml` only and names Russian тире as the reason the locales are
+exempt, so this is not a hook or policy violation.
+
+**Toast line budget.** `anki_first_field_unmapped` renders 57 characters against EN's 51
+with the documented `Key` example — +12%, well under the ~30% Russian expansion this
+locale plans for, so it lands on the same two lines EN does under the Android 12+ clamp.
+A field name past roughly twenty characters would push a third line, but EN carries that
+exposure identically; nothing was gained by shortening the Russian further, and shortening
+it would have meant dropping «поле», the head noun the whole case-safety rests on.
+
+**Card-shape toasts.** «Карточка предложения добавлена» / «Карточка слова добавлена»:
+genitive of the mode labels as they appear in the toggle — `anki_mode_sentence`
+«Предложение» → «предложения», `anki_mode_word` «Слово» → «слова» — with feminine
+«добавлена» agreeing with «Карточка». Subject-first + participle-last is the standard
+Russian notification shape («Сообщение отправлено»), so these read as native toasts, not
+as translated headlines. «карточка предложения» is not invented: `anki_content_flag_sentence`
+(«Маркер карточки предложения»), `anki_content_words_table` («карточки предложений») and
+`anki_game_audio_row_subtitle` («новые карточки предложений») already use it. For the word
+shape the translator correctly chose «Карточка слова» over the file's «карточка лексики»
+(`anki_content_flag_vocabulary`) — these toasts exist precisely to surface which side of
+the Предложение/Слово toggle fired, so echoing the toggle's own label is the point.
+Divergence from `anki_added_no_audio` («Добавлено в Anki», impersonal) mirrors EN's own
+split, and all three end on «в Anki», so the family stays coherent.
+
+**Hide-translations toggle — aspect confirmed.** «Скрывать переводы» is imperfective, and
+this file splits aspect by surface: toggle titles take the imperfective
+(`history_toggle_title` «Хранить историю текста», `history_capture_image_toggle_title`
+«Сохранять изображения захвата», and the direct analogue
+`settings_hide_overlays_during_auto_mode` «Скрывать наложения в авторежиме»), while
+one-shot actions take the perfective («Скрыть» in `floating_icon_close_label_hide`,
+`overlay_hide_for_now`). The new title lands on the correct side of that split. Plural
+«переводы» is right for a list-wide setting and does not conflict with the singular in
+`hotkey_show_translations_title` («…для показа перевода»), where a single on-screen
+overlay is meant — Russian number here follows the referent, as it should.
+
+**Hide-translations subtitle — terminology.** «захваченный текст» reuses the app's
+established capture verb rather than inventing a second one, exactly as the hard
+constraint requires: `history_toggle_subtitle` «Сохранять захваченные предложения»,
+`settings_cell_history_summary_on/off` «Журнал захваченных предложений». It also stays
+clear of «распознанный», which this file reserves for OCR (`status_ocr`, `settings_header_ocr`
+«Распознавание текста»). «строку» matches `history_empty_none` («Строки появляются по мере
+перевода») and `history_clear_confirm_message` («Все сохранённые строки»); «Нажмите на
+строку» matches `anki_words_helper`'s «Нажмите на слово». The infinitive → imperative shift
+between the two sentences mirrors EN's own, and bare «перевод» in the second sentence is
+unambiguous after «Нажмите на строку» — «её перевод» would only add weight. 78 chars vs
+EN 62 (+26%) in a wrapping subtitle.
+
+**Card-back header.** `card_words_in_sentence` «Слова в предложении» is sentence case as
+the EN comment requires; the uppercasing is CSS (`.gl-section`, `text-transform:uppercase`
+with `letter-spacing:0.12em` at `0.55em` in `PtCardTemplates.kt` / `AnkiHtmlStylers.kt`),
+and Cyrillic uppercases cleanly, so «СЛОВА В ПРЕДЛОЖЕНИИ» is what renders. Baked at send
+time, full-width block with 20px/4px margins — 19 chars against EN's 17 clips nothing.
+
+**Zoom-hint length read against the real view, not guessed.** 68 chars vs EN 32 (+112%)
+looked alarming, so the host was checked: the caption in `anki_game_audio_panel.xml` is
+`match_parent` / `wrap_content` at 11sp with no `maxLines` and no `ellipsize`, inside a
+24dp-padded sheet panel, so it wraps to a second line and clips nothing. The expansion is
+not padding either — Russian has no one-word "pinch", and «Сведите или разведите пальцы»
+is Google's own Russian for the gesture, which is the wording a Russian Android user has
+already been taught. Naming both directions is arguably more informative than EN's bare
+"Pinch" for a gesture with no visual affordance. No accuracy was traded for brevity here,
+and none should be.
+
+**Register and punctuation.** Formal lowercase «вы» throughout the delta («Сопоставьте»,
+«Нажмите»); no «ты»; « » quotes in both first-field strings where EN uses “ ”; terminal
+periods present exactly where EN has them (both first-field strings, the history subtitle)
+and absent exactly where EN omits them (both toasts, the zoom hint, both headers/titles).
+
+### Verdict
+
+**PASS.** Two 💬, no ⚠️, no ❌, no 🛑. The delta's hardest spot — a free-form,
+user-supplied AnkiDroid field name dropped into two Russian sentences — is handled with
+the head-noun-plus-citation-quotes construction and holds for any name.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_styling_subtitle | ⚠️ | «…с **версткой** и оформлением **самого словаря**. Применяется к словарям, **которые будут импортированы позже**…» | «…с **вёрсткой** и оформлением **каждого словаря**. Применяется к словарям, **импортированным с этого момента**…» | Three separate slips in one string. (a) **ё** — this file writes ё consistently (63 occurrences, incl. «идёт», «сохранённые»), and вёрстка is one of the words where the е-spelling is a genuine misreading risk. (b) «самого словаря» says *the dictionary itself*, singular and definite; EN says "**each** dictionary's own", which is the whole point of a per-dictionary styling switch. (c) «позже» = *later*, which reads as an unspecified future; EN's "from now on" is a boundary at the toggle flip, which «с этого момента» states. |
+
+### Clean areas (delta) — checked, no findings
+
+**Every placeholder sentence is case-safe by construction.** The four strings carrying the
+dictionary title use the head-noun-plus-guillemets pattern this file already established in
+`yomitan_duplicate_message` («Словарь «%1$s» уже импортирован») and `yomitan_delete_title`:
+«Словарь «%1$s» можно обновить…», «Данные словаря «%1$s» нужно скачать заново…»,
+«У словаря «%1$s» установлена последняя версия», «Словарь «%1$s» обновлён до последней
+версии». The runtime value stays a citation form inside the quotes, so it never has to
+decline, and every participle (обновлён) agrees with «словарь» (m.), not with an arbitrary
+title. This is precisely the failure mode that produced the «Импортирован 0…» bug in the
+2026-06-23 sync, closed here before it could recur.
+
+**«обновлён» is correct, and it is not the old bug.** In `yomitan_update_done_title`
+«Словарь обновлён» and `_message`, the short participle agrees with the explicit masculine
+subject «Словарь» — a fixed word, not a count and not a user value. The 2026-06-23 defect
+was a participle agreeing with a *number* slot; there is no number slot in this delta.
+
+**Update vocabulary is the app updater's.** «Доступно обновление» and «Не удалось проверить
+обновления» are byte-identical to `update_dialog_title` / `update_check_failed_title`;
+`yomitan_update_check_failed_message` follows `yomitan_download_error_message`'s
+«Проверьте подключение и повторите попытку»; `yomitan_update_scan_active_message` closes
+with `anki_models_unavailable`'s «Повторите попытку через минуту»; «в фоне» matches
+`onboarding_notif_row_silent_sub` rather than introducing «в фоновом режиме» as a second
+form. `yomitan_update_checking_title` «Проверка обновлений» is the deverbal-noun progress
+idiom of `update_progress_verifying` «Проверка…».
+
+**«Исходный язык» comes from the file, not from the English.** `llm_prompt_kw_source_desc`
+already says «исходного языка». Note this is deliberately *not* «Язык игры» — the app's
+term for the capture side (`pack_upgrade_label_source`, `cd_change_source_language`) — because
+this row is the *dictionary's* declared language, which need not be the game's.
+
+**«Любой язык» reads correctly in both of its slots.** It is the pinned first row of the
+language picker *and* the muted value of the Source Language row, and it agrees with
+«язык» (m.) in the second. The semantics are "applies everywhere", not "unset" — so the
+wildcard word (Любой), not a «Не выбран»/«Нет» form, which is exactly the distinction the
+EN rename from "None" to "Any" was making.
+
+**Register, length, truncation.** Formal lowercase «вы» throughout («Проверьте»,
+«Повторите», «выключите»); no «ты». The two long subtitles land in `Text.PT.RowSubtitle`
+and `settings_row_value`, neither of which sets `maxLines` or `ellipsize` (checked in
+`settings_row_value.xml` and `styles.xml`), so Russian's usual ~30% expansion wraps rather
+than clipping. No accuracy was traded for brevity.
+
+### Verdict
+
+**PASS after fix.** One ⚠️ carrying three sub-issues, no ❌, no 🛑. The delta's hardest
+spot — four sentences built around an arbitrary, indeclinable dictionary title — is solved
+with the head-noun construction the file already uses, so no case ever has to be guessed.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+None. No 🛑/❌/⚠️; one 💬 recorded as a decision rather than a defect.
+
+| name | severity | current | note |
+|---|---|---|---|
+| settings_debug_force_mmap_weights | 💬 | «(локальная LLM)» | LLM is inflected as feminine, agreeing with the elided модель. That follows the file's own «Локальные модели» (`llm_prompt_advisory_too_long`) and «облачным и локальным» (`llm_prompt_row_system_subtitle`), which is also why "on-device" is локальная here and not «на устройстве» — the app already picked a word for this concept. |
+
+### Clean areas (delta) — checked, no findings
+
+**Nothing needed case restructuring.** The only runtime fills in this delta are the fixed
+brand names AnkiDroid and Anki, and each sits where the nominative is what the grammar
+wants: «слишком велики для отправки в AnkiDroid», «слишком велика для AnkiDroid»,
+«Добавлено в Anki». No placeholder was put in an oblique slot, so the standing hazard for
+this locale does not arise.
+
+**Infinitive questions match the file.** «Сохранить упрощённую карточку…?» follows
+`llm_prompt_discard_title` «Не сохранять изменения?» and `bergamot_disable_title`
+«Выключить Firefox Translations?». The button «Сохранить в упрощённом виде» is a full
+prepositional phrase rather than a dangling «упрощённую», so nothing agrees with an absent
+noun.
+
+**Register and length.** Formal lowercase вы («Попробуйте убрать…»), matching
+`anki_send_failed_message` «Убедитесь, что… и повторите попытку». Russian runs ~30% long,
+so both debug rows were kept to a single noun phrase; neither row clips (the title
+TextView has no maxLines), and the alert body is comparable in length to the sibling it
+replaces.
+
+**Terminology.** карточка (card), определения (definitions), «простой текст» — the last
+from `yomitan_styling_subtitle`'s «всегда использовать простой текст», not re-coined.
+«слово» and «предложение» in the failure body match `anki_mode_word` / `anki_mode_sentence`
+exactly, so the advice names the same two things the card editor does.
+
+**Offline prefix.** «Офлайн-маршрутизация» keeps the hyphenated prefix the file already
+uses in `settings_header_offline_translations` «Офлайн-перевод» and
+`lang_section_offline_models_title` «Скачать офлайн-модели».
+
+### Verdict
+
+**PASS.** No fixes required — the highest-risk locale for this delta turned out to be its
+cleanest, because the delta carries no placeholders that could land in an oblique case and
+no plurals.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** «Включить или выключить встроенный пиньинь» keeps the
+furigana string's structure, with the adjective agreeing with masculine пиньинь (inanimate
+accusative = nominative).
+
+**The ⋯ names what the parked sheet's hint names.** «Другие действия» is the noun
+`capture_sliver_expand_hint` already uses («Нажмите для других действий»).
+
+**Row names.** «Фуригана» «Пиньинь» are `overlay_mode_option_*`; «Прочитать вслух» is
+`cd_read_original_aloud` without its object; «Изменить текст» uses `label_edit`'s verb.
+Longest row: the reused «Показать на экране», 18 characters, fits.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| icon_action_swap_furigana, icon_action_swap_pinyin (2 strings, one fix) | ⚠️ | «Переключать перевод и фуригану» / «…и пиньинь» | «Переключаться между переводом и фуриганой» / «…и пиньинем» | With a direct object, «переключать X и Y» reads as switching both on or off; the action alternates between them. |
+| icon_action_lookup_words | 💬 | «Определение слова при наведении» | «Показать определение слова при наведении» | The cell stacks it over «Показать перевод на экране» and «Открыть быстрое меню»; one noun phrase among infinitives. |
+| icon_gesture_drag | 💬 (decision) | «Перетаскивание» | — | 14 letters set the gesture column's width on narrow phones, but it is the Android term and no shorter noun is natural. Kept. |
+
+### Clean areas (delta) — checked, no findings
+
+**No placeholder in an oblique slot.** The pill is «Язык игры: %1$s»: the language name
+arrives nominative and capitalized, so it goes after a colon, as in `status_no_text`
+(«%1$s: текст не найден…»). Service names end at a colon with a lowercase continuation.
+The alert names the gestures in nominative apposition («жесту «Удержание» или «Нажатие»»),
+so they byte-match the section headers.
+
+**Terms.** Reused: «Изменить язык игры» (`cd_change_source_language`), «Не удалось
+перевести», «быстрое меню» (the removed tap hint), «Запустить/остановить автоперевод» (the
+hotkey), «недействительный API-ключ», «квота исчерпана», «ЭКСПЕРИМЕНТАЛЬНО.», «Наложение»
+(the screen title and «Режим наложения»), «размер текста» (`cd_text_size`). ё as the file
+uses it (отклонён, удаётся, придётся, её, краёв).
+
+**Register.** Formal вы; « » quotes.
+
+### Verdict (round 1)
+
+1 ⚠️ + 1 💬 to apply; 1 💬 recorded as a decision.
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fixes present: «Переключаться между переводом и фуриганой» / «…и пиньинем» (the file's first declined пиньинь; instrumental пиньинем is standard), «Показать определение слова при наведении». Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 PKT/../tools/mech_check.py PKT/../keys.txt ru` reports
+"checked 1 locales x 41 keys; problems: 0" (every key present; `<xliff:g>` spans and `%1$s`
+byte-identical to EN; `\n`, `<b>`, `\{ \}`, `&amp;/&lt;/&gt;` counts match; no unescaped
+`'`/`"`, stray tag, `--`, double space or edge whitespace). `python3 scripts/l10n_diff.py
+--locale app/src/main/res/values-ru/strings.xml` reports `missing=0 orphan=0 modified=0`,
+"in sync". Also confirmed by hand: each of the 41 names occurs exactly once, the orphans
+`settings_debug_export_logs_title` / `_subtitle` are gone while `_subject` stays, and the
+file parses as XML. No `<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice`: the body is one of the three `kill_notice_body_*`, and
+  only when a floating icon is actually on screen (`hasAnyFloatingIcon`) does it get
+  `' '` + `kill_notice_restored`, so the restored sentence has to bind after each body.
+- `KeepRunningActivity` / `KeepRunningItems`: the Xiaomi battery card reuses
+  `keep_running_battery_line` and opens `com.miui.powerkeeper…HiddenAppsConfigActivity` with
+  the package; the generic battery card opens Android's `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`
+  dialog and disappears once exempt; the accessibility card shows only while the mode is off (or
+  stuck: `a11y_stuck_title` + the restart line); ROM cards always show on their ROM, so
+  `keep_running_empty` appears only on other ROMs. The page's Report a bug row binds the same two
+  strings as Settings.
+- `LogExporter`: the no-email toast is `LENGTH_LONG` with `SUPPORT_EMAIL`, then `shareFiles`
+  opens the chooser `share_chooser_share_logs` («Поделиться журналами») with the report's subject.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| kill_notice_restored | ⚠️ | `Сейчас он снова включён.` | `Сейчас значок снова на экране.` | Follows all three bodies, and «он» binds differently after each: after `_body_memory` the text's last «он» was the phone («и он закрыл»); after `_body_other` the sentence just before is about «телефоны» and «заряда», so the reader reaches back past them, and «телефон … снова включён» is the natural collocation; after `_body_stopped` it lands on «значок», for which «включён» is an odd predicate. Naming the icon answers «значок и исчез» in all three and is exactly what the code checks. If the app must stay the subject: «Сейчас PlayTranslate снова включён.» |
+| email_no_app_fallback | ⚠️ | `Нет почтового приложения. Отправьте файлы на <xliff:g id="email" example="support@playtranslate.com">%1$s</xliff:g> иначе.` | `Нет почтового приложения. Отправьте файлы на <xliff:g id="email" example="support@playtranslate.com">%1$s</xliff:g> сами.` | Asked. Unambiguous (sentence-final «иначе» can only mean "differently", and the first sentence supplies the contrast), but it dangles after the address and reads stilted; a native writes «другим способом», which does not fit (measured: «способом.» falls to line 3). «сами» is natural, says what the plain share sheet needs (the user addresses it), and wraps «Нет почтового приложения. Отправьте» / «файлы на support@playtranslate.com сами.»: line 2 is 280 dp at 296 (now 286, inside the ±10 dp noise); 2 lines at 320 too. |
+| keep_running_battery_title | 💬 | `Установить для батареи режим «Без ограничений»` | `Установить режим расхода заряда «Без ограничений»` | «Без ограничений» matches AOSP. «для батареи режим» reads like a phone-wide battery mode; the setting is the app's battery usage, which AOSP ru calls «Расход заряда батареи приложениями» / «Расход заряда приложением», the page where «Без ограничений» sits. Optional: the card opens Android's own dialog and hides once allowed. |
+| keep_running_accessibility_line | 💬 | `<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> работает с приоритетом службы специальных возможностей, которую очистка памяти почти не затрагивает.` | `В этом режиме <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> работает с приоритетом службы специальных возможностей, которую очистка памяти почти не затрагивает.` | The card shows only while the mode is off, so the bare present states what is not yet true; the English's elided subject is the mode ("Runs PlayTranslate…"), which «В этом режиме» restores. |
+| keep_running_samsung_never_sleeping_line | 💬 | `Находится в разделе «Обслуживание устройства» → «Батарея» → «Ограничения в фоновом режиме». Приложения в режиме сна закрываются, когда телефону нужна память.` | `Список находится в разделе «Обслуживание устройства» → «Батарея» → «Ограничения в фоновом режиме». Приложения в режиме сна закрываются, когда телефону нужна память.` | «Находится» has no subject (it borrows the list from the title); the twin Huawei line has one («Этот параметр находится…»). All four labels match Samsung Russia's own page, read today. |
+
+### Clean areas (delta) — checked, no findings
+
+**Kill notice, read once per body.** The title «Android закрыл PlayTranslate» treats Android as
+masculine, as `a11y_stuck_message` does («Android остановил службу»). PlayTranslate is masculine
+everywhere, as in `crash_dialog_title` («ранее завершился сбоем»): «пока тот был включён»
+(«тот» rightly picks the app, since «он» already names the phone), «был остановлен», «его сами»,
+«не закрывался», «им пользуетесь», «даёт ему», «из него выходите». «Поэтому плавающий значок
+и исчез» is idiomatic, and «ради экономии заряда» is the file's own phrase. The buttons are
+«Что можно сделать», a natural invitation that leads to a page listing exactly that, and
+«Не сейчас», which matches `btn_not_now`. The only problem is the appended sentence (row above).
+
+**Support card, in order.** The rows read «Проверить обновления», «Присоединиться к Discord»,
+«Если значок исчезает», «Сообщить об ошибке», «Поддержать PlayTranslate». The symptom-first
+«Если значок исчезает» breaks the run of infinitives, but it reads as a help-topic title, which
+is what the English comment asks for. It is byte-identical to the toolbar title (226 dp of about
+272). «плавающий» would not fit the toolbar, and the subtitle «Чтобы PlayTranslate не
+закрывался» supplies the context (217 dp: whole at 393 dp, at the edge at 360 dp). Report a
+bug: the tap sentence «Письмо с журналами в поддержку.» is 216 dp, so it fits 249 and sits at
+the 360 dp limit. The hold half clips at every hub width in Russian (424 dp in all, against 267
+at 411 dp). That is this locale's addition to known issue 2: no natural Russian pair fits one
+line, and the page shows the string whole. «Удерживайте», «журналы» and «поделиться» reuse the
+file's hold verb and logs terms.
+
+**Fix disappearing icon page, on every ROM.** The intro is natural. In the empty label,
+«сообщите об ошибке» matches the row's «Сообщить об ошибке», and «Если проблема не исчезла» is
+idiomatic. The battery line shared by the generic and Xiaomi cards reads correctly after both
+titles. The OPPO and vivo lines are byte-identical. The tile title equals
+`quick_tile_add_row_title`. The restart line reuses `a11y_stuck_message`'s wording, and
+«очистка памяти» is used the same way in both places. «свайп» appears only here (the drag hint
+says «Проведите пальцем»), but it is the ordinary colloquial word in a description and is kept.
+vivo's «в фоне» is the file's established form (the onboarding strings).
+
+**OEM labels (three of the four sources were read today).** Samsung: samsung.com/ru confirms all
+four labels, «Обслуживание устройства» → «Батарея» → «Ограничения в фоновом режиме» → «Не уходят
+в сон автоматически», as well as «Приложения в режиме сна». Huawei: the five official labels
+match. ru-ru00428704 confirms «Другие настройки батареи» exactly (the research had only guessed
+«Дополнительные…»). On known issue 1, that page has no close-after-lock option either; in its
+place is «Подключение к сети, когда устройство в спящем режиме», which the developer can use if
+the card is reworked. Lock: «Закрепить» matches Xiaomi's own Russian «Закрепить приложения»
+(AdGuard RU, MIUI 12.0.8 route) and Huawei RU's «Закрепите фоновое приложение». The OPPO and
+vivo titles describe the settings rather than quote labels, which is right because only guesses
+exist for them.
+
+**Xiaomi battery label (asked): keep `keep_running_xiaomi_battery_title` as it is**, byte-consistent
+with the reviewed `a11y_stuck_message_xiaomi`. Today I read AdGuard RU directly (a secondary
+source; mi.com refused the fetch again, and Kaspersky's ru page redirects to English). It prints
+«Без ограничений» for MIUI 13+ and HyperOS, which is what current Xiaomi phones run, and «Нет
+ограничений» for MIUI 12 and earlier, which is close enough to find. «энергосбережение» is not
+an on-screen label on any version: HyperOS shows «Экономия заряда батареи», MIUI 12.0.8 «Контроль
+активности», and MIUI 10–12 «Контроль фоновой активности»; the English entry was renamed again
+in HyperOS 2/3. It should not be a label either. As a lowercase umbrella it covers all of them,
+and the card opens the per-app page itself, so the user lands on the option list. The existing
+string has the same wording and is the weaker of the two only because its user navigates by
+hand. Even there, «энергосбережение» points at HyperOS's «Экономия заряда батареи», and less
+well at MIUI 12's «Контроль активности». No finding. Name the entry in both strings only after
+a Russian-language Xiaomi phone confirms it.
+
+**Email flow.** The chooser titles «Отправить отчёт о сбое» and «Отправить отчёт об ошибке»
+agree with `crash_dialog_message`. The subject «Отчёт об ошибке PlayTranslate – v3.3.0» mirrors
+`crash_email_subject`, en dash kept. The body is natural, and «прикреплены» matches the crash
+body's «прикреплённый». The address goes in undeclined after «на», and the toast leads into
+«Поделиться журналами».
+
+**Register and typography.** Formal вы throughout. « » quotes, never nested. ё wherever the file
+uses it (отчёт, включён, даёт, закреплённые, её). → paths as in
+`overlay_icon_a11y_required_message`. Known issue 3: «телефон» appears only in these strings
+(the rest of the file says «устройство»), as already known.
+
+### Verdict (round 1)
+
+2 ⚠️ + 3 💬 to apply: `kill_notice_restored`, `email_no_app_fallback` (⚠️);
+`keep_running_battery_title`, `keep_running_accessibility_line`,
+`keep_running_samsung_never_sleeping_line` (💬). Every "current" cell was checked byte for byte
+against the file, and every suggestion passes the mechanical rules. No 🛑.
+
+### Round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 PKT/../tools/mech_check.py PKT/../keys.txt ru` reports
+"checked 1 locales x 41 keys; problems: 0", and `python3 scripts/l10n_diff.py --locale
+app/src/main/res/values-ru/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync".
+The file parses as XML, each of the 41 names occurs exactly once, and the orphans
+`settings_debug_export_logs_title` / `_subtitle` are still gone while `_subject` stays.
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:** all five are in the file exactly as suggested (compared by script against the
+round-1 table's "suggested" cells).
+- `kill_notice_restored` ⚠️: applied («Сейчас значок снова на экране.»). Read after each body
+  as the code joins them (one space): it follows «Поэтому плавающий значок и исчез.» in `_memory`
+  and `_stopped` and «…ради экономии заряда.» in `_other`, and it names what the code checks
+  before appending it (`hasAnyFloatingIcon`).
+- `email_no_app_fallback` ⚠️: applied (ends «…сами.»). Re-measured with the packet's tools:
+  2 lines at 296 dp (line 2, «файлы на support@playtranslate.com сами.», is 280 dp) and 2 at
+  320 dp; «сами» is the formal-вы form, as in `kill_notice_body_stopped`'s «его сами».
+- `keep_running_battery_title` 💬: applied. AOSP 16 ru heads the per-app choice «Управление
+  расходом заряда», with the option «Без ограничений», so the title names that setting. The
+  generic card never shows on Xiaomi (`KeepRunningItems.ids`), so it never meets the Xiaomi
+  card's wording.
+- `keep_running_accessibility_line` 💬: applied. «В этом режиме» binds to the title right above
+  it; the stuck state swaps in the restart line, so this line never follows `a11y_stuck_title`.
+- `keep_running_samsung_never_sleeping_line` 💬: applied. «Список» picks up the title's list.
+  Samsung Russia's page, read again today, prints the path and the list label exactly as quoted
+  (step 04: «Нажмите «Не уходят в сон автоматически».»).
+
+The identity rules still hold: `keep_running_title` = `settings_support_keep_running_title`
+(«Если значок исчезает», 226 dp of about 272 in the toolbar), the OPPO and vivo lines are
+byte-identical, `keep_running_tile_title` = `quick_tile_add_row_title`, and
+`kill_notice_not_now` = `btn_not_now`. Hub summaries re-measured as round 1 reported:
+`settings_support_keep_running_subtitle` 217 dp (whole from 393 dp, at the edge at 360 dp);
+`settings_support_report_bug_subtitle` 424 dp, its tap sentence 216 dp.
+
+#### Findings (round 2)
+
+No new findings.
+
+Fresh read of all 41, by surface, with PlayTranslate, support@playtranslate.com and 3.3.0 in
+the spans. Kill notice: PlayTranslate stays masculine («тот был включён», «был остановлен»,
+«его сами»), and so does Android («Android закрыл», as in `a11y_stuck_message`). «тот» picks the
+app, not the phone, and «остановлен» / «останавливали» match AOSP ru's Force stop button
+«Остановить». Support card: the five rows read as one help list, and the tap sentence stays
+visible at 249 dp. Page: I read every ROM's card set (Xiaomi, Huawei, OPPO, vivo, Samsung, other)
+and the stuck accessibility state. Each line binds to its own title, the back-to-back «Иначе»
+mirrors the English "Without this", and the empty label points at the row titled «Сообщить об
+ошибке». Email flow: the chooser titles agree with `crash_dialog_message`, the subject mirrors
+`crash_email_subject` with its en dash, and «прикреплены» agrees with its compound subject.
+Terms match the file: журналы, плавающий значок, специальные возможности, очистка памяти, and
+«Быстрые настройки» (also the framework's own label). « » quotes are never nested, and ё appears
+wherever the file uses it. I agree with round 1 on `keep_running_xiaomi_battery_title`: the card
+opens Xiaomi's per-app page itself (`HiddenAppsConfigActivity` with the package), where the
+option «Без ограничений» matches HyperOS, and the string stays byte-consistent with
+`a11y_stuck_message_xiaomi`.
+
+#### Verdict (round 2)
+**PASS.** All five round-1 fixes landed as suggested, nothing around them broke, and there are
+no new findings. No 🛑.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite)
+
+Mechanical layer: `python3 TOOLS/mech_check.py F2/keys2.txt ru` reports "checked 1 locales x 15
+keys; problems: 0" (every key present; `<xliff:g>` spans, including both `app_name` /
+`app_name2` spans in the three two-span lines, byte-identical to EN; `\n` count matches in
+`a11y_stuck_message`; no unescaped `'`/`"`, stray tag, `--`, double space or edge whitespace).
+`python3 scripts/l10n_diff.py --locale app/src/main/res/values-ru/strings.xml` reports
+`missing=0 orphan=0 modified=0`, "in sync". Also confirmed by hand: the file parses as XML, each
+of the 15 names occurs exactly once, and the four removed keys (`restricted_settings_title`,
+`restricted_settings_message`, `keep_running_huawei_close_after_lock_title` / `_line`) are gone.
+No `<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` (API 33+ only) appends the addendum after `\n\n`
+  to `accessibility_dialog_message` (MainActivity) and `overlay_icon_a11y_required_message`
+  (SettingsRenderer), both system AlertDialogs ending in the → path; to the three
+  `a11y_required_*_message` through `AccessibilityAlert` → OverlayAlert, whose message sits in a
+  ScrollView inside the 280 dp card, so length cannot clip; and to `keep_running_accessibility_line`
+  while the service is off. The stuck state swaps in the restart line with no addendum, and
+  `showA11yStuckAlert` adds `a11y_stuck_message_xiaomi` after `\n\n` only when
+  `Build.MANUFACTURER` is Xiaomi.
+- `KeepRunningActivity.openFirst`: when no candidate screen launches, the toast (`LENGTH_LONG`),
+  then App info; the Xiaomi lock card is instruction-only and never toasts. The Xiaomi battery
+  card launches `com.miui.powerkeeper…HiddenAppsConfigActivity` with the package (the per-app
+  page itself), so the entry names in `keep_running_xiaomi_battery_line` are read only when that
+  launch fails.
+- `KeepRunningItems.ids`: the generic battery card (AOSP's `high_power_prompt_title` dialog,
+  hidden once exempt) never shows on Xiaomi, so the two battery titles never meet; Samsung opens
+  its never-sleeping list through the documented intent.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_xiaomi_autostart_line | 💬 | `В настройках найдите автозапуск через поиск и разрешите его для <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>. Без автозапуска Xiaomi может не давать <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> снова запуститься после закрытия.` | `В настройках найдите автозапуск через поиск и разрешите его для <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>. Иначе Xiaomi может не давать <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> снова запуститься после закрытия.` | «Без автозапуска Xiaomi …»: an indeclinable brand right after a noun reads as that noun's attribute (as in «смартфоны Xiaomi»), so the first parse is "without Xiaomi's autostart", and «может не давать» then has no subject until the reader backtracks. The meaning survives either parse, hence a nit. «Иначе Xiaomi» is unambiguous, mirrors "Without it", and is how the reviewed first-pass line began («Иначе Xiaomi останавливает…»). Not «Без него» (автозапуск or PlayTranslate, both masculine) and not «Без этого Xiaomi» ("without this Xiaomi"). The OPPO and vivo lines' «Без этого телефон» are fine, since «телефон» declines. |
+| keep_running_xiaomi_battery_line | 💬 | `В системных настройках приложения <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> откройте пункт «Экономия заряда батареи», «Батарея» или «Питание» (в зависимости от версии) и выберите «Без ограничений».` | `В системных настройках приложения <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> откройте пункт, отвечающий за расход заряда (в зависимости от версии он называется «Экономия заряда батареи», «Батарея» или «Питание»), и выберите «Без ограничений».` | The English instruction is "open the battery entry", with the three names as a parenthetical; the Russian keeps only the names. Two of them («Батарея», «Питание») are unverified guesses (three web searches today found no Russian HyperOS 2/3 source, only DriveQuant's English guides), and the Russian MIUI-era name «Контроль активности» (AdGuard RU, MIUI 12.0.8) is none of the three, so the descriptor is what still guides a user whose phone shows another name. «отвечающий за расход заряда» echoes the title's «режим расхода заряда»; the labels stay nominative after «называется». A nit because the card opens Xiaomi's per-app page itself (`HiddenAppsConfigActivity`), so the line is read only when that launch fails. |
+
+### Clean areas — checked, no findings
+
+**The addendum, after each of its hosts.** Read with PlayTranslate in the span after all six. In
+the two system dialogs it follows «→ PlayTranslate → Включить.», so «переключатель» is the switch
+just reached; after the three OverlayAlert messages and the accessibility card line it has no
+antecedent, exactly as "the switch" has none in English. «Начиная с Android 13» is the natural
+form of "On Android 13 and later", «неактивен» the usual word for a greyed-out control, and «в
+меню ⋮ выберите» folds "tap the ⋮ menu and choose" into one step without losing either. Both
+labels match AOSP 16 QPR2 ru byte for byte (`application_info_label` «О приложении»,
+`app_restricted_settings_lockscreen_title` «Разрешить доступ к настройкам»), so the old reviewed
+«Разрешить ограниченные настройки» rightly gives way; «О приложении» stays nominative under
+«страницу».
+
+**Stuck alert, as one dialog.** Diffed against the reviewed text in `PKT1/packet-ru.md`:
+`a11y_stuck_message` lost exactly the cause sentence and nothing else, and
+`a11y_stuck_message_xiaomi` changed only where the English moved («включите» → «разрешите» for
+allow; «для энергосбережения значение» → «режим расхода заряда» for battery use, the Xiaomi card
+title's phrase; «будет» → «может» for may). Title, body and Xiaomi paragraph read as one alert:
+«также» ties the Xiaomi paragraph to the re-toggle instruction above it, and «Без этого» covers
+both of its settings.
+
+**Every card, title then line.** Battery: the title is AOSP ru's own dialog title («Разрешить
+приложению всегда работать в фоновом режиме?») with PlayTranslate in the undeclined dative slot,
+as in `a11y_required_displays_message` («позволяет PlayTranslate…»), so the card and the dialog
+it opens say the same thing; «С этим разрешением» picks up the title's verb, and «сам» / «его»
+agree with masculine PlayTranslate. Tile: «Плитка» supplies the subject the English elides and
+points back at «Добавить плитку в «Быстрые настройки»»; the rest is the reviewed «снова
+включает … с любого экрана». Xiaomi lock: the first sentence is byte-identical to the reviewed
+one, and the new second one is natural. Huawei: all five labels are Huawei Russia's official
+ones (recorded in the 2026-10-07 section); the new head noun «переключатели» keeps feminine
+«Работа в фоновом режиме» nominative (the reviewed line quoted it bare after «Включите»), and
+«Запуск приложений» / «Автоматическое управление» need none, their accusative being the
+nominative. OPPO and vivo: the closing sentences are byte-identical, as in English, and «не дать
+ему» agrees; vivo quotes «Автозапуск» where the English capitalizes "Autostart" as a label, while
+OPPO and Xiaomi leave «автозапуск» lowercase and unquoted where the English gives a search word.
+Samsung: «Батарея» → «Ограничения в фоновом режиме» → «Не уходят в сон автоматически» are
+Samsung Russia's labels (recorded earlier), «Обслуживание устройства» goes as the English
+dropped Device care, «список» keeps the list label nominative, and «режим сна» matches Samsung's
+«Приложения в режиме сна».
+
+**Toast, then App info.** Measured with the packet's Wrap tool (14 sp Roboto): 548 dp in all, 2
+lines at 296 dp (271 + 274 dp) and 2 at 320 dp (303 + 241 dp), so it meets the stricter target.
+«Найдите этот параметр через поиск в настройках» uses the card lines' «через поиск» frame and
+drops "instead" as Russian would, and the page that opens next is AOSP's «О приложении», the one
+the addendum names. «параметр» is new to the live file but not to this page: the deleted, reviewed
+Huawei line said «Этот параметр находится…»; AOSP ru prefers «этот параметр» (14 strings) to «эту
+настройку» (3); and it avoids «настройку … в настройках».
+
+**Search words and OEM labels.** Huawei's «Запуск приложений» is official. Xiaomi's «автозапуск»
+finds both «Автозапуск» (MIUI) and «Автозапуск в фоновом режиме» (HyperOS, AdGuard RU). OPPO's
+and vivo's «автозапуск» / «Автозапуск» stay unverified (known issue 2). For the Xiaomi battery
+entry, «Экономия заряда батареи» rests on AdGuard RU (secondary, a translation of English steps),
+and «Батарея» / «Питание» are unverified: three searches today found no Russian HyperOS 2/3
+source, only DriveQuant's English guides (second row above). «Без ограничений» matches AdGuard
+RU for HyperOS and AOSP's own option.
+
+**Case, register, typography.** PlayTranslate is masculine throughout («сам», «его», «ему») and
+undeclined after «для», «разрешить», «давать», «карточку», «приложения». Every quoted label is
+nominative, under a head noun («страницу», «режим», «пункт», «переключатели», «В разделе», «в
+список») or where the accusative equals it. Formal imperatives only. Checked by script: « »
+never nested, no em or en dash in the 15 values, and ё wherever the file uses it («её»), with no
+missing one. «в фоновом режиме» appears only in labels and the AOSP-mirroring title, «в фоне» in
+descriptions, as the first pass set.
+
+### Verdict (round 1)
+
+0 ❌, 0 ⚠️, 2 💬: `keep_running_xiaomi_autostart_line` and `keep_running_xiaomi_battery_line`,
+both optional. Every "current" cell is the file's value byte for byte (extracted by script), and
+both suggestions pass the mechanical rules (spans byte-identical to EN, no unescaped quotes, no
+double spaces). No 🛑. **PASS**; the two nits are the developer's call.
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 TOOLS/mech_check.py F2/keys2.txt ru` reports "checked 1 locales x 15
+keys; problems: 0", and `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ru/strings.xml`
+reports `missing=0 orphan=0 modified=0`, "in sync". The file parses as XML, each of the 15 names occurs
+exactly once, the four removed keys are still gone, and the English of all 15 is unchanged since the
+packet (compared by script with `english-delta-f2.md`). **No 🛑 build-breaking issues.**
+
+**Round-1 fixes:** both are in the file exactly as suggested (compared by script with the round-1 table's
+"suggested" cells).
+- `keep_running_xiaomi_autostart_line` 💬: applied. «Иначе Xiaomi может не давать PlayTranslate снова
+  запуститься после закрытия» parses on the first read: the brand is the subject, and present-tense
+  «может» needs no gender for it. Both spans (`app_name`, `app_name2`) are intact, and the card reads
+  title «Разрешить автозапуск», then «…разрешите его для PlayTranslate. Иначе…».
+- `keep_running_xiaomi_battery_line` 💬: applied. The quotes are not nested. There are four separate « »
+  pairs, three inside the parenthesis and «Без ограничений» after it. The comma that closes «отвечающий за
+  расход заряда» sits correctly after the bracket («…или «Питание»), и выберите…»). «он» resolves to
+  «пункт», since only a menu item can «называться» a label, and the labels stay nominative after
+  «называется». «расход заряда» echoes the card title («Установить режим расхода заряда «Без
+  ограничений»») and the stuck alert's Xiaomi paragraph.
+
+#### Findings (round 2)
+
+No new findings.
+
+Fresh read of the 15 as sets, with PlayTranslate in every span.
+- **Addendum.** Read after each host. In the two system dialogs it follows «→ PlayTranslate → Включить.»,
+  so «переключатель» is that switch. After the three OverlayAlert messages and the accessibility card line
+  it has no antecedent, as in English.
+- **Labels.** Re-checked against the local AOSP 16 QPR2 Settings ru file: «О приложении», «Разрешить
+  доступ к настройкам», «Разрешить приложению всегда работать в фоновом режиме?» (the battery title's
+  model), «Без ограничений» and «Поиск» are all byte-identical. Neither the old «ограниченные настройки»
+  nor «энергосбережение» survives anywhere in the file.
+- **Stuck alert.** Title, body and Xiaomi paragraph read as one dialog.
+- **Cards.** Read title then line on every ROM (Xiaomi has no generic battery card) and in the stuck
+  accessibility state. «нажмите» and «удерживайте» are the file's established tap and hold verbs.
+- **Toast.** Re-measured with the packet's Wrap tool: 548 dp in all, 2 lines at 296 dp and at 320 dp
+  (303 + 241 dp).
+- **Noun case.** PlayTranslate is masculine and undeclined in every slot: after «для»; dative after
+  «Разрешить» and «давать»; accusative after «включает», «остановить» and «добавьте»; in apposition after
+  «карточку» and «приложения». «сам», «его» and «ему» agree with it. Every quoted label is nominative.
+- **Typography (by script).** « » are never nested, there are no em or en dashes, and ё is used where
+  needed («её»; «включены» rightly keeps е).
+
+Xiaomi's HyperOS 2/3 entry names stay unverified (known issue 2, not a finding). Two Russian-language
+web searches today returned only restatements of DriveQuant's English guides and no Russian Xiaomi source,
+so «Батарея» and «Питание» remain educated guesses. The round-1 descriptor «пункт, отвечающий за расход
+заряда» is what keeps the line usable on a phone that shows another name. The card also opens Xiaomi's
+per-app page itself (`HiddenAppsConfigActivity`), so the line is read only when that launch fails. Huawei's
+«Запуск приложений» and Samsung's labels are official (earlier 2026-10-07 sections). Xiaomi's
+«автозапуск» matches MIUI's «Автозапуск» and HyperOS's «Автозапуск в фоновом режиме» (AdGuard RU).
+
+#### Verdict (round 2)
+**PASS.** Both round-1 fixes landed exactly as suggested, nothing around them broke, and there are no new
+findings (0 ❌, 0 ⚠️, 0 💬). No 🛑.
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ru/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync". The three keys are present once each, beside the same neighbours as in English, and the file parses as XML. This delta has no `<xliff:g>`, placeholder, plural, markup, apostrophe, ASCII quote or dash. "Bilibili" stays in Latin script, twice in the note. **No 🛑 build-breaking issues.**
+
+Render code read before reviewing: the note is `tvProviderNote` (RowSubtitle, wraps, no `maxLines`), shown in place of the API-key section under the untranslated title "Bilibili Index-Translate". The picker line is a 13 sp wrapping TextView, used when the account takes no key. The keyless body appears under `tr_service_remove_title_fmt` for Lingva and Bilibili Index-Translate.
+
+| key | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_index_translate_note | 💬 | `Сервис предоставляет Bilibili, лимиты использования не опубликованы.` | `Сервис предоставляет компания Bilibili, лимиты использования не опубликованы.` | «Сервис» and the indeclinable «Bilibili» have the same form in nominative and accusative, and the present-tense verb agrees with either. So the first parse is the common SVO collocation «Сервис предоставляет …» ("the service provides Bilibili"), and only the sense restores "provided by Bilibili". «компания» can only be nominative, so it settles the order. «Сервисом управляет Bilibili» is the other clean form. Either avoids leaning on case, as the file's «от Tencent» does. |
+
+Clean areas: The note keeps all three English facts: free and keyless; run by Bilibili, with no published limits; the captured text goes to Bilibili. «Бесплатно, API-ключ не нужен.» is natural. «лимиты использования» is in line with «дневной лимит» (`translation_error_daily_quota`). «Захваченный текст» is the captured-text term of `tr_service_order_footer` and `history_hide_translations_toggle_subtitle`, and «API-ключ» is `llm_backend_api_key_label`. In «отправляется в Bilibili» the name follows a preposition, so no case ending is needed. The keyless picker line keeps the sibling's first sentence and its «или введите ID модели через «Вручную…».» byte for byte. «Вручную…» matches `llm_backend_model_custom_entry` and keeps the sibling's « » quotes. «Повторите попытку» is the file's retry phrase (`settings_ocr_download_failed`, `yomitan_update_busy_message`), in the вы form. Read as one screen, the delete alert is «Убрать Lingva?», then «Сервис будет убран из списка.», then the button «Убрать». The body is the sibling without its key clause, and it keeps убрать (remove) apart from удалить (delete), which the sibling uses only for the key.
+
+### Disposition (2026-10-14)
+
+Applied the 1 💬 («Сервисом управляет Bilibili»).
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports "39 keys x 13 locales: 0 problems" and prints no line for ru (xliff spans byte-identical to EN, placeholder multiset, `<b>`/`\n`/`\{ \}`/`&lt; &gt; &amp;` counts, no raw `'` or `"`, no stray or double space, XML well-formed); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ru/strings.xml` reports `values-ru missing=0 orphan=0 modified=0`, "in sync". `git diff` on the locale touches exactly the 24 Part A keys. **No 🛑 build-breaking issues.**
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| pt_cloud_translate_toggle_subtitle, pt_cloud_translate_row_subtitle_no_key | ⚠️ | `pt_cloud_translate_toggle_subtitle`: `Платные модели перевода уже включены, и для каждой задачи выбирается лучшая.`<br>`pt_cloud_translate_row_subtitle_no_key`: `Лучшие платные модели перевода уже включены` | `pt_cloud_translate_toggle_subtitle`: `Платные модели перевода уже входят в сервис, и для каждой задачи выбирается лучшая.`<br>`pt_cloud_translate_row_subtitle_no_key`: `Лучшие платные модели перевода уже входят в сервис` | Both lines sit beside a switch, and there «включены» with no object reads as "switched on", which is how this file uses the word: «Вкл.» / «Выкл.», and on the Translation services page itself `tr_service_order_footer` («каждый включённый сервис», «Перед включением»). The no-key line shows only while no key is saved, when `OnlineServicesController.bindCloudRow` forces that row's switch off, so it says "the best paid models are already on" next to an off switch. Where the file means "includes", the verb takes an object («Бесплатный тариф включает 500 000 символов», `deepl_settings_get_key_subtitle`); «входят в сервис» can only mean included. Both lines wrap (switch-row subtitle; `tvRowSubtitle2`), so the extra words cost nothing. |
+| anki_screenshot_crop_instruction | ⚠️ | `Перетащите края, чтобы обрезать снимок экрана` | `Перетащите края, чтобы обрезать снимок` | The pill is one line with an end ellipsis (`RegionEditorControls.pill`: `isSingleLine`, `TruncateAt.END`, 14 sp, 16 dp padding inside 16 dp margins), so its text gets the host width minus 64 dp: 296 dp in the full-screen crop dialog on a 360 dp phone (`showScreenshotCropDialog`, opened from the in-app Anki sheets; the manifest locks no orientation), and about 272 dp on the floating workspace's crop page (12 dp insets) over a portrait game. Measured at 14 sp in Arial (a few percent wider than Roboto): 323 dp, so portrait shows «…обрезать снимок э…», while the English (215 dp) fits. The suggestion is 275 dp. Bare «снимок» is unambiguous over the screenshot being cropped, and the «Перетащите края, чтобы …» frame of `region_overlay_drag_instruction` stays. Landscape fits either way. |
+| keep_running_screen_unavailable | 💬 | `Не удалось открыть этот экран. Найдите этот параметр через поиск в настройках.` | `Не удалось открыть экран. Найдите этот параметр через поиск в настройках.` | `openFirst` shows the toast and opens App info at the same moment, and its comment says the toast is there so the user knows the screen in front of them is not the one promised. «этот экран» can point at that App info page. The bare noun is the natural Russian for English "that screen" (Turkish chose «O ekran» over «Bu ekran» for the same reason in the 2026-10-07 follow-up), and it drops the «этот … этот» repeat. The second sentence stays the reviewed one. Measured: 2 lines at 296 dp (270 + 236 dp) and at 320 dp. |
+
+### Clean areas (checked, no findings)
+
+**Render code, read per surface.** Error pill: `TranslationErrorMessages.text` maps `BackendFailureKind.NOT_RUNNING` to `translation_error_not_running` with the backend's display name, and the only producer is `PtCloudErrors.classifyHttp` (a 404 with an empty body), so the span always holds «PlayTranslate Cloud»; the pill text is 14 sp, `maxLines = 2`. Cloud page (`activity_pt_cloud_settings.xml`): two `settings_row_switch` rows whose title and subtitle wrap; the key label over a single-line 13 sp monospace field; the status row, `pt_cloud_status_title` at weight 1 with the value at its end (`Text.PT.RowValue`, wrap_content), set by `healthStatusText`, «Проверка» on every resume and `_unchecked` only before the first answer; the cooldown line under it. Hub: the summary in `settings_row_hub.xml` is `singleLine` + `ellipsize="end"` at 13 sp, about screen width minus 144 dp (216 dp on a 360 dp phone), picked by `RootSettingsViewModel.cloudDigest`. Capture & overlay: `bindCloudOcrRow` puts `pt_cloud_ocr_row_subtitle` under the brand title in a wrapping switch-row subtitle. Translation services: `PtCloudBackend.status` shows the no-key line in `tvRowSubtitle2` (wraps) only while no key is saved. Floating menu: `updateCloudHeader` sets only the strip's contentDescription. Toast: `KeepRunningActivity.openFirst`, `LENGTH_LONG`, then App info. Part B: `WordDetailBinder.addGroupHeader`, `RegionEditorControls.pill`, `buildPillToggle`, `MagnifierLens.addLoadMoreRow`.
+
+**Error pill.** «остановлен» joins the family's lower-case predicate after the colon («не удаётся подключиться», «не отвечает») and says what the comment says: the server is stopped and works again once started. Agreement is in the appendix.
+
+**Cloud page, the switch pair.** «Распознавание текста» / «Перевод текста» read as a pair, and the first is the file's OCR noun (`settings_header_ocr` «Распознавание текста (OCR)», `status_ocr`). «Более мощная модель OCR на серверном GPU» names the larger model the comment describes, and «серверном» agrees with GPU as «графический процессор» (m.). «Все ресурсы устройства достаются игре» is idiomatic. The translate subtitle's one problem is «включены» (Findings).
+
+**Cloud page, the key.** «Клиентский ключ» keeps the file's «ключ» (`llm_backend_api_key_label` «API-ключ», `tr_service_key_tail_fmt` «Ключ ••••»), and «Вставьте» is the verb of `hint_deepl_key`. The hint is 24 characters in the 13 sp monospace field (0.6 em a glyph, about 187 dp), well inside the 278 dp the single-line field leaves on a 360 dp phone.
+
+**Cloud page, the status row.** «Сервис» is the file's word for an online service (`settings_cell_translation_services` «Сервисы перевода», `degraded_warning_cooldown`). The three pairs the brief names match their pill twins word for word, capitalized as standalone values: «Не удаётся подключиться» = `translation_error_unreachable`, «Неожиданный ответ» = `translation_error_bad_response`, «Остановлен» = `translation_error_not_running`. «Проверка» is AOSP's `ext_media_status_checking` («Проверка…») without the ellipsis the English also lacks. The widest pair, «Сервис» (51 dp at 15 sp) and «Не удаётся подключиться» (157 dp at 13 sp), fits the 298 dp row on one line.
+
+**Settings hub.** «Выкл.» is the file's Off (`settings_cell_history_summary_off`, `capture_lifecycle_state_off`). Measured at 13 sp against the 216 dp a summary gets on a 360 dp phone: «OCR и перевод на сервере» 165 dp, «Только OCR на сервере» 146, «Только перевод» 97, «Выкл.» 35. «на сервере» is the comment's own gloss of "Server-grade" (on PlayTranslate's server rather than on the device), and «Только» sits before the element it limits («Только OCR на сервере»: only OCR runs there). The pitch reads well beside `settings_yomitan_empty_summary` and `settings_hotkeys_none`.
+
+**Capture & overlay, OCR section.** «OCR на сервере, без нагрузки на устройство» has the engine notes' two-fragment shape («Распознаёт мелкий текст, медленнее», «Намного быстрее, может пропустить мелкий текст») and the hub's «на сервере».
+
+**Translation services.** Apart from «включены» (Findings), the no-key line stands where the store rows read «Нужен аккаунт» and works as the pitch the comment asks for.
+
+**Floating menu labels.** «PlayTranslate Cloud: доступен / недоступен» agree with the name (appendix), and AOSP's `media_route_status_available` is masculine «Доступен» too. `backend_status_unavailable_default` «Недоступно» has a different shape, a subjectless value at the head of a cooldown line, so the two need not match.
+
+**Toast.** The new first sentence says what the English now says (the app could not open the screen) in place of «На телефоне нет такого экрана». «Найдите этот параметр через поиск в настройках» is the reviewed second sentence, in the cards' own «в настройках … через поиск» frame. Measured 2 lines at 296 dp (270 + 268 dp) and at 320 dp, so nothing is dropped. The deixis is the 💬 above.
+
+**Part B, word-detail headers.** «Спряжение», «Склонение», «Формы»: one noun each, the standard grammar terms, beside «Определения». `addGroupHeader` uppercases with `Locale.ROOT`; Cyrillic case mapping does not depend on locale, so «СПРЯЖЕНИЕ», «СКЛОНЕНИЕ», «ФОРМЫ» render correctly.
+
+**Part B, crop.** «Обрезать снимок экрана» pairs with the remove button beside it (`anki_screenshot_remove_content_description` «Убрать снимок экрана») and uses the group's noun (`anki_group_screenshot` «Снимок экрана»). On the workspace page the header is hidden (`hidesHeader`), so the title is spoken, not seen. The instruction is the ⚠️ above.
+
+**Part B, thinking rows.** «Режим рассуждений» and «Уровень рассуждений» share «рассуждений», as both English comments require, and the subtitles keep the same root («рассуждает», «рассуждения»). «выходные токены» matches the file's «Токенов сегодня» (`tr_service_status_usage_today_fmt`). «Медленнее, а …» and «Чем выше уровень, тем медленнее» are idiomatic terse UI copy.
+
+**Part B, level segments.** «Выкл.», «Минимум», «Низкий», «Средний», «Высокий»: the adjectives agree with «уровень» in the title, and «Выкл.» is the file's Off. `buildPillToggle` gives each of four segments about 56 dp of text on a 360 dp phone (16 dp page and row padding, 3 dp track inset, 8 dp segment padding) and shrinks 13 sp to 10 sp before any ellipsis. Measured at 13 sp: «Минимум» 57 dp, «Средний» 53, «Высокий» 52, so at most the bold active segment drops a step, and none comes near the ellipsis. «Минимальный» would agree with «уровень» but cannot fit, so the noun is the right trade.
+
+**Part B, lens.** «Загрузить ещё (2)»: the count sits in parentheses, so no plural form is needed; 108 dp in the one-line 13 sp row; ё as the file writes «ещё».
+
+**Register and typography.** Formal вы in every imperative («Вставьте», «Найдите», «Перетащите»). The 39 values have no quotation marks and no em dash, and ё appears wherever the file uses it («удаётся», «ещё»).
+
+**Outside the delta, not filed.** Under the status row the cloud page shows `cooldownLine`, whose description for PlayTranslate Cloud is the English constant in `PtCloudErrors` ("Not running", also "Rate limited", "Server error", "Bad key"), so a stopped service can show «Остановлен» above "Not running · Повтор в 15:42". It is code, not a string, and every service's cooldown works the same way ("Connection failed" and "Rate limited" in the store backends).
+
+### Russian case and gender around placeholders and status words
+
+Each read with «PlayTranslate Cloud» or the example value in the span.
+
+- `translation_error_not_running` → «PlayTranslate Cloud: остановлен». The name stands before a colon, so it takes no case. The participle is masculine: Russian gives an indeclinable service name the gender of its generic noun («сервис»), and this file treats «PlayTranslate» as masculine everywhere («был остановлен, пока был включён», `kill_notice_body_stopped`). Only PlayTranslate Cloud reaches this string, so no other name has to agree.
+- `floating_menu_pt_cloud_available` / `_unavailable` → «PlayTranslate Cloud: доступен» / «PlayTranslate Cloud: недоступен»: the same masculine short form, for the same reason.
+- `pt_cloud_status_*` under the title «Сервис» (m.): «Работает» and «Запускается» are present tense with no gender; «Остановлен» agrees with «Сервис»; «Не удаётся подключиться» is impersonal; «Неожиданный ответ (500)» is its own noun phrase; «Проверка» is a noun; «Не проверено» is the neuter impersonal Russian uses for a value not yet determined (the form of AOSP's one standalone «Не …» value, «Не распознано»). The row mixes agreeing and impersonal values, each idiomatic where it stands; «Не проверен» would agree as well, and is not needed.
+- `pt_cloud_status_other` → «Неожиданный ответ (500)»: the code sits in parentheses and never declines.
+- `load_more_count` → «Загрузить ещё (2)»: in parentheses, so 1, 2, 5 and 21 all read correctly with no plural.
+- No span in the 39 sits in an oblique-case slot; Part B's only placeholder is `load_more_count`.
+
+**Tally:** 2 ⚠️ (three keys), 1 💬; no ❌, no 🛑. The other 35 keys pass as they are.
+
+### Disposition (2026-10-27)
+
+All three findings applied: `pt_cloud_translate_toggle_subtitle` and `pt_cloud_translate_row_subtitle_no_key` now say «уже входят в сервис», so nothing beside a switch reads as "switched on"; `anki_screenshot_crop_instruction` «Перетащите края, чтобы обрезать снимок» fits the one-line pill; the 💬 on `keep_running_screen_unavailable` («Не удалось открыть экран.») is applied too, since the bare noun cannot point at the App info page that opens with the toast. The cooldown line's English description ("Not running", "Rate limited" from `PtCloudErrors` and the store backends) is a code finding outside the delta, verified in code; reported to the developer, not fixed in this sync.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports "39 keys x 13 locales: 0 problems" and prints no line for ru (xliff spans byte-identical to EN, placeholder multiset, markup and escape counts, no raw `'` or `"`, no stray or double space, XML well-formed); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ru/strings.xml` reports `values-ru missing=0 orphan=0 modified=0`, "in sync". `git diff` on the locale touches the 24 Part A keys and `anki_screenshot_crop_instruction` (the round-1 fix), nothing else; every applied value byte-matches the round-1 suggestion. **No 🛑 build-breaking issues.**
+
+Round-1 changes checked:
+- `pt_cloud_translate_toggle_subtitle` «Платные модели перевода уже входят в сервис, и для каждой задачи выбирается лучшая.»: confirmed. «входят в сервис» with an inanimate subject can only mean "are part of" (the sign-in sense of «входить в сервис» needs a person), «лучшая» picks up «модели», and the comma before «и» is required between clauses with different subjects. It wraps (switch-row subtitle, no maxLines).
+- `pt_cloud_translate_row_subtitle_no_key` «Лучшие платные модели перевода уже входят в сервис»: confirmed. Same wording as its page twin; `tvRowSubtitle2` in `item_online_service.xml` wraps with no maxLines, so the longer line costs nothing next to the forced-off switch.
+- `anki_screenshot_crop_instruction` «Перетащите края, чтобы обрезать снимок»: confirmed. 275 dp at 14 sp in Arial: one line in the 296 dp the full-screen dialog's pill leaves on a 360 dp phone. On the floating workspace page (card inset 12 dp, `pt_workspace_inset`; pill text = host minus 64 dp) a 360 dp phone in portrait gives 272 dp, so it fits there only by the few percent Arial runs wider than Roboto. Landscape and wider phones have room. It keeps the «Перетащите края, чтобы …» frame of `region_overlay_drag_instruction`. `anki_screenshot_crop` keeps «снимок экрана», and it is only spoken: the dialog has no title and the workspace page hides its header.
+- `keep_running_screen_unavailable` «Не удалось открыть экран. Найдите этот параметр через поиск в настройках.»: confirmed. 2 lines at 296 dp (270 + 236 dp), also at 280 and 320 dp, so the toast drops nothing. The second sentence is unchanged and keeps the cards' «В настройках найдите … через поиск» frame.
+
+#### Findings (round 2)
+
+No findings.
+
+#### Verdict (round 2)
+Passes. I re-read all 39 from scratch with «PlayTranslate Cloud» in the spans. The masculine short forms «остановлен», «доступен», «недоступен» follow the file's masculine service names («Сервис перевода недоступен», `note_mlkit_service_unavailable`; «PlayTranslate … был остановлен», `kill_notice_body_stopped`), and «Остановлен» agrees with the status title «Сервис». No span sits in an oblique-case slot; each stands before a colon or inside parentheses. Every imperative uses вы, no value has quotation marks or a dash, and ё appears where the file writes it. Widths re-measured on a 360 dp phone: hub summaries at most 165 dp of about 216; status values at most 157 dp beside «Сервис» in the ~298 dp row; the key hint 188 dp in monospace of about 278; level segments drop at most one size step («Минимум» 57 dp regular against 56); the toast and crop pill are covered above. «Проверка» without an ellipsis follows the English. Russian uses the bare noun as a status value (order and document statuses), so it still reads as in progress. Left open, outside the strings: the cooldown line's English description from `PtCloudErrors`, recorded in round 1 as a code finding.

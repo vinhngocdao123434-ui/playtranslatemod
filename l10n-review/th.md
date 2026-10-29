@@ -1,0 +1,988 @@
+# Thai (values-th) localization review
+
+Mechanical pass: scripted comparison of all string names, placeholders (%1$s/%2$d/…), escapes (\n, \{ \}, &lt; &gt;), and `<b>` markup found zero differences; plurals use `other` only; no unescaped apostrophes; no ครับ/ค่ะ particles anywhere; brand names all preserved. No 🛑 issues.
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| live_mode_auto_with_hint | ❌ | `อัตโนมัติ <xliff…>%1$s</xliff…>` | `<xliff…>%1$s</xliff…>อัตโนมัติ` | English word order. Composed it renders "อัตโนมัติ ฟุริงานะ"; Thai puts the modifier last — "ฟุริงานะอัตโนมัติ", matching the file's own `live_mode_auto_translate_label` "แปลอัตโนมัติ". |
+| tts_language_unsupported_with_engine_message | ❌ | `แต่ไม่รองรับ %2$s` | `แต่ไม่รองรับภาษา%2$s` | Thai language display names lack the "ภาษา" prefix ("ญี่ปุ่น" = both "Japanese" and "Japan"), so this reads "doesn't support Japan". Every sibling string (status_no_text, lang_setup_requires_64bit_msg, tts_voices_section_header, anki_section_description) correctly prepends ภาษา. |
+| tts_language_unsupported_unknown_engine_message | ❌ | `ไม่รองรับ %1$s` | `ไม่รองรับภาษา%1$s` | Same issue as above. |
+| tr_service_quality_better | ⚠ | `คุณภาพดีขึ้น` | `คุณภาพดีมาก` | "ดีขึ้น" means "has improved (over time)", not a static tier above "ดี". On a model row it implies the quality recently changed. |
+| anki_permission_rationale_message | ⚠ | `ไปยัง Anki PlayTranslate ต้องมีสิทธิ์` | `PlayTranslate ต้องมีสิทธิ์เข้าถึง AnkiDroid เพื่อเพิ่มการ์ดไปยัง Anki` | The English comma was dropped, leaving two adjacent Latin brands; renders as "add cards to Anki PlayTranslate". Restructure so the brands don't collide. |
+| anki_settings_grant_access_subtitle | ⚠ | `ไปยัง Anki %1$s ต้องมีสิทธิ์` | `%1$s ต้องมีสิทธิ์เข้าถึง AnkiDroid เพื่อเพิ่มการ์ดไปยัง Anki` | Same brand-collision as above ("Anki PlayTranslate"). |
+| status_hold_hint | ⚠ | `กดค้างที่พื้นที่หรืออัตโนมัติ` | `กดค้างที่ "พื้นที่" หรือ "อัตโนมัติ"` | Without quotes this garden-paths as "long-press the area, or automatically…". The words are button names and need marking. |
+| live_mode_pause_label | ⚠ | `หยุดชั่วคราว` | `พัก` | 11 glyphs at 8sp next to short siblings (อัตโนมัติ/พื้นที่/การตั้งค่า) — real truncation risk. "พัก" is the natural short gaming "pause"; keep "หยุดอัตโนมัติชั่วคราว" for the 16sp overflow item. |
+| restricted_settings_message | ⚠ | `"อนุญาตการตั้งค่าที่จำกัด"` | `"อนุญาตการตั้งค่าที่ถูกจำกัด"` | Android 13+ renders the ⋮ menu item ("Allow restricted settings") as "อนุญาตการตั้งค่าที่ถูกจำกัด"; the quoted label must match exactly or users can't find it. Also applies to restricted_settings_title. Verify once on a Thai-locale device. |
+| settings_header_ocr | ⚠ | `รูปภาพเป็นข้อความ (OCR)` | `แปลงภาพเป็นข้อความ (OCR)` | Verbless "X เป็น Y" reads "images are text"; conversion needs แปลง. |
+| overlay_icon_gesture_drag / _hold / _tap | 💬 | `<b>ลาก</b> บนคำ…` / `<b>กดค้าง</b> เพื่อ…` / `<b>แตะ</b> เพื่อ…` | `<b>ลาก</b>บนคำ…` etc. | Space after the bolded verb sits inside a Thai run; the rest of the file writes "กดค้างเพื่อ…" unspaced. If the gap is a deliberate visual cue for the bold verb, keep it — but then it's the only place that does it. |
+| hymt_legal_message | 💬 | `ใบอนุญาตนี้ไม่รวมการใช้งานภายใน` | `ใบอนุญาตนี้ไม่อนุญาตให้ใช้งานภายใน` | "ไม่รวม" ("doesn't include") is softer than "excludes". Also consider quoting the button: `เมื่อแตะ "ยอมรับ" ถือว่า…`. Everything load-bearing is intact: §5(b) reference, both สหภาพยุโรป/สหราชอาณาจักร/เกาหลีใต้ enumerations, and "ยืนยันและรับรอง" carries the affirm-and-warrant force. |
+| qwen_mnn_disable_message (also qwen35_2b / gemma_e2b / hymt) | 💬 | `โมเดลขนาด … ถูกติดตั้งไว้` | `มีโมเดลขนาด … ติดตั้งอยู่` | Adversative ถูก-passive on a neutral fact; the existential form is the natural Thai. Same sentence in all four model sections. |
+| settings_support_donate_subtitle | 💬 | `ช่วยให้มันดำเนินต่อไปได้` | `ช่วยให้โปรเจกต์นี้ดำเนินต่อไปได้` | "มัน" is too colloquial for the otherwise neutral-polite register. |
+| anki_card_type_basic_no_mapping | 💬 | `โดยอัตโนมัติตามว่าคุณกำลังบันทึก` | `โดยอัตโนมัติขึ้นอยู่กับว่าคุณกำลังบันทึก` | "ตามว่า" is non-standard; "ขึ้นอยู่กับว่า" is the idiomatic "depending on whether". |
+| settings_hide_overlays_ignored_multi_display | 💬 | `ระบบจะไม่สนใจเมื่อ` | `ระบบจะไม่ใช้การตั้งค่านี้เมื่อ` | "ไม่สนใจ" ("won't care") is anthropomorphic/casual for a settings disclosure. |
+| llm_low_memory_start_anyway | 💬 | `เริ่มต่อไป` | `เริ่มใช้งานเลย` | "เริ่มต่อไป" can parse as "start the next one"; "…เลย" carries the "anyway/regardless" force. |
+| status_idle (also accessibility_dialog_message) | 💬 | `แตะแปลเพื่อ…` | `แตะ "แปล" เพื่อ…` | Unmarked button name fuses into the verb phrase ("tap-translate"). Lower stakes than status_hold_hint but same pattern. Separately: "แอปที่ติดตั้ง" in the two nav paths faithfully mirrors the EN "Installed apps", but stock Android's Accessibility list section is actually "แอปที่ดาวน์โหลด" — a source-string issue worth fixing in English too. |
+
+Sections checked and clean (not padded above): all download/progress strings ("กำลังดาวน์โหลด… X จาก Y" consistent), metered-network dialogs (agreed term เครือข่ายที่จำกัดปริมาณ used throughout), classifier usage (สำรับ Anki %d ชุด, %d รายการ, %d หน้าจอ, %d ตัวอักษร all read naturally at 1 and many), the backend-cooldown composition ("ลองใหม่เวลา 15:42" / "ลองใหม่วันที่…" composes correctly), the Example: samples correctly left unlocalized, "Capture Region" two-line button (พื้นที่\nจับภาพ — short, correct head-noun order), and the a11y label/colon set (a11y_quality_label etc. match the EN colon placement exactly).
+
+## Verdicts
+
+- **Register consistency**: clean — no politeness particles anywhere, consistent neutral-polite คุณ-register; only "มัน" (donate subtitle) dips colloquial.
+- **Terminology consistency**: strong — การช่วยเหลือพิเศษ, สำรับ, การ์ด, แพ็กภาษา, ปุ่มลัด, การอ่านออกเสียงข้อความ, การจับภาพหน้าจอ, การซ้อนทับ all map 1:1 throughout; one tier-label miss (คุณภาพดีขึ้น).
+- **Android-settings wording**: good — การตั้งค่า, การช่วยเหลือพิเศษ, แสดงทับแอปอื่น, การตั้งค่าด่วน + ไทล์ all match system Thai; restricted-settings quoted label likely off by one word (ถูกจำกัด).
+- **Word spacing**: clean except the three gesture-hint strings (space after the bolded verb).
+- **Grammar around placeholders**: solid overall; two TTS strings drop the required ภาษา prefix and one composed label has English word order — the three ❌ items.
+- **Truncation risk**: only หยุดชั่วคราว (bottom-bar Pause) is at real risk; everything else fits.
+- **Legal text**: faithful — §5(b), both EU/UK/South Korea enumerations, and affirm-and-warrant force all preserved; one softener noted (ไม่รวม → ไม่อนุญาต) as polish.
+- **Overall**: fix-then-ship — three ❌ grammar/meaning fixes plus the brand-collision sentences, then this is a high-quality, consistent translation.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR set; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| audio_no_results | ⚠ | `ไม่พบผลลัพธ์` | `ไม่มีผลลัพธ์` | Same English "No results" already ships as `ไม่มีผลลัพธ์` in both `lang_search_no_results` and `dictionary_status_no_results`. Both forms are natural Thai, but one English term must map to one translation; align this third instance to the established `ไม่มีผลลัพธ์`. |
+| yomitan_import_summary_more (plurals) | ⚠ | `+<xliff…>%1$d</xliff…> รายการ` | `อีก <xliff…>%1$d</xliff…> รายการ` | English `+%1$d more` is appended to an elided names line ("…, +3 more"); `+3 รายการ` reads as a flat count "+3 items" and drops the "more / not-shown" sense. The file already renders "more" as `อีก %1$d` (`inflection_more`); `อีก %1$d รายการ` restores it. Borderline ❌ (meaning loss) but context-recoverable, so ⚠. |
+
+## Clean areas (delta)
+**Word-spacing** — clean at every boundary. `base_url_invalid`: `ใช้ https://`, the em-dash `https:// — http://` (spaced between two Latin URLs), and `LAN เท่านั้น` all correct; the long Thai run `อนุญาตเฉพาะที่อยู่ในเครื่องหรือเครือข่าย` between `http://` and `LAN` carries no stray internal space. `URL ที่กำหนดเอง` (Latin→Thai), `importing_progress` `นำเข้า %1$d จาก %2$d…` (spaces around both numeric placeholders, ellipsis glued), `summary_count` `…%1$d จาก %2$d ฉบับแล้ว`, and `summary_more` `+%1$d รายการ` (the `+` glued to the number) are all spaced correctly. The four Anki `*_desc` brand spans (`“PitchPosition” ของ <Lapis>`, `<JPMN>`) sit Thai-space-Latin-space-Thai with no leakage.
+
+**Classifiers** — `ฉบับ` for dictionaries in `summary_count` (`นำเข้าพจนานุกรม N จาก M ฉบับแล้ว`) reads naturally and collapses correctly at 1 and many (Thai has no singular form). `รายการ` for the elided-item count in `summary_more` matches the file's existing `%d รายการ` list counters (lines 214, 1317). No bare-number-without-classifier anywhere in the new set.
+
+**Terminology reuse** — every load-bearing term matches precedent: `การเน้นระดับเสียง` (pitch-accent) == `yomitan_category_pitch_accent`; `ความถี่` (frequency) == `yomitan_category_frequency`; `พจนานุกรม` (dictionary) and `นำเข้า` (import) consistent across the whole Yomitan block; `การอ่านออกเสียงข้อความ` (TTS, `audio_source_tts_name`) == the file-wide TTS term (`settings_cell_tts`, `tts_no_engine_*`); `เสียง` (`audio_source_picker_title`) == `anki_group_audio`; `ขั้นสูง` (`llm_backend_advanced_header`) == the casing-free adjective already used in `enhanced_auto_translate_title`; `คำจำกัดความ`, `การ์ด`, `ไฮไลต์` all reused. `ตัวเลขจัดเรียงตามความถี่` (frequency-sort) and `รายการความถี่ (สไตล์ JPMN)` read as native compounds, not calques. `audio_error_loading` `ไม่สามารถโหลดได้` follows the file's `ไม่สามารถโหลด…ได้` frame (`word_detail_more_examples_error`); `audio_loading` `กำลังโหลด…` matches the `กำลังโหลด…` family.
+
+**Register** — neutral-polite throughout; no ครับ/ค่ะ/นะคะ in any of the 29 keys; no colloquial pronouns.
+
+**Short-label truncation** — `ขั้นสูง` (2 syllables), `เสียง` (1), `อัปเดตอัตโนมัติ`, `URL ที่กำหนดเอง` all comfortably short for their headers/labels; no risk.
+
+**The `Example:` rule** — `pitch_position_desc` keeps the sample `0,2` verbatim after `ตัวอย่าง:`, and the desc strings leave the quoted field names ("PitchPosition", "PAOverride", "Frequency", "FreqSort", "FrequenciesStylized", "FrequencySort") and brand spans untouched — all correct, not flagged.
+
+**Import-title near-synonyms** — `yomitan_import_summary_title_none` "Couldn't Import" → `นำเข้าไม่สำเร็จ` collapses onto the same Thai as `yomitan_io_error_title` "Import Failed"; accepted (distinct dialogs/contexts, faithful natural rendering, no user-facing collision). `นำเข้าเสร็จสมบูรณ์` for "Import Complete" is natural.
+
+---
+
+# Delta review — 2026-07-14 sync (174 keys)
+Scope: game-audio capture + trim, History screen, editable LLM prompts, in-app updater, the 38 `misc_*` dictionary chips, OCR picker, translation-service rows, single-app capture. Independent review (reviewer did not write these strings).
+
+Mechanical layer re-verified programmatically across all 174 keys: placeholder sets identical to EN; every `<xliff:g>` span byte-identical (inner `%n$s`, `id`, `example`); `\n` preserved (`floating_menu_capture_screen` = `จับภาพ\nหน้าจอ`); no unescaped `'`/`"`; all bare `{text} {source} {source_code} {target} {target_code} {context} {N} {strings}` tokens byte-identical Latin; `name=` untouched; `settings_yomitan_count_summary` correctly collapses to `other` only (Thai CLDR). `update_dialog_download` renders EN `&amp;` as `และ` — correct, not a dropped escape. **No 🛑 build-breaking issues.**
+
+**Counts: 0 🛑 · 3 ❌ · 6 ⚠️ · 4 💬** (13 rows / 15 keys).
+
+## Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| hotkey_show_hint_title | ❌ | `กดค้างเพื่อแสดง <xliff…>%1$s</xliff…>` | `กดค้างเพื่อแสดง<xliff…>%1$s</xliff…>` | **`hint_label` fills with Thai, not Latin.** `HotkeysSettingsActivity.kt:108/116` passes the *same* `hintLabel` (→ `hint_label_furigana_lower` = ฟุริงานะ / `hint_label_pinyin_lower` = พินอิน) into this row **and** into `hotkey_auto_hint_title` — two **adjacent rows of the same list**. Rendered: "กดค้างเพื่อแสดง ฟุริงานะ" (spurious space = clause break between verb and object) sitting directly above "แตะเพื่อเริ่ม/หยุดฟุริงานะอัตโนมัติ" (correct, unspaced). The delta's own auto-family is right and matches committed `live_mode_auto_with_hint` (`%1$sอัตโนมัติ`); this one string is the outlier. It is the **only** spaced Thai-filling seam in all 174 keys (see appendix). |
+| misc_euphemistic | ❌ | `คำสละสลวย` | `คำเลี่ยง` | Mistranslation. **สละสลวย = "elegant / graceful / well-turned" (a style-quality judgement about eloquence)** — it is not euphemism. A euphemism is a mild substitute for a harsh or taboo term; the Thai linguistic label is `คำเลี่ยง` ("avoidance word"; `คำอ้อม` also works). `คำสุภาพ` is unavailable — `misc_polite` already owns it. `คำเลี่ยง` is also 7 glyphs vs 9, so it improves the chip fit. |
+| ocr_source_label | ❌ | `จดจำข้อความโดย <xliff…>%1$s</xliff…>` | `อ่านโดย <xliff…>%1$s</xliff…>` | Breaks the glossary **hard constraint** that this mirror `translation_source_label`. Committed Thai is `แปลโดย %1$s` — bare **verb + โดย + %1$s**. This inserts an object (`ข้อความ`), so the two labels render side by side non-parallel: "แปลโดย DeepL" / "จดจำข้อความโดย PaddleOCR". `อ่านโดย %1$s` restores the structure, mirrors the ja precedent (`%1$sによる翻訳` → `%1$sによる読み取り`), and reuses the verb the file already uses for OCR (`settings_ocr_footer` "PlayTranslate อ่านข้อความบนหน้าจอ", `error_capture_blocked_secure` "อ่านข้อความไม่ได้"). Secondary: `จดจำ` is primarily "memorize / commit to memory"; the technical term for recognition is `รู้จำ`. |
+| settings_yomitan_count_summary | ⚠️ | `นำเข้าพจนานุกรมแล้ว <xliff…>%d</xliff…> ฉบับ` | `นำเข้าพจนานุกรมแล้ว <xliff…>%d</xliff…> เล่ม` | **Wrong classifier.** `ฉบับ` counts documents/issues and, for a reference work, **editions of one title** (พจนานุกรมฉบับราชบัณฑิตยสถาน). So "3 ฉบับ" reads "3 *editions*" — but the user imported 3 *different* dictionaries (JMdict, Jitendex, a frequency list). The classifier for a dictionary as a work/volume is `เล่ม` (`ชุด` if you prefer a data-set reading). Note this **also** applies to the committed `yomitan_import_summary_count`, which the 2026-06-23 delta blessed — I'm re-litigating that call deliberately; fix both together or neither, so the two counters agree. |
+| settings_ocr_use_manga_subtitle · update_unknown_sources_message | ⚠️ | `…ไม่แนะนำสำหรับโหมดอัตโนมัติ MangaOCR เป็นส่วนเสริม…` / `…หน้าการตั้งค่าที่จะเปิดขึ้น Android อาจรีสตาร์ทแอป…` | insert a Thai clause-opener before the Latin token: `…ไม่แนะนำสำหรับโหมดอัตโนมัติ ทั้งนี้ MangaOCR เป็นส่วนเสริม…` / `…หน้าการตั้งค่าที่จะเปิดขึ้น โดย Android อาจรีสตาร์ทแอป…` | **Latin/Thai seam, 2 keys, one fix.** In both, an EN **sentence boundary** lands immediately before a Latin token — and Thai spells a sentence break with the *same single space* it uses to delimit Latin. The reader cannot tell which it is, and the greedy parse binds the brand backwards: "ไม่แนะนำสำหรับโหมดอัตโนมัติ MangaOCR" = "auto-mode MangaOCR is not recommended" (meaning inverted); "หน้าการตั้งค่าที่จะเปิดขึ้น Android" = "the Android settings page that opens". A Thai discourse opener (`ทั้งนี้` / `โดย`) makes the boundary unambiguous. The delta gets this right everywhere else — `update_error_signature` / `_wrong_package` open the new sentence with `ให้`. |
+| error_single_app_not_fullscreen | ⚠️ | `หยุดการแปลชั่วคราว — … ระบบจะแปลต่อเมื่อแอปกลับมาเต็มหน้าจออีกครั้ง` | `การแปลหยุดชั่วคราว — … ระบบจะกลับมาแปลอีกครั้งเมื่อแอปแสดงเต็มหน้าจอ` | Two problems in one banner. (1) Verb-initial `หยุดการแปลชั่วคราว` reads as an **imperative** ("Pause the translation") on a string that is a *status*; topic-first `การแปลหยุดชั่วคราว` is unambiguously stative. (2) `จะแปลต่อเมื่อ` garden-paths on the fixed conjunction **ต่อเมื่อ = "only when"** — the intended parse is `แปลต่อ` ("resume") + `เมื่อ`. `กลับมาแปลอีกครั้งเมื่อ…` removes the ambiguity. |
+| misc_nonstandard | ⚠️ | `ไม่มาตรฐาน` | `ไม่เป็นมาตรฐาน` | `ไม่` cannot negate the bare noun `มาตรฐาน`; `ไม่มาตรฐาน` is telegraphic/colloquial. `ไม่เป็นมาตรฐาน` is grammatical **and** parallels the set's own `เป็นทางการ` / `ไม่เป็นทางการ` (`misc_formal` / `misc_informal`). (`ไม่ได้มาตรฐาน` is the wrong sense — it means "substandard quality".) |
+| misc_historical | ⚠️ | `ทางประวัติศาสตร์` | `ประวัติศาสตร์` | Two problems: it is an **adverbial adjunct** ("historically"), not a label — every sibling chip is a noun phrase or an adjective; and at **13 advancing glyphs it is the widest chip in the set**, 3 over the committed `pos_*` ceiling (`คำบอกจำนวน`, 10). Dropping `ทาง` yields a domain-style label ("History"), which is exactly the tag's sense per the EN comment ("refers to a thing of the past"). |
+| settings_debug_log_trace | ⚠️ | `บันทึกเทรซของบันทึกการแปล` | `เก็บ trace ของบันทึกการแปล` | `เทรซ` is an ad-hoc transliteration; the file's own precedent keeps the term in Latin (`crash_dialog_message`: "ซึ่งจะรวมถึง stack trace"). Also a `บันทึก…บันทึก` stutter (verb "record" + noun "log") that makes the row hard to parse. Swapping the verb to `เก็บ` kills the stutter. Debug-builds-only, hence ⚠️ not ❌. |
+| misc_internet_slang · misc_endearing | 💬 | `สแลงอินเทอร์เน็ต` (13) · `คำแสดงความรัก` (12) | `สแลงเน็ต` (8) · `คำเอ็นดู` (7) | Chip width. Both exceed the committed `pos_*` ceiling (max 10, `คำบอกจำนวน`). `เน็ต` is the everyday Thai clipping and reads naturally next to `คำสแลง` / `สแลงมังงะ`. Optional — neither is *wrong*. |
+| misc_offensive | 💬 | `คำไม่เหมาะสม` | (keep) | The weakest member of the offensiveness cluster — `ไม่เหมาะสม` ("inappropriate") is the natural *umbrella* for all four, so using it for one is slightly off; it is also 11 glyphs. But it **is** distinguishable from `คำดูถูก` / `คำหยาบ` / `คำเหยียด`, and every shorter alternative (`คำหยาบคาย`) collides with `misc_vulgar`. Flagging for the record; recommend keeping. |
+| probe_initializing | 💬 | `กำลังเริ่มต้น…` | `กำลังเริ่ม…` | EN comment says "Keep short" — it is a ~1.5 s chip beside a colour swatch. 11 advancing glyphs is above the `pos_*` ceiling; `กำลังเริ่ม…` saves 3 with no loss. |
+| settings_cell_history_summary_on / _off | 💬 | `เปิด · บันทึกประโยคที่จับภาพไว้` | `เปิด · ประวัติประโยคที่จับภาพไว้` | EN is a **noun** ("Record **of** captured sentences" — what the feature *is*); Thai `บันทึก…` reads first as a **verb** ("record the captured sentences"), which collapses it onto `history_toggle_subtitle` ("บันทึกประโยคที่จับภาพไว้ลงในอุปกรณ์นี้" — what the toggle *does*). `บันทึก` *can* be the noun "a record", and the `เปิด ·` / `ปิด ·` prefix disambiguates, so this is benign — `ประวัติ` (the file's own noun for History) would make it unambiguous. |
+
+## Clean areas (delta — checked, no findings)
+
+**Word spacing at Latin/Thai seams — pristine but for the one ❌.** I audited every seam in all 174 keys programmatically (Thai glyph ↔ whitespace ↔ placeholder/Latin run, both directions). **65 spaced seams; 64 are correct** — all delimit a genuinely Latin or numeric run: brands (`Anki`, `PlayTranslate`, `GitHub`, `MangaOCR`, `Android`, `PaddleOCR`, `OpenAI`), initialisms (`OCR`, `TTS`, `LLM`, `API`, `URL`, `JSON`), the bare keyword tokens (`{N}`, `{source}`, `{source_code}`, `{target}`, `{target_code}`, `{strings}`, `{text}`), the un-localized code/name examples (`ja`, `en`, `Japanese`, `English`), and numeric fills (`%1$s วิ`, `(ต้องการ 230 MB)`, `%d ฉบับ`, `12,345 โทเค็น`, `Key ••••4f2a`). The 65th is `hotkey_show_hint_title`. No stray space appears *inside* any Thai run anywhere in the delta.
+
+**The `hint_label` family.** `hotkey_auto_hint_title` (`แตะเพื่อเริ่ม/หยุด%1$sอัตโนมัติ`) and `hotkey_auto_hint_dialog_title` (`%1$sอัตโนมัติ`) both correctly treat the placeholder as a Thai run — unspaced, modifier last — and are consistent with the committed `live_mode_auto_with_hint`, confirming the 2026-06-23 ❌ fix landed. (Companion note, outside delta scope: the same spurious space as the ❌ above also sits in three *committed* siblings — `hotkey_show_hint_dialog_title` (`แสดง %1$s`), `translate_button_subtitle_hold_to_show_hint` (`กดค้างเพื่อแสดง %1$s บนหน้าจอเกม` — needs **both** spaces removed), and `translate_button_subtitle_hold_to_show_translations_instead_of_hint` (`…แทน %1$s`). Worth sweeping in the same pass, since `hotkey_show_hint_title` and `hotkey_show_hint_dialog_title` are the row and the dialog it opens.)
+
+**Remove / Delete / Clear — all three kept apart**, exactly as the glossary requires: `นำ…ออก` for services (`tr_service_delete_cd` นำบริการออก, `tr_service_remove_confirm` นำออก, `tr_service_remove_title_fmt` `นำ %1$s ออกหรือไม่` — correct discontinuous verb around the placeholder), `ลบ` for entries and models (`history_action_delete`, `history_delete_confirm_title`, `settings_ocr_disable_delete`), `ล้าง` for Clear (`history_clear_menu` ล้างประวัติ, `history_clear_confirm_title`). No cross-contamination.
+
+**Terminology vs the committed file.** `บริการแปล` matches the page title `settings_cell_translation_services` (glossary requirement) in both `add_online_service_title` and `tr_service_add_online`. `พรอมต์` is the single noun across all 24 `llm_prompt_*` keys — never "คำขอ"/"คำสั่ง" as the *term*. `ประวัติ` = History everywhere (`settings_cell_history`, `history_screen_title`, `history_toggle_title`). `จับภาพ` reused for "captured" per the glossary's "one capture verb" rule. `การซ้อนทับ` (overlays), `พื้นที่` (region), `การเชื่อมต่อที่จำกัดปริมาณ` (metered — matches the agreed `เครือข่ายที่จำกัดปริมาณ`), `ช่วงที่เลือก` (selection, both trim buttons), `ตัด` (Trim, toolbar + Anki cell), `กลุ่ม` (batch), `ผู้ให้บริการ` (Provider), `คีย์เวิร์ด` (keyword), `LLM` kept as the initialism. `เสียงเกม` works as both pill and section header. `การแปล` (section header) vs `คำแปล` (the rendered translation layer) are correctly assigned in the hotkey block — not a collision.
+
+**Seconds.** `game_audio_trim_duration`'s `วิ` is not a register slip — it matches the committed `settings_capture_interval_seconds_suffix` (`วิ`), while prose keeps `วินาที` (`settings_capture_interval_hint`, `dialog_hotkey_setup_instruction`). Correct split.
+
+**Classifiers elsewhere.** `tr_service_status_usage_today_fmt` (`วันนี้: 12,345 โทเค็น`) and `update_error_no_space` (`ต้องการ 230 MB`) are unit-nouns in a NUM+NOUN stat frame — idiomatic Thai, no classifier wanted. Only the dictionary counter is wrong (above).
+
+**Register.** Zero `ครับ/ค่ะ/นะคะ/จ้า` in any of the 174 keys (verified programmatically); consistent neutral-polite `คุณ`-register; sibling buttons share a grammatical form (`เก็บโมเดลไว้`/`ลบโมเดล`, `เล่นช่วงที่เลือก`/`ใช้ช่วงที่เลือก`). `บันทึกเลย` (`llm_prompt_save_anyway`) correctly reuses the `…เลย` "anyway" frame the committed `llm_low_memory_start_anyway` (`เริ่มใช้งานเลย`) established.
+
+**Deliberate decisions honoured** (not flagged, per brief): `stream_kind_share_one_app` / `_entire_screen` = `แชร์แอปเดียว` / `แชร์ทั้งหน้าจอ` — AOSP Thai SystemUI wording, and `stream_kind_prompt_message` quotes both back verbatim, so the dialog cross-references the buttons exactly; `llm_prompt_kw_source_desc` / `_target_desc` keep `Japanese` / `English` in Latin; `llm_status_low_memory_badge` dash untouched.
+
+**Plurals.** `settings_yomitan_count_summary` correctly ships `other` only (EN's `one` dropped — right for Thai's CLDR set). Classifier flagged above; the form itself collapses correctly at 1 and at many.
+
+**Orthography.** `history_empty_none`'s `ต่างๆ` (no space before ไม้ยมก) is non-RID but is the file's consistent house style (`ใดๆ`, `อื่นๆ`, `เงียบๆ`, `เร็วๆ นี้`, `ต่างๆ` in 6 committed strings) — left alone rather than made inconsistent.
+
+**`misc_*` cluster distinctness — all four clusters pass.** offensiveness: `คำดูถูก` (belittling) / `คำไม่เหมาะสม` (inappropriate) / `คำหยาบ` (coarse) / `คำเหยียด` (discriminatory) — four different roots, mutually legible on one word. obsolescence: `คำโบราณ` / `เลิกใช้แล้ว` / `ล้าสมัย` / `ทางประวัติศาสตร์` — distinct (the last is re-worded above for form/width, not for collision). informality: `ภาษาพูด` / `ไม่เป็นทางการ` / `ภาษากันเอง` / `คำสแลง` — distinct. **honorifics is the strongest cluster:** `คำยกย่อง` (尊敬語) / `คำถ่อมตน` (謙譲語) / `คำสุภาพ` (丁寧語) — the correct three-way Thai split, no collapse. `ภาษาพูด`/`ภาษาเขียน` (colloquial/literary) is the canonical Thai pair. `โดยปริยาย` is the genuine RID figurative label, not a gloss of the English. `คานะ`/`คันจิ` kept as loanwords per glossary; `misc_yojijukugo` described (`สำนวนสี่อักษร`), not romanized. The chips follow the committed `pos_*` register (`คำ-` / `ภาษา-` prefixed lexicographic nouns).
+
+**Truncation.** `service_llm_badge` (`LLM`, 3), `floating_menu_capture_screen` (`จับภาพ\nหน้าจอ` — 6/6 per line, verb/object split, `\n` intact) both comfortable. Chip widths measured against the `pos_*` ceiling (10); the five over it are called out above.
+
+---
+
+## Delta review round 2 — 2026-07-14
+
+Fresh independent reviewer (wrote none of these strings, reviewed none of them in round 1). Scope: the same 174 delta keys, re-derived from scratch, with the 13 keys round 1 changed as the primary target.
+
+Mechanical layer re-verified programmatically across all 174: placeholder sets identical to EN; every `<xliff:g>` span byte-identical; bare `{text} {source} {source_code} {target} {target_code} {context} {N} {strings}` tokens intact and Latin; `\n` preserved; no unescaped `'`; `name=` untouched; `settings_yomitan_count_summary` correctly `other`-only (Thai CLDR); zero ครับ/ค่ะ/นะคะ/จ้า. **No 🛑.**
+
+**Counts: 0 🛑 · 1 ❌ · 3 ⚠️ · 6 💬** (10 rows / 13 keys).
+
+### The 13 changed strings — verdict on each fix
+
+| key | fix | verdict |
+|---|---|---|
+| `hotkey_show_hint_title` | deleted the space before `<xliff:g>` | ✅ **correct.** Premise verified in code: `hint_label_furigana_lower` = ฟุริงานะ, `hint_label_pinyin_lower` = พินอิน — the placeholder really does fill with **Thai**, so the space was a spurious clause break. Now parallel with its own delta siblings `hotkey_show_translations_title` (กดค้างเพื่อแสดงคำแปล) and `hotkey_auto_hint_title` (…หยุด%1$sอัตโนมัติ). No space leaked anywhere else. |
+| `ocr_source_label` → `อ่านโดย %1$s` | mirror `translation_source_label` | ✅ **correct.** Committed `translation_source_label` = `แปลโดย %1$s` (verified, line 263). Bare verb + โดย + placeholder now matches exactly; side by side they render "แปลโดย DeepL" / "อ่านโดย PaddleOCR". Reuses the file's own OCR verb (`settings_ocr_footer`). |
+| `misc_nonstandard` → `ไม่เป็นมาตรฐาน` | grammatical negation | ✅ **correct**, and it now parallels the set's own `เป็นทางการ` / `ไม่เป็นทางการ` without colliding with either. |
+| `misc_historical` → `ประวัติศาสตร์` | drop the adverbial `ทาง` | ✅ **correct.** Domain-style noun label; collides with nothing, incl. `ประวัติ` (History screen) and `คำโบราณ` / `ล้าสมัย` / `เลิกใช้แล้ว`. |
+| `settings_debug_log_trace` → `เก็บ trace ของ…` | kill the บันทึก…บันทึก stutter | ✅ **correct.** Latin `trace` matches the file's own precedent (`crash_dialog_message` "stack trace"), spaced correctly on both sides. One residual noted below (💬). |
+| `error_single_app_not_fullscreen` | topic-first + `แอปที่ถูกจับภาพ` | ✅ **correct.** Stative reading restored; the `แปลต่อเมื่อ` ("only when") garden path is gone. |
+| `error_capture_blocked_secure` | `แอปที่ถูกจับภาพ` | ✅ **passive is unambiguous** (see below); one stylistic residual (💬). |
+| `update_unknown_sources_message` | insert `ทั้งนี้` before `Android` | ✅ **correct.** The brand can no longer bind backwards. |
+| `settings_ocr_use_manga_subtitle` | insert `ทั้งนี้` before `MangaOCR` | ⚠️ **fixed the cited seam, left the identical bug at the next one** — see findings. |
+| `settings_cell_history_summary_on` / `_off` → `ประวัติประโยค…` | noun, not verb | ✅ correct; minor echo noted (💬). |
+| `probe_initializing` → `กำลังเริ่ม…` | shorten | ✅ correct; created a benign byte-merge (💬). |
+| `misc_euphemistic` → `คำเลี่ยง` | "สละสลวย means elegant" | 🔴 **REGRESSION — revert.** See ❌ below. |
+
+**Is the `ถูก` passive now unambiguous in both error strings? Yes — in both.** `ที่ถูก` + V is a hard passive in Thai: `ถูก` marks the following verb as done **to** the head noun, so no subject-relative reading ("the app that *is capturing*" = PlayTranslate) is grammatically available. `แอปที่ถูกจับภาพ` can only mean "the app that is being captured". The round-1 defect is closed in `error_single_app_not_fullscreen` **and** `error_capture_blocked_secure`, and the two banners now use one term for one concept.
+
+### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| misc_euphemistic | ❌ | `คำเลี่ยง` | `คำสละสลวย` **(revert round 1)** | **Regression introduced by the round-1 fix.** Round 1 parsed the compound compositionally — the *bare adjective* สละสลวย does mean "elegant / well-turned" — and missed that **คำสละสลวย is lexicalised as the ordinary Thai noun for "a euphemism."** Attested in running Thai Wikipedia prose in exactly this sense: *"เน็ตฟลิกซ์แอนด์ชิล … ซึ่งเป็น**คำสละสลวย**สำหรับการมีกิจกรรมทางเพศ"* ("…which is a euphemism for sexual activity") and *"พระนามเนบตี … เป็น**คำสละสลวย**ในทางศาสนา"* ("…is a religious euphemism"); Thai reference sources gloss it as *ถ้อยคำสุภาพซึ่งใช้แทนคำที่อาจหยาบคายหรือรุนแรงเกินไป* — precisely a euphemism. `คำเลี่ยง` has **no attestation** as a lexicographic label. Worse, it is a `คำ`+V compound sitting beside five taboo tags (`คำหยาบ` · `คำเหยียด` · `คำดูถูก` · `คำไม่เหมาะสม` · `คำอ่อนไหว`), which primes the inverted reading **"a word to avoid"** — the opposite of a euphemism, which is the *safe substitute*. The failure modes are asymmetric: a reader who doesn't know `คำสละสลวย` still lands on "genteel wording" (near-correct); a reader who mis-parses `คำเลี่ยง` lands on "taboo" (inverted). Chips don't truncate, so the 9 glyphs cost nothing. (`การเกลื่อนคำ` is th-wiki's title for the *phenomenon*; it names the process, not the word, so it is wrong for a chip.) |
+| settings_ocr_use_manga_subtitle | ⚠️ | `…MangaOCR เป็นส่วนเสริมของ OCR ที่เลือกไว้ ไม่สามารถทำงานเพียงลำพังได้` | `…เป็นส่วนเสริมของ OCR ที่เลือกไว้ จึงไม่สามารถทำงานเพียงลำพังได้` | **The round-1 fix repaired the first ambiguous seam and left the identical bug at the next one.** `ทั้งนี้` correctly stops `MangaOCR` binding backwards — but one clause later the zero-subject predicate `ไม่สามารถทำงานเพียงลำพังได้` sits immediately after the NP `OCR ที่เลือกไว้`, which is *itself an OCR engine* and therefore a plausible subject. Linear adjacency gives **"the selected OCR cannot work alone"** — inverting which engine is the dependent one, in a WARNING string. Thai topic-continuity and pragmatics favour the intended reading, so it is recoverable (hence ⚠️, not ❌), but `จึง` closes it for two glyphs: it forces the null subject back to the topic (MangaOCR) **and** supplies the causal link EN's comma splice implies. Same generator as the seam round 1 fixed — sweep the string, not the sentence. |
+| anki_game_audio_cell_untrimmed | ⚠️ | `ตัดเมื่อบันทึก` | `ตัดเมื่อบันทึกการ์ด` | **Record/Save lexical merge, in the one string where both senses are live.** Thai `บันทึก` is the file's word for *both* "Save" (`btn_save`, `anki_field_mapping_save`) and "Record" (`anki_game_audio_row_title` = `บันทึกเสียงเกม`, "Record game audio"). This row is a bare, context-free title **inside the game-audio recording feature**, so `ตัดเมื่อบันทึก` reads as easily "trim when *recording*" as "trim when *saving*". Naming the object (`การ์ด`) resolves it and matches the EN comment ("card editor"). |
+| settings_yomitan_count_summary | ⚠️ | `นำเข้าพจนานุกรมแล้ว <xliff…>%d</xliff…> ฉบับ` | `…<xliff…>%d</xliff…> เล่ม` | **Carried forward from round 1 — proposed, not applied.** Independently re-derived; I reach the same answer. `ฉบับ` counts documents/issues and, for a reference work, *editions of one title* (พจนานุกรม**ฉบับ**ราชบัณฑิตยสถาน), so "3 ฉบับ" reads "3 **editions**" — but the user imported 3 *different* dictionaries. `เล่ม` is the classifier for a dictionary as a work. **Not a ship-blocker:** leaving it also leaves it *consistent* with the committed `yomitan_import_summary_count`, which uses the same classifier — so the two counters agree either way. Fix both together or neither. |
+| error_capture_blocked_secure | 💬 | `อ่านข้อความไม่ได้ — แอปที่ถูกจับภาพบล็อกการจับภาพหน้าจอ` | `อ่านข้อความไม่ได้ — แอปนี้บล็อกการจับภาพหน้าจอ` | The passive fix is right (above). The residual: EN says **"this app"**, not "the captured app" — the fix imported the sibling banner's term, yielding **จับภาพ twice in one nine-word clause** plus a small logical stumble ("the app that *is captured* *blocks* capture"). EN carries the same repetition and reads fine, so this is polish, not a defect. Weigh against the counter-argument for keeping it: `แอปนี้` in an in-app panel can be misread as PlayTranslate itself — presumably why the disambiguating relative was chosen — and keeping it holds the two capture-error banners on one term. Either call is defensible; flagged for the record. |
+| settings_cell_history_summary_on · _off | 💬 | `เปิด · ประวัติประโยคที่จับภาพไว้` | `เปิด · รายการประโยคที่จับภาพไว้` | The fix is right — it is now a noun, and no longer collapses onto `history_toggle_subtitle` (what the toggle *does*). Residual: it now **echoes its own cell title** — the hub renders `ประวัติ` / `เปิด · **ประวัติ**ประโยค…`. EN says "Record of…", not "History of…", precisely to avoid that echo. `รายการ` is unambiguously a noun and is already the file's word for a History *entry* (`history_delete_confirm_title` = `ลบรายการนี้หรือไม่`), so it removes the echo and ties the summary to the thing being counted. |
+| llm_prompt_fatal_missing_strings · llm_prompt_fatal_missing_text | 💬 | `…— หากไม่มี วลีที่จะแปลจะไม่ถูกส่งไปยังโมเดลเลย` | `…— หากขาดคีย์เวิร์ดนี้ วลีที่จะแปลจะไม่ถูกส่งไปยังโมเดลเลย` | **Same bug class round 1 fixed elsewhere**, caught in two more keys: a single space is the only thing preventing the greedy read `หากไม่มีวลีที่จะแปล` ("if there are **no phrases to translate**…"). The space is the correct Thai device, the misparse is *vacuous* rather than harmful, and the preceding clause (`พรอมต์ต้องมี {strings}`) supplies the antecedent — so it is recoverable, hence 💬 not ⚠️. Naming the referent removes the ambiguity outright, which is worth doing in a *validation* dialog. |
+| probe_initializing | 💬 | `กำลังเริ่ม…` | (keep) | The shortening made it **byte-identical to the committed `settings_ocr_downloading_msg`** ("Starting…"), merging EN's `Initializing…` / `Starting…` distinction. Verified benign: different surfaces (live-mode probe chip vs OCR download dialog), never co-visible, and nothing runs `.distinct()` across them. No action needed — logged only because it is fix-introduced and a later reviewer will otherwise re-find it. |
+| settings_debug_log_trace | 💬 | `เก็บ trace ของบันทึกการแปล` | (keep) | Good fix. Residual: EN "Record" is now `เก็บ` here but `บันทึก` in `anki_game_audio_row_title` — a one-EN-term-two-TH-words split. Forced by the `บันทึก…บันทึก` stutter and confined to a debug-builds-only row. Accept. |
+| update_unknown_sources_message | 💬 | `หากต้องการอัปเดตให้เสร็จสิ้น ให้อนุญาตให้ PlayTranslate…` | `หากต้องการอัปเดตให้เสร็จสิ้น โปรดอนุญาตให้ PlayTranslate…` | The `ทั้งนี้` fix is right. Residual: three `ให้` in eight words (resultative / imperative / permissive). Each is grammatical; together they are a mouthful. `โปรด` for the imperative one breaks it up. |
+
+### Clean areas (round 2 — checked, no findings)
+
+**Word spacing at every Thai/Latin seam — clean, and no fix leaked a space.** Re-audited all 174 keys programmatically (Thai glyph ↔ whitespace ↔ Latin/placeholder run, both directions): **119 whitespace seams touching Thai; every one is correct.** Each `TH|Latin` seam delimits a genuinely Latin, numeric or punctuation run — brands (`Anki`, `PlayTranslate`, `GitHub`, `MangaOCR`, `Android`, `PaddleOCR`), initialisms (`OCR`, `TTS`, `LLM`, `API`, `URL`, `JSON`), the bare keyword tokens, the un-localised code/name samples (`ja`, `en`, `Japanese`, `English`), the new Latin `trace`, numeric fills (`%1$s วิ`, `(ต้องการ 230 MB)`, `%d ฉบับ`, `12,345 โทเค็น`, `••••4f2a`), the `·` middot and the ` — ` em dash. Every `TH|TH` seam is a genuine Thai sentence/clause break. **No stray space survives inside any Thai run**, and `hotkey_show_hint_title` — round 1's only spaced Thai-filling seam — is gone. This was the axis most likely to break under an edit round, and it is clean.
+
+**Em-dash house style.** Five delta strings use a `X — Y` frame (`anki_game_audio_permission_denied`, `audio_source_game_enable_hint`, `llm_status_low_memory_badge`, and both capture-error banners). All spaced identically, all matching EN. `llm_status_low_memory_badge` keeps its dash per the settled call.
+
+**`misc_*` distinctness — all 38 labels distinct, verified programmatically.** `renderMisc` (`MiscLabels.kt:31`) calls `.distinct()` **on the localised strings**, so a collision would silently collapse two tags into one — there are none. None of the 38 contains the `" · "` join separator. The four clusters all survive the three edits: **offensiveness** (`คำดูถูก` / `คำไม่เหมาะสม` / `คำหยาบ` / `คำเหยียด` / `คำอ่อนไหว`) — five roots, mutually legible on one word; **obsolescence** (`คำโบราณ` / `เลิกใช้แล้ว` / `ล้าสมัย` / `ประวัติศาสตร์`); **informality** (`ภาษาพูด` / `ไม่เป็นทางการ` / `ภาษากันเอง` / `คำสแลง`) — and the new `ไม่เป็นมาตรฐาน` parallels `ไม่เป็นทางการ` structurally without blurring into it (`มาตรฐาน` ≠ `ทางการ`); **honorifics** (`คำยกย่อง` / `คำถ่อมตน` / `คำสุภาพ`) — the correct three-way 尊敬語 / 謙譲語 / 丁寧語 split. **Reverting `misc_euphemistic` to `คำสละสลวย` keeps all 38 distinct** (`คำสุภาพ` is a different string).
+
+**Benign file-wide value merges.** Swept every duplicate value in the whole file. All are either same-EN→same-TH (correct: `ocr_picker_title` = `cd_choose_ocr`, `history_copied_toast` = `toast_copied`, `update_unknown_sources_button` = `btn_open_overlay_settings`, `settings_ocr_disable_delete` = the six other `*_disable_delete`) or different-EN→same-TH across surfaces that never co-render (`misc_obsolete` = `deprecated_badge_label`; `probe_initializing` = `settings_ocr_downloading_msg`, noted above). No merge feeds a `.distinct()`.
+
+**Classifiers.** `%d ฉบับ` is the only wrong one (above). `วลีกี่วลี` (`llm_prompt_advisory_missing_count`) correctly uses `วลี` as its own classifier. `โทเค็น` and `MB` are unit-nouns in a NUM+NOUN stat frame — idiomatic, no classifier wanted. `วิ` (`game_audio_trim_duration`) matches the committed `settings_capture_interval_seconds_suffix` while prose keeps `วินาที` — correct split.
+
+**Plurals.** `settings_yomitan_count_summary` ships `other` only (EN's `one` correctly dropped for Thai's CLDR set) and collapses correctly at 1 and at many.
+
+**The trim-editor button trio** reads as a coherent set: `ใช้ TTS แทน` / `ไม่ใช้เสียง` / `ใช้ช่วงที่เลือก` — one ใช้/ไม่ใช้ frame across all three, with the primary confirm parallel to `game_audio_trim_play` (`เล่นช่วงที่เลือก`).
+
+**Terminology, post-edit.** `อ่านโดย` (new) collides with nothing: `อ่าน` is already the file's OCR verb (`settings_ocr_footer`, `error_capture_blocked_secure`). `พรอมต์` is still the single noun across all 24 `llm_prompt_*` keys, with `คำขอ` correctly reserved for EN "request". Remove / Delete / Clear stay apart (`นำ…ออก` / `ลบ` / `ล้าง`). `ประวัติ` = History throughout.
+
+**Already logged in round 1, not re-filed** (committed, out of scope): `hotkey_show_hint_dialog_title` (`แสดง %1$s`) and the two `translate_button_subtitle_*` siblings still carry the spurious space that `hotkey_show_hint_title` just lost — so the hotkey **row** and the **dialog it opens** now visibly disagree. Round 1 flagged it as a follow-up sweep; it remains open.
+
+### Appendix — `activity_game_audio_trim.xml` bottom row, measured for Thai
+
+**Premise correction.** The row is *not* three `wrap_content` buttons with no weights: there **is** a `<Space android:layout_width="0dp" android:layout_weight="1"/>` between `btnTrimNoAudio` and `btnTrimSave`. It does not rescue the row. With `layout_width=0dp` + a weight, LinearLayout computes the weighted child's width as `share` (its slice of `delta = available − totalLength`) and clamps it with `Math.max(0, …)`. When the buttons overrun, `delta` is negative, the Space collapses to **0**, and LinearLayout **never re-measures non-weighted `wrap_content` children smaller**. So the excess overflows; horizontal gravity is START (`android:gravity="center_vertical"` sets only the vertical axis), so the **last child — `btnTrimSave`, the primary confirm — is exactly what gets clipped.** The premise's conclusion holds; only the "no weights" detail was wrong.
+
+**Metrics** (resolved from the AAR, not assumed — `Theme.PlayTranslate` = `Theme.Material3.Dark.NoActionBar`, material 1.14.0, no `materialButtonStyle` override):
+
+- `btnTrimSave` → `Widget.Material3.Button`: `m3_btn_padding_left/right` = **24dp**, `insetLeft/Right` = 0dp
+- `btnTrimUseTts` / `btnTrimNoAudio` → `Widget.Material3.Button.TextButton`: `m3_btn_text_btn_padding_left/right` = **12dp**
+- all three inherit `android:minWidth` = **88dp** from `Base.Widget.AppCompat.Button`
+- text = `?attr/textAppearanceLabelLarge` → **14sp**, `sans-serif-medium`, letterSpacing 0.00714 em
+- row `padding` = 12dp; `btnTrimNoAudio` `layout_marginStart` = 4dp
+
+**Measured** with the real Android fonts (Noto Sans Thai VF instanced at wght 500 for Thai, Roboto Medium for Latin; Thai combining marks confirmed zero-advance; cross-checked against PIL's rasteriser):
+
+| button | Thai label | text @14sp | button width |
+|---|---|---|---|
+| `game_audio_trim_use_tts` | ใช้ TTS แทน | 71.2 dp | **95.2 dp** |
+| `game_audio_trim_no_audio` | ไม่ใช้เสียง | 54.6 dp | **88.0 dp** (minWidth floor) + 4dp margin |
+| `game_audio_trim_save` | ใช้ช่วงที่เลือก | 73.4 dp | **121.4 dp** |
+
+**Row total (Thai) = 12 + 95.2 + 4 + 88.0 + 121.4 + 12 = ~333 dp.**
+
+| screen | Thai row | is `game_audio_trim_save` reachable? |
+|---|---|---|
+| **360 dp** | 333 dp — **fits**, 27 dp slack | ✅ **yes, fully** |
+| **411 dp** | 333 dp — **fits**, 78 dp slack | ✅ **yes, fully** |
+
+**Thai is not one of the overflowing locales — it is one of the safest.** Thai runs words together and takes no inter-word spaces, so the row is **45 dp narrower than English**. The measurement that matters: **English itself is 377.8 dp and overflows a 360 dp phone by ~18 dp**, clipping ~13% off the right edge of its own primary confirm. The trim row is a **source/layout defect, not a locale defect** — it is broken in `values/` before any translation is applied, and no `values-th` edit can fix it. Two caveats for whoever owns the layout:
+
+- **Font scale.** Thai clears 360 dp only up to fontScale ≈ 1.2. At **fontScale 1.3** (a common accessibility setting) the Thai row is **383 dp and overflows 360 dp by 23 dp**; at 1.5 it overflows 411 dp too. Padding doesn't scale; text does.
+- **Small phones.** Thai overflows a 320 dp screen by ~13 dp even at fontScale 1.0.
+
+The structural fix is in the layout, not the strings: let the two secondary text buttons shrink (`layout_weight` + `android:maxLines="1"` + `android:ellipsize="end"`), or move `btnTrimSave` to its own row. **No Thai string change is warranted for width, and shortening `game_audio_trim_save` would not help** — English, not Thai, is the binding case.
+
+### Verdict
+
+**FIX FIRST** — one revert.
+
+- `misc_euphemistic`: **`คำเลี่ยง` → `คำสละสลวย`** (undo the round-1 change; it replaced the attested Thai noun for "euphemism" with an unattested coinage that can invert next to the set's taboo tags).
+- Recommended in the same pass: `settings_ocr_use_manga_subtitle` (add `จึง` — the round-1 fix stopped one clause short of a meaning-inverting seam) and `anki_game_audio_cell_untrimmed` (add `การ์ด`).
+
+Everything else round 1 changed is **correct and landed cleanly**. Spacing — the axis most likely to break under an edit round — is pristine across all 174 keys; the `ถูก` passive is unambiguous in both error banners; all 38 `misc_*` labels remain distinct. The trim row needs no Thai change: it needs a layout change, and it needs it for English first.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "รวดเร็วแม้หน้าจอมีข้อความจำนวนมาก" | "ฉับไวแม้หน้าจอมีข้อความมาก" | The English comment forbids reusing the literal Fast tier label; the first pass reused the เร็ว root, the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+
+### Clean areas (delta) — checked, no findings
+
+The ภาษา prefix is written **tight** against both source-language placeholders — `image_import_no_text` (ไม่พบข้อความภาษา%1$s ในรูปภาพนี้, no space) and `camera_snapshot_no_text` — matching the committed `status_no_text`, because these fill from `SourceLangId.displayName()` and come back Thai on a Thai device; a space would sever the ภาษาญี่ปุ่น compound. Spaces appear only at Latin, numeral and symbol borders (PaddleOCR (แม่นยำ), ไฟล์ PDF, <xliff:g>%d</xliff:g> บรรทัด, the → path). No ครับ/ค่ะ. No sentence-final periods, matching the file (`settings_ocr_download_failed`). เอนจิน was adopted for *engine* specifically so เครื่องมือ stays free for *tool* — the two collide inside `settings_ocr_delete_camera_import_note`, where reusing เครื่องมือ for both would have produced เครื่องมือกล้องก็ใช้เครื่องมือนี้. ภาพนิ่ง for the camera freeze-frame stays distinct from ภาพหน้าจอ (`anki_group_screenshot`). Plurals `other` only, with the ฉบับ and บรรทัด classifiers. “ ” quotes in the Xiaomi paragraph.
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ found and fixed, no ❌.
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Mechanical layer verified programmatically over the eight delta keys: all eight present in
+`values-th`, none extra, none duplicated, and each sits in the same EN-relative position as its
+source (no ordering drift). Every `<xliff:g>` span is byte-identical to English including `id`
+and `example` (`brand_anki`/`Anki` x4, `field_name`/`%1$s`/`Key` x2); placeholder multisets are
+identical (`%1$s` once in each first-field string, none elsewhere); `“ ”` counts match EN exactly
+(1/1 in `anki_first_field_unmapped` and `anki_first_field_empty`, zero in the other six); no
+`<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` deltas; no unescaped `'` or `"` in any text run (the
+only quote characters in the file's text are the typographic pair, which needs no escaping);
+`name=` untouched; the Anki brand left untranslated inside its span. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | ⚠️ | `บีบนิ้วเพื่อแสดงช่วงเสียงให้กว้างขึ้นหรือแคบลง` | `บีบนิ้วเพื่อแสดงเสียงช่วงยาวขึ้นหรือสั้นลง` | The decision to render "more or less audio" as an extent rather than a quantity is **right** — a bare เสียงมากขึ้น/น้อยลง would have read as volume. The execution picks the wrong compound. **ช่วงเสียง** is an established Thai collocation for *vocal / pitch range* (ช่วงเสียงของนักร้อง), so "แสดงช่วงเสียงให้กว้างขึ้น" lands in the frequency domain — near the very audio-property misreading the translator was dodging. Two further wobbles: `แสดง X ให้กว้างขึ้น` predicates on how X is *rendered* (cf. แสดงกราฟให้ใหญ่ขึ้น), which reads as stretching the waveform rather than choosing how much of it is on screen; and กว้าง/แคบ is a spatial axis, while the thing being sized is a **time** window — the readout directly above it is denominated in วิ (`game_audio_trim_duration`: เลือกไว้ 2.4 วิ), so a reader arriving from that line takes ให้กว้างขึ้นหรือแคบลง as *resize my 2.4-second selection*, which is what the drag handles do, not what pinch does. The suggested form flips the noun order to the file's own attested pattern — `anki_game_audio_row_subtitle` already writes เก็บ**เสียง**เกม**ช่วง**ไม่กี่นาทีล่าสุด, i.e. [เสียง] + [ช่วง + duration] — which dissolves the ช่วงเสียง compound, moves to the ยาว/สั้น axis that matches วิ, keeps แสดง as the head verb, and introduces no new noun (the file has no waveform term; คลื่น appears nowhere in `values-th`). |
+| `anki_first_field_empty` | 💬 | `…ในการ์ดนี้ว่างอยู่ <xliff…>Anki</xliff…> ใช้ฟิลด์แรก…` | `…ในการ์ดนี้ว่างอยู่ โดย <xliff…>Anki</xliff…> ใช้ฟิลด์แรก…` | Dropping the English full stops is correct for this file, but here the sentence break falls immediately **before** a Latin token, so the boundary space is indistinguishable from the space Thai must put beside Latin anyway — the two sentences fuse into one run at a glance. The file's precedent (`anki_words_helper`: …ในการ์ด Anki แตะที่คำ…) has the Latin token *ending* the first clause, where the following space still reads as a break; this is the inverted, riskier shape. A one-syllable connective restores the seam at no cost, and this string is a full alert with room to spare (84 chars vs 112 in EN). Optional — nothing is mistranslated. |
+
+### Clean areas (delta — checked, no findings)
+
+**The two one-tap toasts are exactly right.** `anki_added_sentence_success` / `anki_added_word_success`
+reuse the sibling's frame verbatim — `anki_added_no_audio` is เพิ่มไปยัง Anki แล้ว, and these are
+เพิ่ม**การ์ดประโยค**ไปยัง Anki แล้ว / เพิ่ม**การ์ดคำ**ไปยัง Anki แล้ว, same เพิ่ม…ไปยัง…แล้ว shape,
+same ไปยัง as the action label `history_action_anki` (เพิ่มไปยัง Anki), with แล้ว carrying the
+completed sense that distinguishes the toast from the button. The card shapes derive cleanly from the
+mode chips: `anki_mode_sentence` ประโยค → การ์ดประโยค, `anki_mode_word` คำ → การ์ดคำ, head-initial and
+unambiguous. Notably การ์ดคำ was **not** collapsed into การ์ดคำศัพท์, which `anki_content_flag_vocabulary`
+already owns for Migaku's "Vocabulary card" flag — English keeps "Word card" and "Vocabulary card"
+apart and so does Thai. Since the whole point of these strings is to surface a silently-applied mode,
+naming the shape in the first two words (การ์ดประโยค / การ์ดคำ) puts the payload where a two-second
+toast can deliver it.
+
+**โน้ต for Anki's *note* is the correct call, and applied consistently.** บันทึก is genuinely
+unavailable — it carries save/record 38 times across this file, including in the immediately adjacent
+`anki_card_type_basic_no_mapping` (คุณกำลัง**บันทึก**คำหรือประโยค) and `anki_game_audio_row_title`
+(**บันทึก**เสียงเกม); reusing it here would have produced "so Anki can identify the save". โน้ต's
+competing everyday reading is the musical one, but in both strings the word sits immediately after the
+Latin brand (`Anki ระบุโน้ตได้`, `Anki ใช้ฟิลด์แรกเพื่อระบุโน้ต`), which forecloses it. The two
+strings agree on both the noun and the verb (ระบุโน้ต in each), so the term is introduced once and
+never drifts. That the app's Thai UI otherwise says ประเภทการ์ด rather than ประเภทโน้ต is inherited
+from English, which likewise says "card type" everywhere and "note" only in this pair — Thai mirrors
+the source rather than inventing a distinction.
+
+**แมป / ฟิลด์ register matches the established siblings.** แมป is already the file's verb for field
+mapping (`anki_card_type_edit_mapping_row_label` แก้ไขการแมปฟิลด์, `anki_content_source_pick_title`
+แมป “%1$s”, `anki_card_type_basic_no_mapping` ไม่จำเป็นต้องแมปฟิลด์), and ฟิลด์ is the noun throughout
+the `anki_content_*_desc` family. `anki_first_field_unmapped` reverses the argument structure to
+แมป[ค่า]ให้กับ[ฟิลด์] to track the English "Map a value to X" — correct Thai, and adding the ฟิลด์ head
+noun before the quoted name is an improvement over a bare quote, applied identically in both new
+strings. Quote spacing follows the file exactly: a space before “ and after ”, matching
+`anki_content_frequency_stylized_desc` (สำหรับฟิลด์ “FrequenciesStylized” ใช้กับ…) and `status_idle`
+(แตะ “แปล” เพื่อ…) — correct, since the enclosed field name is a user-supplied Latin token and Thai
+spaces border Latin and symbols.
+
+**Toast clamp measured, not assumed.** `anki_first_field_unmapped` fires through
+`Toast.makeText(..., LENGTH_LONG)` in `AnkiSendDispatch.kt:218`, so Android 12+ clamps it to two lines.
+The Thai body is 50 characters against English's 52 (the dropped full stop nets out against Thai's
+longer verb phrase), so it fits wherever English fits; the free variable is the user-defined field name,
+which is identical in both locales. No shortening warranted. `game_audio_zoom_hint`'s own surface was
+read rather than guessed: in `anki_game_audio_panel.xml` it is a `match_parent` / `wrap_content`
+TextView at 11sp with `gravity="center_horizontal"` and **no** `maxLines` or `ellipsize`, so the Thai
+line wraps harmlessly and length is not a constraint there — the finding above is about sense, not width.
+
+**History terminology reuses what is already committed.** `history_hide_translations_toggle_title`
+ซ่อนคำแปล matches the app's existing hide-translations vocabulary letter for letter
+(`translate_button_subtitle_hold_to_hide_translations` กดค้างเพื่อ**ซ่อนคำแปล**บนหน้าจอเกม,
+`cd_toggle_translation_visibility` สลับการแสดง**คำแปล**), and คำแปล is the file-wide noun for
+*translation* across `section_translation`, `anki_group_translation`, `overlay_mode_option_translation`
+and eleven more. The subtitle's ข้อความที่**จับภาพ**ไว้ satisfies the hard constraint that "captured"
+reuse the locale's screen-capture verb — `history_toggle_subtitle` is บันทึกประโยคที่จับภาพไว้ and
+`settings_cell_history_summary_on` is รายการประโยคที่จับภาพไว้, same จับภาพ…ไว้ frame — while correctly
+tracking English's own ข้อความ/ประโยค split ("captured text" here, "captured sentences" there).
+แตะ**รายการ** for "Tap a row" is the right unit noun: it matches `history_delete_confirm_title`
+(ลบรายการนี้หรือไม่), the one other string that names the History entry as a tappable object, and
+correctly avoids บรรทัด, which this feature reserves for the *content* lines
+(`history_line_count` %d บรรทัด, `history_empty_none`, `history_clear_confirm_message`) exactly as
+English reserves "lines". The two-clause subtitle uses a single space as the sentence break with no
+full stop, consistent with the file.
+
+**`card_words_in_sentence` คำในประโยค** is a bare noun phrase in the same register as the file's other
+section headers (`section_translation` คำแปล, `anki_group_translation` คำแปล), number-neutral as Thai
+requires, and unaffected by the `.gl-section` CSS that wraps it (`text-transform:uppercase` is a no-op
+for Thai; `letter-spacing:0.12em` applies between grapheme clusters, so combining vowels and tone marks
+stay welded to their base consonants). It is baked into the card at send time via
+`AnkiSendPipeline.kt:192`, so no runtime relocalization concern.
+
+**Register and spacing across all eight.** Neutral-polite throughout, no ครับ/ค่ะ, no あなた-equivalent
+second person forced in where Thai would elide it. No sentence-final periods anywhere, matching the
+file. Spaces appear only at Latin borders (Anki, the quoted field name) and at clause boundaries; no
+space was introduced inside a Thai run. None of the eight strings contains a language-name placeholder,
+so the ภาษา prefix rule is not in play here.
+
+### Verdict
+
+**PASS with one ⚠️.** `game_audio_zoom_hint` should be reworded (the ช่วงเสียง compound reads as pitch
+range); `anki_first_field_empty` has an optional 💬. The other six are clean, and the two judgement
+calls the translator flagged — โน้ต over บันทึก, and rendering "more or less audio" as an extent rather
+than a quantity — are both correct in principle; only the second one's wording needs work.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_update_none_title | ⚠️ | «เป็นเวอร์ชันล่าสุดแล้ว» | «อัปเดตอยู่แล้ว» | The title was a verbatim prefix of its own body («%1$s เป็นเวอร์ชันล่าสุดแล้ว»), so the alert said the same sentence twice, once without its subject. Every other locale's title/body pair in this alert differs; Thai was the only one that collapsed. «อัปเดตอยู่แล้ว» keeps the "already up to date" reading and leaves the body to name the dictionary. |
+| yomitan_update_available_message | 💬 | «อัปเดต %1$s เป็นเวอร์ชัน %2$s ได้» | «สามารถอัปเดต %1$s เป็นเวอร์ชัน %2$s ได้» | Verb-initial, the sentence reads as an imperative ("update X to version Y") until the final ได้ arrives and retro-fits the modal. This file uses the สามารถ…ได้ frame 27 times for exactly this; the prompt body is a statement of possibility, not a command — the command is the button. |
+| yomitan_update_busy_message | 💬 | «กำลังอยู่ในเซสชันการแปล …» | «มีเซสชันการแปลกำลังดำเนินอยู่ …» | EN's subject is the session ("A translation session is in progress"), not the user. The original put the user in the session, which is true but shifts the blame-free framing and reads oddly in an alert body that then tells them to wait for "it" to finish. |
+
+### Clean areas (delta) — checked, no findings
+
+**Spacing.** Latin runs and digits are bordered by spaces («%1$s เป็นเวอร์ชันล่าสุดแล้ว»,
+«เป็นเวอร์ชัน %2$s», «(10°)»); Thai runs are unbroken; the space after a clause boundary
+does the work a period does in English, and no terminal periods were introduced — matching
+`update_none_message` and `yomitan_download_error_message`, which also end bare. The ภาษา
+prefix rule does not apply anywhere in this delta: no string carries a language-name
+placeholder (`lang_pick_any` is a fixed label, not a fill).
+
+**Update vocabulary reused.** «มีการอัปเดต» and «ตรวจสอบการอัปเดตไม่สำเร็จ» are
+byte-identical to `update_dialog_title` / `update_check_failed_title`;
+`yomitan_update_check_failed_message` follows `yomitan_download_error_message`'s
+«ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง»; `yomitan_update_scan_active_message` closes with
+`anki_models_unavailable`'s «ลองอีกครั้งในอีกสักครู่»; «กำลังตรวจสอบการอัปเดต» is
+`update_progress_verifying`'s «กำลังตรวจสอบ…» extended. «อยู่เบื้องหลัง» matches
+`onboarding_notif_row_silent_sub`.
+
+**«ภาษาต้นทาง» is the file's own term**, from `llm_prompt_kw_source_desc`
+(«ชื่อภาษาต้นทางในภาษาอังกฤษ»), not a fresh coinage, and distinct from «ภาษาของเกม»
+(`pack_upgrade_label_source`) which names the capture language rather than the dictionary's.
+
+**Register.** Neutral-polite, no ครับ/ค่ะ anywhere. «ตอนนี้» in `yomitan_update_done_message`
+carries EN's "now", which is what keeps the success alert distinct from the no-update one
+(two other locales lost that contrast this round).
+
+### Verdict
+
+**PASS after fixes.** One ⚠️, two 💬, no ❌, no 🛑. The ⚠️ was a redundancy visible only
+when title and body are read together as one alert, which is how the user sees them.
+
+---
+
+**Source-side observation (reported, not fixed).** `yomitan_source_language_label` is the
+only Title-Case row title in the Configure card — its neighbours are `yomitan_alias_label`
+("Alias"), `yomitan_styling_title` ("Dictionary styling"), `yomitan_auto_update_label`
+("Auto-update") and `yomitan_check_updates_label` ("Check for updates"), all sentence case.
+It affects no locale in this set (none of the 12 carries English title case into row
+labels), so it is an English-source polish item only. The Title Case on the new
+`yomitan_update_*` **alert** titles is *not* an inconsistency: it matches the Yomitan
+family's existing alert titles (`yomitan_io_error_title` "Import Failed",
+`yomitan_duplicate_title` "Already Imported", `yomitan_downloading_title` "Downloading
+Dictionary", `yomitan_download_error_title` "Download Failed").
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+One ⚠️, applied.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| settings_debug_short_text_routing | ⚠️ | 「เส้นทางออฟไลน์สำหรับข้อความสั้น」 | 「การกำหนดเส้นทางออฟไลน์สำหรับข้อความสั้น」 | เส้นทาง alone is a physical route; the software sense of "routing" is การกำหนดเส้นทาง. The short form read as "an offline route for short text" rather than as a routing policy the toggle switches. The row's TextView has no `maxLines`, so the longer, correct term costs nothing but a wrap. |
+
+### Clean areas (delta) — checked, no findings
+
+**Spacing.** No space anywhere inside a Thai run. Spaces appear only where they border the
+Latin brand tokens (「ส่งไปยัง AnkiDroid บันทึก…」, 「ที่ AnkiDroid จะรับได้」, 「ด้วย mmap (LLM บนอุปกรณ์)」)
+and at clause boundaries — which is also the sentence break, exactly as the committed
+`anki_send_failed_message` does it (「ไม่ยอมรับการ์ด ตรวจสอบว่า…」). No ภาษา prefix is involved:
+this delta has no language-name fills.
+
+**Questions carry no `?`.** 「…หรือไม่」 closes the prompt, matching `llm_prompt_discard_title`
+「ละทิ้งการเปลี่ยนแปลงหรือไม่」, `bergamot_disable_title` and `tr_service_remove_title_fmt`. The
+file contains zero question marks and the delta does not add one.
+
+**Terminology.** การ์ด (card), คำจำกัดความ (definitions), พจนานุกรม (dictionary),
+「ข้อความธรรมดา」 for plain text — the last from `yomitan_styling_subtitle`'s
+「ปิดเพื่อใช้ข้อความธรรมดาเสมอ」. คำ and ประโยค in the advice match `anki_mode_word` and
+`anki_mode_sentence`. บนอุปกรณ์ for on-device comes from `llm_prompt_advisory_too_long`
+「โมเดลบนอุปกรณ์」.
+
+**ย่อ is one root** across the prompt (การ์ดแบบย่อ), the button (บันทึกแบบย่อ), the failure
+(คำจำกัดความแบบย่อ) and the toast (ย่อคำจำกัดความ).
+
+**Register.** Neutral-polite; no ครับ/ค่ะ particles. 「บังคับ…」 in the mmap row matches
+`settings_debug_force_single_screen` 「บังคับใช้หน้าจอเดียว」.
+
+### Verdict
+
+**PASS after fix.** One ⚠️, corrected. Thai word-spacing — the standing hazard for this
+locale — was checked on every string in the delta.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** 「สลับพินอินแบบอินไลน์」 mirrors 「สลับฟุริงานะแบบอินไลน์」; no
+spaces, since the delta has no Latin, numbers or symbols to border.
+
+**Actions, not options.** 「การดำเนินการเพิ่มเติม」 for the ⋯ (the parked sheet's
+ตัวเลือกเพิ่มเติม is "more options").
+
+**Row names.** 「อ่านออกเสียง」 and 「แก้ไขข้อความ」 are the verbs of `cd_read_original_aloud` /
+`cd_edit_original`. No ครับ/ค่ะ.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| icon_gestures_no_menu_title | ⚠️ | ไม่มีท่าทางใดเปิดเมนูด่วน | ไม่มีท่าทางสัมผัสใดที่เปิดเมนูด่วน | Android's Thai for gestures is ท่าทางสัมผัส; ท่าทาง alone reads as posture or manner. |
+| settings_edge_indicator_subtitle | 💬 | …ขณะที่การซ้อนทับแสดงอยู่ | …ขณะที่การซ้อนทับปรากฏอยู่ | แสดง twice. |
+
+### Clean areas (delta) — checked, no findings
+
+**Spacing.** The pill «กำลังแปลจากภาษา%1$s» keeps ภาษา tight because the name fills in
+Thai (`displayName()` in the UI locale), per the parameters doc's source-language rule.
+Spaces border Latin (Gemini:, HTTP 404, Anki) and the inline icon; none inside Thai runs.
+
+**Terms and register.** Reused: เมนูด่วน (the removed tap hint), ลาก / กดค้าง / แตะ,
+เปลี่ยนภาษาของเกม, จับภาพหน้าจอ, ไม่สามารถแปลได้, คีย์ API ไม่ถูกต้อง, อยู่ในขั้นทดลอง,
+ละทิ้ง…หรือไม่ (a question with no ?), การซ้อนทับ. No ครับ/ค่ะ.
+
+### Verdict (round 1)
+
+1 ⚠️ + 1 💬, to apply.
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fixes present: «ไม่มีท่าทางสัมผัสใดที่เปิดเมนูด่วน», «…ขณะที่การซ้อนทับปรากฏอยู่». Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 tools/mech_check.py keys.txt th` reports `checked 1 locales x 41 keys; problems: 0` (all 41 names present; every `<xliff:g>` span and placeholder identical to EN; `\n` counts match; no unescaped `'`/`"`, stray tags, double spaces or edge spaces), and `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync" (the two orphans `settings_debug_export_logs_title` / `_subtitle` are gone). **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice`: the message is `getString(body) + ' ' + getString(kill_notice_restored)`, and the sentence is added only when `activeOverlayUi?.hasAnyFloatingIcon == true`, so it always directly follows one of the three bodies. See options opens `KeepRunningActivity`; Not now is `addCancelButton`.
+- `SettingsRenderer` 1190-1203 with `settings_row_hub.xml` (summary `singleLine` + `ellipsize="end"`). `KeepRunningActivity.bindReportBugRow` shows the same two Report a bug strings under `tvKeepRunningEmpty` (16 sp, centered, visible only when no card is left). `lineOf()` gives the Xiaomi battery card the generic `keep_running_battery_line`, and a stuck service gets `a11y_stuck_title` + `keep_running_accessibility_restart_line`.
+- `BugReport.email` → `LogExporter.emailFiles`: when nothing resolves `message/rfc822`, the app shows `email_no_app_fallback` (with `SUPPORT_EMAIL`, `LENGTH_LONG`), then calls `shareFiles` with the bug-report subject. Both that fallback and the hold gesture (`BugReport.share`, subject `settings_debug_export_logs_subject`) open the chooser `share_chooser_share_logs`.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_huawei_close_after_lock_line | ⚠️ | `อยู่ในการตั้งค่าแบตเตอรี่ → การตั้งค่าแบตเตอรี่เพิ่มเติม มิฉะนั้น <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> จะปิดทุกครั้งที่ล็อกหน้าจอ` | `อยู่ใน การตั้งค่า → แบตเตอรี่ → การตั้งค่าแบตเตอรี่เพิ่มเติม หากไม่ปิดตัวเลือกนี้ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> จะปิดทุกครั้งที่ล็อกหน้าจอ` | มิฉะนั้น takes the sentence right before it as its condition. Here that sentence is a location ("it is in … → …"), so the line reads "if it is not there, PlayTranslate closes…", while the real condition is the card title's instruction. หากไม่ปิดตัวเลือกนี้ names it (ตัวเลือก echoes the title) and is the "หากไม่…" form the battery, Xiaomi, OPPO and vivo lines already use. The file's other มิฉะนั้น (`a11y_stuck_message_xiaomi`) follows an instruction, which is where it works. The same edit fixes the path: Huawei Thailand's own page (consumer.huawei.com/th/support/content/th-th00428704/, fetched 2026-10-07) prints การตั้งค่า > แบตเตอรี่ > การตั้งค่าแบตเตอรี่เพิ่มเติม. "การตั้งค่าแบตเตอรี่" is not a screen label, and the lead-in takes a space before a path, as in the Samsung line and `overlay_icon_a11y_required_message`. |
+| kill_notice_restored | 💬 | `ตอนนี้กลับมาเปิดอยู่แล้ว` | `ตอนนี้แอปกลับมาเปิดอยู่แล้ว` | A Thai zero subject continues the previous sentence's subject. After `_memory` and `_stopped` that subject is ไอคอนลอย…หายไป, which works (it is back). After `kill_notice_body_other` it is โทรศัพท์บางรุ่น…เพื่อประหยัดแบตเตอรี่, so the reader has to backtrack. แอป makes it read the same after all three bodies. |
+| keep_running_accessibility_line | 💬 | `เรียกใช้ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> ด้วยลำดับความสำคัญของบริการการช่วยเหลือพิเศษ ซึ่งการล้างหน่วยความจำแทบไม่แตะต้อง` | `<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> จะทำงานด้วยลำดับความสำคัญของบริการการช่วยเหลือพิเศษ ซึ่งการล้างหน่วยความจำแทบไม่แตะต้อง` | This mirrors "Runs X with…" word for word. Without the English -s, a verb-first line reads like the instruction lines on the Xiaomi and Huawei cards ("Run PlayTranslate with…"). เรียกใช้ (invoke) appears nowhere else in the file, which says ทำงาน for "run" (16 strings). With the subject, the line says what the mode does. |
+
+### Clean areas (delta) — checked, no findings
+
+**Spacing.** A script listed every space in the 41 strings with the real values filled in (PlayTranslate, support@playtranslate.com, 3.3.0).
+- Every Latin run (PlayTranslate, Android, Xiaomi, the address, v3.3.0) and every → and – has a space on each side or sits at the string edge. No Thai character touches Latin directly.
+- Every Thai-to-Thai space falls at one of these points: a sentence break (no periods anywhere), a หาก… clause, the ซึ่ง relative clause, a step break (เปิดหน้าแอปล่าสุด␣กดค้าง…), or before แล้ว meaning "then".
+- The “ ” quotes hug the label and take spaces outside, as in `a11y_stuck_message_xiaomi` and `icon_gestures_no_menu_message`.
+- The Samsung line's space in อยู่ใน␣การดูแลอุปกรณ์ is needed: written together, อยู่ในการดูแล reads "in the care of".
+
+**Register and terms.** No ครับ/ค่ะ. โปรด appears in the toast and the empty label, and คุณ is used as in the rest of the file. Each English term has one translation:
+
+| English | Thai | also used in |
+|---|---|---|
+| phone | โทรศัพท์ | (known issue 3) |
+| device info | ข้อมูลอุปกรณ์ | |
+| logs | บันทึก | `share_chooser_share_logs`, `crash_dialog_message` |
+| floating icon | ไอคอนลอย | |
+| hold | กดค้าง | |
+| share | แชร์ | |
+| on | เปิด | ขณะที่เปิดอยู่ / กลับมาเปิด / เปิด…อีกครั้ง |
+| memory cleanup | การล้างหน่วยความจำ | accessibility and Xiaomi lock lines |
+| Not now | ไม่ใช่ตอนนี้ | `btn_not_now` |
+| Add the Quick Settings tile | เพิ่มไทล์การตั้งค่าด่วน | `quick_tile_add_row_title` |
+
+- Crash report (รายงานข้อขัดข้อง: `crash_dialog_message`, `toast_no_crash_report`) and bug report (รายงานข้อบกพร่อง: AOSP `bugreport_title`) stay distinct.
+- The restart line reuses `a11y_stuck_message` word for word. Its card title (`a11y_stuck_title`, รีสตาร์ท) and line (เริ่มใหม่) pair the same way as the reviewed stuck dialog.
+- The email body's เกิดอะไรขึ้น has no "?". The file has none, and neither does AOSP Thai's ให้แอปทำงานอยู่เบื้องหลังเสมอไหม.
+
+**Surfaces as sets.**
+- **Kill notice.** I read the title, each body, and each body + space + `kill_notice_restored`; the one 💬 is above.
+  - ไอคอนลอยจึงหายไป is identical in all three bodies.
+  - ขณะที่เปิดอยู่ after ปิด mirrors English "closed … while it was on" and uses the file's word for the on state.
+  - หากคุณไม่ได้หยุดเอง … อาจเป็นผู้หยุด leaves the attribution to the user, as the English does.
+  - ดูวิธีแก้ไข leads to a page whose title starts with แก้.
+- **Support card.** The five titles are all verb-first (ตรวจหา / เข้าร่วม / แก้ปัญหา / รายงาน / สนับสนุน). ฝ่ายสนับสนุน (the support team) next to สนับสนุน PlayTranslate (donate) mirrors the English, which uses "support" both ways.
+- **Fix page.**
+  - `keep_running_title` and `settings_support_keep_running_title` are byte-identical.
+  - The empty label ends …แล้วรายงานข้อบกพร่อง, the exact title of the row under it.
+  - `keep_running_battery_line` (หากไม่ตั้งค่านี้…) works under both "ตั้งค่า…เป็น “ไม่จำกัด”" titles.
+  - The OPPO and vivo lines are identical.
+- **Email flow.** The subject reads รายงานข้อบกพร่องของ PlayTranslate – v3.3.0. The body works as a prompt; แนบ…ไว้แล้ว reads as the sender saying "I've attached…". After the toast comes the share sheet titled แชร์บันทึก.
+
+**Platform labels.**
+- **AOSP th.** ไม่จำกัด, การใช้งานแบตเตอรี่ (the head of การใช้งานแบตเตอรี่ของแอป) and Recents = แอปล่าสุด (framework `accessibility_system_action_recents_label`) all match.
+- **Samsung TH (official).** All five labels are exact: การดูแลอุปกรณ์, แบตเตอรี่, ขีดจำกัดการใช้พื้นหลัง, ไม่ต้องพักใช้งานแอปอัตโนมัติ, แอปที่พักการทำงานชั่วคราว.
+- **Huawei TH (official, th-th00414587).** การเปิดใช้งานแอป, เปิดการใช้งานอัตโนมัติ, เปิดใช้งานรอง and ทำงานบนพื้นหลัง are exact. ด้วยตนเอง matches the unverified guess for Manage manually.
+  - Huawei's other Thai page (th-th00428704) calls App launch "เรียกใช้แอป", so Huawei's own Thai pages disagree. Without a device, following the oem-labels official cell is the right call.
+  - That page also confirms การตั้งค่าแบตเตอรี่เพิ่มเติม (now official; used in the row above). Like known issue 1 says, it has no close-after-lock option.
+- **Unverified.** These are stated, not asserted. I used 6 web lookups and none found an official Xiaomi, OPPO or vivo Thai page.
+  - Xiaomi เริ่มอัตโนมัติ / ตัวประหยัดแบตเตอรี่ / “ไม่จำกัด” equal the reviewed `a11y_stuck_message_xiaomi`. The oem-labels guess for "No restrictions" is ไม่มีข้อจำกัด; if a Thai MIUI/HyperOS device shows that, change both strings together.
+  - The OPPO and vivo cards use พื้นหลัง where the app's own prose says เบื้องหลัง. That is defensible: AOSP Thai has both (จำกัดกิจกรรมในพื้นหลังใช่ไหม beside กิจกรรมในเบื้องหลัง), Samsung and Huawei TH use พื้นหลัง, and a search summary (the page itself returned 403) says a Casio Thailand OPPO guide prints อนุญาตกิจกรรมในพื้นหลัง.
+
+**Widths.**
+- Toolbar title: 212 dp of about 272.
+- Keep-running summary: 213 dp, fits in 216.
+- Report a bug summary: I measured its first clause, ส่งบันทึกทางอีเมลถึงฝ่ายสนับสนุน, at 183 dp. (The packet's "first sentence" figure is the whole string, since Thai has no period.) So the tap action is whole at 216 and 249 dp, and the clip falls inside the hold hint. The whole string is 267 dp against English's 256, which is reasonable. Adding แทน would bring it to 292 dp, which is not worth it.
+- Toast: 2 lines at both 296 and 320 dp, with the address whole at the start of line 2.
+
+**Considered and left.**
+- `settings_support_report_bug_subtitle` drops "instead": the contrast between email and hold already carries it.
+- The Samsung title says เพิ่มลงใน “…” without รายการ: the quotes make the label read as a name.
+- In the Huawei App launch line, เปิด “เปิดการใช้งานอัตโนมัติ”… doubles เปิด because the official label starts with it; the quotes keep verb and label apart.
+- The double จึง in `kill_notice_body_memory` reads as a natural causal chain.
+- Known issue 1 (close-after-lock does not exist on current Huawei software) is already reported upstream. The Thai renders it faithfully, and ปิดตัวเลือก keeps the two ปิด apart.
+
+### Verdict (round 1)
+
+1 ⚠️ + 2 💬, to apply: `keep_running_huawei_close_after_lock_line`, `kill_notice_restored`, `keep_running_accessibility_line`. No ❌, no 🛑.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite, plus the final review of the first pass's 41 keys)
+
+Mechanical layer: `python3 tools/mech_check.py f2/keys2.txt th` reports `checked 1 locales x 15 keys; problems: 0`; `python3 tools/mech_check.py keys.txt th` (the first pass's 39 keys still in English) reports `checked 1 locales x 39 keys; problems: 0`; `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync" (the four keys English removed are gone from the file). Every `<xliff:g>` span, including the second `app_name2` span in the Xiaomi, OPPO and vivo lines, is byte-identical to English; `\n` counts match; no unescaped quote, stray tag, double space or edge space. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` returns `message + "\n\n" + a11y_restricted_settings_addendum` on API 33+ only. Callers: `MainActivity.showAccessibilityDialog`, `SettingsRenderer.showOverlayIconA11yAlert`, `showAccessibilityRequiredAlert` (the three `a11y_required_*` in the OverlayAlert) and `KeepRunningActivity.lineOf` (the accessibility card, only while the service is not enabled; a stuck service gets `keep_running_accessibility_restart_line` and no addendum). `SettingsRenderer.showA11yStuckAlert` adds `"\n\n" + a11y_stuck_message_xiaomi` when `Build.MANUFACTURER` is Xiaomi, so that paragraph follows the message's own "To fix it" paragraph.
+- `KeepRunningActivity.openFirst`: when no candidate screen launches, `Toast(keep_running_screen_unavailable, LENGTH_LONG)`, then App info (`RomScreens.appDetails`). The Huawei card tries two startup-manager screens and Huawei's protect screen first, so the search word is what the user has exactly when none of them opens. `KeepRunningItems.ids`: Xiaomi gets autostart, its own battery card (`keep_running_xiaomi_battery_line`) and the lock card, and no generic battery card; Huawei gets the App launch card only.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_huawei_app_launch_line | ⚠️ | `ในการตั้งค่า ให้ค้นหา “การเปิดใช้งานแอป” ปิด “การจัดการโดยอัตโนมัติ” สำหรับ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> แล้วเปิด “เปิดการใช้งานอัตโนมัติ” “เปิดใช้งานรอง” และ “ทำงานบนพื้นหลัง”` | `ในการตั้งค่า ให้ค้นหา “การเปิดใช้งานแอป” หรือ “เรียกใช้แอป” ปิด “การจัดการโดยอัตโนมัติ” สำหรับ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> แล้วเปิด “เปิดการใช้งานอัตโนมัติ” “เปิดใช้งานรอง” และ “ทำงานบนพื้นหลัง”` | Since the rewrite, App launch is the word to type into Settings search, and Huawei Thailand's own pages give two different words for it. th-th00414587 (the oem-labels official cell) prints การเปิดใช้งานแอป. th-th00428704 gives this same step and prints `เปิด การตั้งค่า ค้นหาและเข้าสู่ เรียกใช้แอป` (fetched 2026-10-08). Its other two labels, การจัดการโดยอัตโนมัติ and ทำงานบนพื้นหลัง, match this line word for word, so it describes the same screen. Neither page states a version, and a search for one word will not find the other. The first pass kept การเปิดใช้งานแอป when App launch appeared only in the card title; now that it is the search word, naming both costs one short phrase and works on either version. The title can keep “การเปิดใช้งานแอป”, because the line under it gives the alternative. Leave the switch labels as they are. Huawei's HarmonyOS 2.0+ page (th-th15850069) reaches the same three switches through the app's รายละเอียดการใช้พลังงาน > การตั้งค่าการเปิดใช้งาน and words them เปิดใช้งานอัตโนมัติ / การเปิดใช้งานรอง / ทำงานในพื้นหลัง. That is close enough to recognise on a dialog that shows only those three. |
+
+### Clean areas — checked, no findings
+
+**The first pass's round-1 fixes landed.** `kill_notice_restored` now reads ตอนนี้แอปกลับมาเปิดอยู่แล้ว and `keep_running_accessibility_line` reads `PlayTranslate จะทำงานด้วย…`, both as suggested. `keep_running_huawei_close_after_lock_line` took its fix and was then deleted along with its English card. `git diff` of `values-th` against HEAD touches exactly the expected keys, and nothing outside them:
+- 42 added: the first pass's 39 and the follow-up's 3 new keys;
+- 2 changed: the two stuck-alert strings;
+- 4 removed: the two orphans and `restricted_settings_title` / `_message`.
+
+The close-after-lock pair never reached HEAD and is absent from the file.
+
+**What moved in the CHANGED keys, and what stayed.**
+- `a11y_stuck_message`: only the cause sentence (กรณีนี้มักเกิดขึ้น…) is gone. The rest is byte-identical to the reviewed text.
+- `a11y_stuck_message_xiaomi` has three edits and nothing else:
+  - เปิด → อนุญาต (allow);
+  - ตัวประหยัดแบตเตอรี่ → การใช้แบตเตอรี่ (no longer a label);
+  - จะ → อาจ (may).
+
+  Its two settings now read exactly like the Xiaomi card titles (อนุญาตการเริ่มอัตโนมัติ; ตั้งค่าการใช้แบตเตอรี่เป็น “ไม่จำกัด”), which is what the English comment asks for.
+- `keep_running_tile_line` lost only ปัดและแตะเพียงครั้งเดียวก็. The verb-first เปิด … อีกครั้งได้ reads as "can turn back on", not as an instruction, because of ได้.
+- `keep_running_xiaomi_lock_line` keeps its reviewed first sentence.
+- `keep_running_xiaomi_battery_title` changes only the entry name.
+- The Huawei line keeps its three switch labels.
+
+**Android labels**, read from AOSP's android16-qpr2 Thai Settings file locally:
+- ข้อมูลแอป (`application_info_label`) and อนุญาตการตั้งค่าที่จำกัด (`app_restricted_settings_lockscreen_title`) are quoted exactly in the addendum. The old reviewed ที่ถูกจำกัด came from the first full review, which asked for a device check and cited no source, so replacing it with AOSP's wording is right.
+- The battery title ให้ PlayTranslate ทำงานอยู่เบื้องหลังเสมอ is the words of `high_power_prompt_title` (ให้แอปทำงานอยู่เบื้องหลังเสมอไหม) with the app name. As in English, it quotes neither state label (ไม่จำกัด / ไม่ได้เพิ่มประสิทธิภาพ).
+- ค้นหา (`search_settings`) is the verb in every search instruction and in the toast.
+
+**Surfaces as sets.**
+- **Addendum.** I read it as the closing paragraph after each of the five messages and after the accessibility card line.
+  - After the two dialogs whose path ends in → เปิดใช้งาน, สวิตช์ is that toggle.
+  - After the three OverlayAlert messages and the card line it has no antecedent. That is also true of the English, and each of those surfaces opens the accessibility settings where the switch is.
+  - ใน Android 13 ขึ้นไป matches `requires_android_11_message` (Android 11 ขึ้นไป).
+  - Inline labels are in “ ” with the spaces outside, and the → paths in the messages above are unquoted. These are the file's two established styles.
+- **Stuck alert.** I read the title (ต้องรีสตาร์ท…), the message, then the Xiaomi paragraph. ด้วย carries "also". มิฉะนั้น follows an instruction, which is where it works, as the first pass noted.
+- **Cards**, title + line per ROM:
+  - Xiaomi: three cards.
+  - Huawei: one card.
+  - OPPO and vivo: one card each. Their lines are parallel, and both end on the same hedge (อาจหยุด … หรือไม่ให้แอปเริ่มทำงานอีกครั้ง).
+  - Samsung: one card.
+  - Then the battery, accessibility and tile cards.
+
+  Every search line has the same shape: ในการตั้งค่า ให้ค้นหา “…” แล้ว…. หากไม่อนุญาต covers "Without it/these", since every setting it refers to is an allow.
+- **Toast, then App info.**
+  - หน้าจอนั้น… then ค้นหาการตั้งค่านี้… In this context, การตั้งค่านี้ is the setting on the card the user just tapped.
+  - Width: 2 lines at both 296 and 320 dp, one sentence per line (193 and 267 dp at 14 sp; English needs 3 lines at 296). The whole text is 463 dp, so Android's dictionary line breaking, which may split inside the second sentence, still needs only two lines.
+
+**Spacing.** I listed every space with values filled in (PlayTranslate in both spans).
+- No Thai character touches Latin, ⋮, or the outside of a quote.
+- Every Thai-to-Thai space falls at one of these points: a clause, step or sentence break; after a fronted locative (ในการตั้งค่า␣ให้…, ในการตั้งค่าแบตเตอรี่␣ให้…); or before และ / หรือ joining two long verb phrases.
+- The three Xiaomi battery names are listed with spaces and หรือ, as the Huawei switch list is.
+
+**Two-span lines.** Both spans are present in the Xiaomi, OPPO and vivo lines. The second mention sits where Thai needs an object (ไม่ให้ PlayTranslate เริ่มทำงาน…, อาจหยุด PlayTranslate ในพื้นหลัง), and any later reference is แอป, so the name never appears a third time.
+
+**Terms**, one translation each across the delta:
+
+| English | Thai | where |
+|---|---|---|
+| allow | อนุญาต | |
+| autostart | (การ)เริ่มอัตโนมัติ | Xiaomi title, line, stuck paragraph; vivo |
+| auto-launch | (การ)เปิดอัตโนมัติ | OPPO title and line |
+| start again | เริ่มทำงานอีกครั้ง | battery, Xiaomi, OPPO, vivo lines |
+| battery settings | การตั้งค่าแบตเตอรี่ | OPPO, vivo, Samsung |
+| the app's system settings | การตั้งค่าระบบของ… | stuck paragraph, Xiaomi battery line |
+| Recents | แอปล่าสุด | |
+| version | เวอร์ชัน | |
+| No restrictions | “ไม่จำกัด” | 3 strings |
+
+- "Background" is เบื้องหลัง on the battery card (the AOSP dialog it opens) and พื้นหลัง on the OEM cards (Samsung ขีดจำกัดการใช้พื้นหลัง, Huawei ทำงานบนพื้นหลัง, the OPPO switch). Each follows the screen it names.
+- No ครับ/ค่ะ. The toast's bare ค้นหา… matches the restart line's bare imperative.
+
+**OEM labels.**
+- **Samsung TH (official).** ขีดจำกัดการใช้พื้นหลัง and ไม่ต้องพักใช้งานแอปอัตโนมัติ are exact. พักการทำงาน in the reason echoes Samsung's แอปที่พักการทำงานชั่วคราว.
+- **Huawei TH.** See the finding. การจัดการโดยอัตโนมัติ and ทำงานบนพื้นหลัง are confirmed by both pages that print them.
+- **Xiaomi, OPPO, vivo: unverified (known issue 2).** These are stated, not asserted.
+  - Search words: Xiaomi and vivo “เริ่มอัตโนมัติ”, OPPO “เปิดอัตโนมัติ”. Each is the core of its card title, so it would also match a longer label that contains it, for example a HyperOS background-autostart entry.
+  - Xiaomi's No restrictions has three candidates:
+    - “ไม่จำกัด”, the file's choice and AOSP's Unrestricted;
+    - ไม่มีข้อจำกัด, the oem-labels guess;
+    - ไม่มีการจำกัด, from the translator's search summary of Casio Thailand's Xiaomi guide.
+
+    That guide (casio.com/th/…/xi-set/) returns 403, and two searches found no Thai Xiaomi page. If a Thai MIUI/HyperOS device shows another form, change `a11y_stuck_message_xiaomi`, `keep_running_xiaomi_battery_title` and `keep_running_xiaomi_battery_line` together.
+  - The battery entry names ตัวประหยัดแบตเตอรี่ / แบตเตอรี่ / พลังงาน are also unverified. ตัวประหยัดแบตเตอรี่ is not AOSP's word (AOSP Thai Battery Saver is โหมดประหยัดแบตเตอรี่), but the entry belongs to Xiaomi, not Android, so AOSP is no guide here.
+  - I used 6 web lookups: Xiaomi (two searches and the Casio fetch) and Huawei (one search and two page fetches).
+
+**The first pass's 39 keys, read again in full.**
+- Kill notice: each body + space + `kill_notice_restored` reads cleanly after all three bodies. ไอคอนลอยจึงหายไป is identical in all three, and ดูวิธีแก้ไข leads to a page titled แก้….
+- Support rows and email flow: unchanged and clean.
+- Widths re-measured on the current values:
+  - Keep-running summary: 213 dp, fits in 216.
+  - Report a bug summary: 267 dp in all, with the tap action (183 dp) whole at 216 and 249.
+  - Toolbar title: 212 dp at 22 sp, of about 272.
+  - `email_no_app_fallback`: 2 lines at 296 and 320, with the address whole at the start of line 2.
+- `keep_running_title` and `settings_support_keep_running_title` are byte-identical.
+- The empty label ends with the title of the row under it.
+
+**Considered and left.**
+- `keep_running_xiaomi_autostart_line`: หากไม่อนุญาต Xiaomi อาจไม่ให้… puts a Latin subject right after a clause break, where the mandatory space cannot mark the boundary. It still reads cleanly: หากไม่อนุญาต echoes the อนุญาตให้ just before it, and the first pass passed the same shape.
+- The toast says การตั้งค่า twice (ค้นหาการตั้งค่านี้ในการตั้งค่าของโทรศัพท์แทน). It is unambiguous (object, then place) and matches the cards' ในการตั้งค่า ให้ค้นหา, so it is not worth a change.
+- `keep_running_xiaomi_battery_line` says การตั้งค่าระบบของ PlayTranslate for "app settings". It reuses the stuck paragraph's phrase for the same place, and ระบบ keeps it from being read as the in-app Settings.
+
+### Verdict (round 1)
+
+1 ⚠️, to apply: `keep_running_huawei_app_launch_line` (add หรือ “เรียกใช้แอป” to the search word). No ❌, no 💬, no 🛑. The other 14 follow-up keys and the first pass's 39 keys pass.
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 tools/mech_check.py f2/keys2.txt th` reports `checked 1 locales x 15 keys; problems: 0`, and `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync". The first pass's 39 keys (`keys.txt`) also report `problems: 0`. Every `<xliff:g>` span, including `app_name2` in the Xiaomi, OPPO and vivo lines, is byte-identical to English. **No 🛑 build-breaking issues.**
+
+**Round-1 fixes:** `keep_running_huawei_app_launch_line`: applied, byte-identical to the suggested value. The line now says to search for “การเปิดใช้งานแอป” or “เรียกใช้แอป”, turn off “การจัดการโดยอัตโนมัติ” for PlayTranslate, then turn on the three switches. Nothing around the fix broke:
+- หรือ sits between the two quoted names with a space on each side, as in the Xiaomi battery line's list, and the next step (ปิด …) still starts after a space, as it did before the fix.
+- The card title keeps “การเปิดใช้งานแอป”, which is the line's first search word.
+- The diff against HEAD has the same shape round 1 recorded (42 added, 2 changed, 4 removed), and the translator's fragment source equals the file for all 15 keys, so the fix touched nothing else.
+
+Round 1 had no finding on the first pass's 39 keys, and those keys still hold the first pass's fixes (`kill_notice_restored` ตอนนี้แอปกลับมาเปิดอยู่แล้ว, `keep_running_accessibility_line` PlayTranslate จะทำงานด้วย…).
+
+#### Findings (round 2)
+
+No new findings.
+
+What I checked:
+- **Addendum.** I read it as the closing paragraph after each of the five messages: the two system dialogs whose path ends in → เปิดใช้งาน, and the three OverlayAlert messages, whose message sits in a ScrollView, so the longer text cannot clip. I also read it after the accessibility card line. ข้อมูลแอป and อนุญาตการตั้งค่าที่จำกัด byte-match AOSP android16-qpr2 Thai (`application_info_label`, `app_restricted_settings_lockscreen_title`), which I read locally.
+- **Stuck alert.** I read the title, the message, then the Xiaomi paragraph (`SettingsRenderer` appends it after "\n\n").
+- **Cards.** Every title + line pair agrees. The battery title is `high_power_prompt_title` with the app name, and the Samsung and Huawei labels byte-match the official cells (เรียกใช้แอป as round 1 quoted it from th-th00428704).
+- **Toast.** I re-measured it at 14 sp: 193 + 267 dp (463 in all), so it takes 2 lines at both 296 and 320 dp.
+- **Spacing.** A script listed every space with PlayTranslate filled in.
+  - No Thai character touches Latin, a number, ⋮, a parenthesis or the outside of a quote.
+  - Every Thai-to-Thai space falls at a clause, step or sentence break, after a fronted locative, or before และ / หรือ.
+  - There are no zero-width or stray characters, and the “ ” quotes are paired.
+- **Register and spelling.** No ครับ/ค่ะ. The spellings match the rest of the file (เวอร์ชัน, แอป, ล็อก, สวิตช์, no variants).
+- **OEM lookups (4).** None reached a Thai source:
+  - The Thai edition of Xiaomi's MIUI 13 generic user guide, the source the pt-BR reviewer used, returned 404 under both ` TH` and ` Thai`, and a search of that folder listed no Thai edition.
+  - An oppo.com search found no Thai auto-launch page.
+  - So Xiaomi “เริ่มอัตโนมัติ”, its battery-entry names and “ไม่จำกัด”, OPPO “เปิดอัตโนมัติ” and vivo “เริ่มอัตโนมัติ” stay unverified (known issue 2).
+  - A note for the device check: AOSP Thai uses เปิดอัตโนมัติ for Battery Saver's "Turn on automatically" (`battery_saver_auto_title`), so on an OPPO phone that search may also list that row. That adds noise to the results but does not make the search word wrong.
+
+#### Verdict (round 2)
+
+PASS. The round-1 fix landed; no new findings (no 🛑, ❌, ⚠️ or 💬). Open, but not findings: the Xiaomi, OPPO and vivo labels are unverified (known issue 2).
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync". The three new names are each present once and are the file's only change (`git diff`). The delta has no `<xliff:g>`, placeholders or markup, no unescaped `'`/`"`, no dashes, no odd or double spaces, and is NFC. **No 🛑 build-breaking issues.**
+
+No findings.
+
+Clean areas: Render code read first. The note is `tvProviderNote` (13 sp, no line cap), shown where the key section would be. The picker and the remove alert switch to `_keyless` when `account.requiresKey` is false (Lingva, Index-Translate). **`llm_backend_index_translate_note`** has all four English facts. 「ซึ่งไม่ได้เผยแพร่ขีดจำกัดการใช้งานไว้」 keeps "publishes no usage limits" with Bilibili as the agent, as in English. ขีดจำกัด is the error pill's word (`translation_error_daily_quota` ถึงขีดจำกัดรายวันแล้ว), and คีย์ API is `llm_backend_api_key_label`. 「ข้อความที่จับภาพไว้」 is the file's capture phrase (`tr_service_order_footer`, `settings_cell_history_summary_*`, `history_toggle_subtitle`). The passive จะถูกส่งไปยัง is already in `llm_prompt_fatal_missing_text`, and ให้บริการโดย is the natural Thai for a service's operator. Spaces fall only at the two sentence boundaries and around the Latin API and Bilibili. There are no particles and no sentence periods. **`llm_model_picker_fetch_failed_keyless`** matches its sibling except for the middle clause, with spaces at the same clause boundaries. ลองอีกครั้งในภายหลัง renders "later" and differs, correctly, from `anki_models_unavailable`'s ในอีกสักครู่ ("in a moment"). “กำหนดเอง…” is `llm_backend_model_custom_entry` verbatim in the same quotes. **`tr_service_remove_message_keyless`** is its sibling without the key clause. Read with the title 「นำ Bilibili Index-Translate ออกหรือไม่」 and the นำออก button, the alert uses one verb, and remove (นำออก) stays distinct from delete (ลบ), as in the sibling.
+
+### Disposition (2026-10-14)
+
+No findings; nothing to apply.
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for values-th (all 39 names present; every `<xliff:g>` span byte-identical to EN; placeholder multiset, `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no raw `'`/`"`; no stray or double space; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- Error pill (`TranslationErrorPills`): 14 sp, `maxLines=2`, ellipsized; `TranslationErrorMessages` maps `NOT_RUNNING` to `translation_error_not_running` with the service name, like the rest of the family.
+- PlayTranslate Cloud page (`PtCloudSettingsActivity`, `activity_pt_cloud_settings.xml`): two `settings_row_switch` rows (title 15 sp, subtitle 13 sp, no line cap), shown at half alpha and disabled while no key is saved. The key label is a `RowTitle` above a single-line 13 sp monospace `EditText` (about 278 dp of text on a 360 dp phone). The status row is `pt_cloud_status_title` (weight 1) beside a wrap-content value. The page sets `pt_cloud_status_checking` on every resume, so `pt_cloud_status_unchecked` is barely seen.
+- Settings hub (`RootSettingsViewModel.cloudDigest`): the summary is `singleLine` + `ellipsize="end"`, 13 sp, 216 dp on a 360 dp phone and 249 dp on a wider one. The pitch shows with no key and again with both switches on.
+- Capture & overlay (`bindCloudOcrRow`): the cloud row is a `settings_row_switch` whose subtitle wraps, above the engine rows with their notes.
+- Translation services (`PtCloudBackend.status`): `BackendStatus.Info` in `tvRowSubtitle2`, which wraps.
+- Floating menu (`FloatingIconMenu.updateCloudHeader`): both strings are only the strip's `contentDescription`. The visible text is the brand name.
+- `KeepRunningActivity.openFirst`: a `LENGTH_LONG` toast, then App info.
+- Part B: `addGroupHeader` applies `uppercase(Locale.ROOT)`, a no-op for Thai. The level segments are `buildPillToggle` labels: 13 sp, autosized down to 10 sp before they ellipsize, about 56 dp each with four segments on a 360 dp phone. The crop pill is `RegionEditorControls.pill`: 14 sp, single line, ellipsized, about 270 dp of text in the floating workspace on a 360 dp phone and 294 dp in the review sheets' full-screen dialog. Its page title is hidden (`hidesHeader`). The lens's load-more row is 13 sp with `maxLines=1`, and `lens_loading` replaces it while it loads.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_reasoning_subtitle | 💬 | โมเดลจะคิดมากแค่ไหนก่อนตอบ ยิ่งสูงยิ่งช้า และส่วนที่คิดจะถูกเรียกเก็บเงินเป็นโทเค็นเอาต์พุต | กำหนดว่าโมเดลจะคิดมากแค่ไหนก่อนตอบ ยิ่งสูงยิ่งช้า และส่วนที่คิดจะถูกเรียกเก็บเงินเป็นโทเค็นเอาต์พุต | On its own, โมเดลจะคิดมากแค่ไหนก่อนตอบ has the form of a direct question ("How much will the model think before answering"). The English is a noun clause that describes the row. The file's only other English line of this shape, `settings_capture_interval_hint` ("How often the game screen is captured…"), became a noun phrase (ความถี่ในการจับภาพ…), not a bare question. Adding กำหนดว่า says what the segments under the line set, and ยิ่งสูงยิ่งช้า then reads as the result. |
+
+### Clean areas (checked, no findings)
+
+**Error pill.** «PlayTranslate Cloud: ไม่ได้ทำงาน» has the family's shape (the service name, a colon, then a short status) and its register: «เชื่อมต่อไม่ได้», «ไม่ตอบสนอง», «ข้อผิดพลาดของเซิร์ฟเวอร์». ไม่ได้ทำงาน is the right word for a stopped service: AOSP Thai's crash dialog says หยุดทำงาน (`aerr_application`, "has stopped"), so that word would read as a crash. It is also the status row's value, so the pill and the page say the same thing. The pill measures 194 dp: one line.
+
+**PlayTranslate Cloud page.**
+- **The two switch rows** read as a pair: «อ่านข้อความบนหน้าจอ» / «แปลข้อความ», verb first, both ending in ข้อความ.
+  - In the OCR subtitle, the second sentence follows from the first: อุปกรณ์จึงใช้พลังทั้งหมดกับเกมได้, where จึง carries the "so" that English leaves implied.
+  - In the translation subtitle, the first clause («มีโมเดลการแปลแบบชำระเงินรวมอยู่ด้วย») and the no-key line on the services page («รวมโมเดลการแปลแบบชำระเงินที่ดีที่สุดไว้แล้ว») share โมเดลการแปลแบบชำระเงิน and รวม.
+  - Both subtitles wrap to 2 lines at 249 dp, and nothing clips.
+- **Key.** «คีย์ไคลเอนต์» and «วางคีย์ที่คุณได้รับ» use the file's key noun (คีย์ API in `llm_backend_api_key_label`, คีย์ ••••… in `tr_service_key_tail_fmt`) and its paste verb (วางคีย์ API ของ DeepL ที่นี่ in `hint_deepl_key`). The hint is 91 dp in a field about 278 dp wide.
+- **Status row.** «บริการ» beside each value: กำลังทำงาน (AOSP's `app_running_notification_title`), กำลังเริ่มต้น, ไม่ได้ทำงาน, กำลังตรวจสอบ (AOSP's `ext_media_status_checking` without the ellipsis, as English drops it), ยังไม่ได้ตรวจสอบ. Each value has its pill counterpart where the brief pairs them:
+  - `pt_cloud_status_unreachable` = `translation_error_unreachable` (เชื่อมต่อไม่ได้);
+  - `pt_cloud_status_other` = `translation_error_bad_response` (การตอบกลับที่ไม่คาดคิด) plus « (500)», with a space before the parenthesis;
+  - `pt_cloud_status_not_running` = `translation_error_not_running`.
+  The longest value, 172 dp, still leaves the title room.
+
+**Settings hub.** The three digests read as one set: «OCR และการแปลระดับเซิร์ฟเวอร์» (175 dp), «เฉพาะ OCR ระดับเซิร์ฟเวอร์» (147 dp) and «เฉพาะการแปล» (77 dp). All are whole at 216 dp. «ปิด» is the Off of `settings_cell_history_summary_off` (ปิด · …) and of AOSP. ระดับเซิร์ฟเวอร์ is Thai tech marketing's usual "server-grade". The OCR row's second phrase, ไม่เป็นภาระต่ออุปกรณ์, supplies the "on the server, not the device" that the English comment asks for.
+
+**Capture & overlay.** «OCR ระดับเซิร์ฟเวอร์ ไม่เป็นภาระต่ออุปกรณ์» has the engine notes' shape: two short phrases split by a space, as in «อ่านตัวอักษรเล็กได้ แต่ช้ากว่า» and «เหมาะกับเกมที่สุด ค้นหาคำได้แม่นยำที่สุด». At 232 dp it may wrap on a 360 dp phone, as the Meiki note does in English, and the row has no line cap.
+
+**Translation services and floating menu.** The no-key line stands where other rows read «ต้องมีบัญชี». It is 244 dp and wraps freely. The two screen-reader labels use AOSP's pair (`media_route_status_available` พร้อมใช้งาน / `_not_available` ไม่พร้อมใช้งาน), which is also `backend_status_unavailable_default`.
+
+**Toast.** «เปิดหน้าจอนั้นไม่ได้ ค้นหาการตั้งค่านี้ในการตั้งค่าของโทรศัพท์แทน» now says the app could not open the screen. The old text said the phone has no such screen. The search sentence is the reviewed one, with the cards' verb ค้นหา (ในการตั้งค่า ให้ค้นหา “…”). Measured at 14 sp, it takes 2 lines at both 296 and 320 dp (378 dp in all; English is 491).
+
+**Part B.**
+- **Thinking titles.** Both titles use การคิด, as the comments require: «โหมดการคิด» / «ระดับการคิด». โหมดการ… follows the file's โหมดการซ้อนทับ and โหมดการช่วยเหลือพิเศษ.
+- **Subtitles.** Both reuse โมเดล (`llm_backend_model_label`), โทเค็น (`tr_service_status_usage_today_fmt`) and the file's billing word เรียกเก็บเงิน (`note_mlkit_account_issue`). ยิ่งสูงยิ่งช้า is idiomatic.
+- **Level segments.** «ปิด / ต่ำสุด / ต่ำ / กลาง / สูง». ปิด is the file's Off, and ต่ำสุด, below ต่ำ, keeps Gemini's Minimal on the same scale. In bold at 13 sp they measure 14 to 31 dp against about 56, so none of them shrinks.
+- **Group headers.** «การผันกริยา», «การผันคำนาม» and «รูปคำ» sit beside «คำจำกัดความ» as plain noun phrases. การผันกริยา and รูปคำ are the usual Thai learner terms. การผันคำนาม matches the comment's "a noun's case-and-number table", and `GermanParadigm.nominalTable` returns no table for adjectives.
+- **Crop.** «ครอบตัดภาพหน้าจอ» pairs with its neighbour button «ลบภาพหน้าจอ» (verb + ภาพหน้าจอ), and ครอบตัด is the usual Thai photo-editor verb (from memory). «ลากขอบเพื่อครอบตัดภาพหน้าจอ» has the same shape as «ลากขอบเพื่อจำกัดการจับภาพหน้าจอให้อยู่ในพื้นที่นี้». At 187 dp it fits the 270 dp pill.
+- **Load more.** «โหลดเพิ่มเติม (2)» uses the file's โหลด (กำลังโหลดตัวอย่าง…). It is 97 dp and becomes «กำลังค้นหา…» while loading.
+
+**Considered and left.**
+- `llm_backend_thinking_subtitle` puts ช้ากว่า between two spaces as a one-word fragment. That mirrors English "Slower,", and the file already has a bare แต่ช้ากว่า in the OCR tier note.
+- Both subtitles use ถูกเรียกเก็บเงิน with ส่วนที่คิด as the subject. That passive is the common Thai wording for "billed as output tokens", and the term matches the file.
+- กลาง vs ปานกลาง (AOSP's "medium" in its password-complexity scale, 51 dp bold, also fits). In a row beside ต่ำ and สูง, กลาง reads as a level, and it is the common game-settings word.
+- In «OCR และการแปลระดับเซิร์ฟเวอร์» the post-modifier may attach only to การแปล. Both routes are server-side, so either reading is true, and English has the same ambiguity.
+- ไคลเอนต์ is the Royal Institute spelling. Google's Thai consoles write ไคลเอ็นต์ (from memory). This is the file's only use of either spelling, so it conflicts with nothing.
+- In the translation subtitle, «พร้อมเลือกโมเดลที่ดีที่สุดให้แต่ละงาน» makes the service the one who picks: ให้แต่ละงาน means "for each job", and there is no ให้เลือก, which would read "for you to choose". So it avoids the "you pick" reading that the vi report flags in its own wording.
+
+### Thai appendix: spacing, register, classifiers
+
+**Spacing**, from a script that listed every space with the real values filled in (PlayTranslate Cloud, 500, 2):
+- **Around Latin.** Every Latin run (OCR, GPU, the brand) and every number in parentheses has a space on the Thai side. No Thai character touches Latin, a digit or a parenthesis.
+- **Between Thai words.** Every Thai-to-Thai space falls at a phrase or clause boundary. In the subtitles and the toast that boundary is a sentence break (…เซิร์ฟเวอร์␣อุปกรณ์จึง…, …ด้วย␣พร้อมเลือก…, …ไม่ได้␣ค้นหา…, …ก่อนตอบ␣ช้ากว่า␣และ…, …ก่อนตอบ␣ยิ่งสูงยิ่งช้า␣และ…); in the OCR row it falls between its two phrases.
+- **Everything else.** The other 26 values have no spaces at all. Every value is NFC, with no zero-width or odd characters.
+
+**ภาษา prefix.** It does not arise: the only placeholders are the Latin brand, `http_code` and `count`.
+
+**Register.** There is no ครับ/ค่ะ. คุณ appears once, in the hint's relative clause (ที่คุณได้รับ), as in `keep_running_intro`. The status values are bare state words, as AOSP's are.
+
+**Classifiers.** The only count is `load_more_count`, a bare number in parentheses after the action, which takes no classifier in Thai (the badge style of «ความคิดเห็น (2)»).
+
+### Verdict
+
+0 🛑, 0 ❌, 0 ⚠️, 1 💬 (`llm_backend_reasoning_subtitle`, optional). The other 38 keys pass as written.
+
+### Disposition (2026-10-27)
+
+The one 💬 is applied: `llm_backend_reasoning_subtitle` now opens with กำหนดว่า, so it says what the row sets rather than asking a question (ja, fr and pt-rBR made the same change to this key).
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for values-th (all 39 names present; every `<xliff:g>` span byte-identical to EN; placeholder multiset and `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no raw `'`/`"`; no edge or double spaces; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-th/strings.xml` reports `values-th missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+Round-1 changes checked:
+- `llm_backend_reasoning_subtitle` now opens with «กำหนดว่า» («กำหนดว่าโมเดลจะคิดมากแค่ไหนก่อนตอบ ยิ่งสูงยิ่งช้า และ…»): confirmed, byte-identical to the round-1 suggestion and the applied-fix list.
+  - The line now says what the segments under it set instead of reading as a question, and ยิ่งสูง reads as the level named in the title «ระดับการคิด».
+  - Its spaces are unchanged: two, both at clause breaks.
+  - The subtitle wraps with no `maxLines` (`activity_llm_backend_settings.xml`), so the extra word costs nothing.
+- Nothing else moved. Part A equals the sync's drafts, and `git diff` shows Part B changed only in this key.
+
+#### Findings (round 2)
+
+No findings.
+
+**Fresh read of all 39 keys: checked, no finding.**
+- **Register and spacing.**
+  - No ครับ/ค่ะ. คุณ appears only in the hint's relative clause.
+  - A script listed every space with the real values filled in. Each Latin run (OCR, GPU, the brand) and each «(500)» / «(2)» has a space on the Thai side, and no Thai letter touches Latin, a digit or a bracket.
+  - Every space between two Thai words falls at a phrase or clause break. All values are NFC, with no zero-width characters.
+  - The ภาษา rule does not arise, since no placeholder takes a language name.
+- **Pill family and status row.**
+  - `translation_error_not_running` and `pt_cloud_status_not_running` share «ไม่ได้ทำงาน».
+  - `pt_cloud_status_unreachable` = `translation_error_unreachable` «เชื่อมต่อไม่ได้».
+  - `pt_cloud_status_other` = `translation_error_bad_response` plus « (500)», spaced like `translation_error_rejected_code`.
+  - «กำลังทำงาน», «กำลังตรวจสอบ» and «พร้อมใช้งาน / ไม่พร้อมใช้งาน» are AOSP's words (android-36 th `app_running_notification_title`, `ext_media_status_checking`, `media_route_status_available` / `_not_available`).
+- **Terms against the file.**
+  - Key and paste: คีย์ and วาง, as in `llm_backend_api_key_label`, `tr_service_key_tail_fmt` and `hint_deepl_key`.
+  - Server, device, model, token: เซิร์ฟเวอร์ (`translation_error_server`), อุปกรณ์ (26 strings), โมเดล (`llm_backend_model_label`) and โทเค็น.
+  - Off: ปิด, as in `settings_cell_history_summary_off`.
+  - The toast uses the cards' ค้นหา, and the toggle subtitle and the services row share โมเดลการแปลแบบชำระเงิน.
+- **Neighbours.**
+  - The OCR row's two phrases have the engine notes' shape («อ่านตัวอักษรเล็กได้ แต่ช้ากว่า»), and the two switch titles pair as verb + ข้อความ.
+  - The group headers sit with «คำจำกัดความ» as plain nouns. In code, CONJUGATION tables are always a verb's and DECLENSION tables a German noun's, which is what การผันกริยา / การผันคำนาม say.
+  - The crop instruction has `region_overlay_drag_instruction`'s ลากขอบเพื่อ… shape.
+- **Widths, re-measured in Thonburi.**
+  - **Hub summaries:** 17 to 175 dp, against 216 dp.
+  - **Toast:** 378 dp, which takes 2 lines at 264, 296 and 320 dp.
+  - **Crop pill:** 187 dp of the 270 dp available.
+  - **Level segments:** 14 to 31 dp in bold, against about 57 dp.
+  - **Key hint:** 91 dp.
+  - **Load more:** 97 dp.
+- **A correction to the round-1 record, not a finding.** On a 360 dp portrait phone the pill's text gets about 174 dp: the 328 dp pill, less the logo, the paddings and two 48 dp buttons. At 209 dp in Thonburi it does not fit on one line there, as round 1 said it would. It wraps after ไม่ได้, which is a word break, and stays within `maxLines=2`, just as the English wraps after "Not". In landscape it is one line.
+
+#### Verdict (round 2)
+
+**PASS.** The one round-1 change landed as the Disposition says, and the fresh read of all 39 keys finds nothing: 0 🛑, 0 ❌, 0 ⚠️, 0 💬. Nothing is left open for Thai.

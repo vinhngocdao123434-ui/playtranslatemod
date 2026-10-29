@@ -1,0 +1,80 @@
+# Local build config (may contain API keys)
+local.properties
+
+# Build outputs
+build/
+app/build/
+.gradle/
+.kotlin/
+
+# Android SDK / JDK (bundled toolchain, not part of source)
+.sdk/
+
+# Claude Code
+.claude/
+
+# Local scratch / test data (not committed)
+local/
+.tmp/
+scripts/thor-wifi-connect.sh
+docs/
+third-party/**/docs/
+
+# Stale MNN-converter log file dropped here by the spike's `llmexport.py`
+# run (contains local absolute paths + transient tool output).
+.export.log
+
+# Python cache from scripts/
+__pycache__/
+*.pyc
+
+# R8 mapping of each release build, archived by app/build.gradle.kts
+# (archiveReleaseMapping) for retracing crash logs; local only. The README
+# beside them is tracked.
+releases/mapping-*.txt
+
+# Release APK (distributed via GitHub Releases, not committed)
+*.apk
+
+# Icon source images
+img/
+
+# Android Studio
+.idea/
+*.iml
+.DS_Store
+
+# Debug screenshots and session logs
+dirty_*.png
+ocr_*.png
+session_*.jsonl
+
+# OCR golden-set test data — local only.
+# Screenshots are copyrighted game frames; transcribed expected.txt files
+# are rebuilt locally via the seed-capture toggle (Settings → Debug →
+# "Save OCR captures as seeds"). Test infrastructure (test class, recipes,
+# .gitkeep) is committed; the data is not.
+app/src/androidTest/assets/ocr_golden/**/*.png
+app/src/androidTest/assets/ocr_golden/**/*.txt
+app/src/androidTest/assets/ocr_golden/**/*.notes.md
+
+# OCR investigation staging directories (pulled from device, not source).
+/ocr-debug/
+/ocr-seeds/
+/ocr-golden-reports/
+
+# OCR grouping corpus + judge — its own private repo (the docs/ pattern):
+# github.com/dominostars/playtranslate-ocr-grouping. Screenshot seeds are
+# copyrighted game frames; app/build.gradle.kts mounts ocr-grouping/assets/
+# into the androidTest assets sourceSet when the checkout is present.
+/ocr-grouping/
+
+# Segmentation-run diagnostic dumps (local analysis output, not source).
+/seg-runs/
+
+# OS
+Thumbs.db
+**/.cxx/
+
+# Kotlin 2.x compiler daemon session data
+.kotlin/

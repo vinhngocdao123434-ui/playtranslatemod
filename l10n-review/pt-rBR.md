@@ -1,0 +1,1008 @@
+# Brazilian Portuguese (values-pt-rBR) targeted review
+
+*(Targeted hotlist pass + whole-file scans, not a full string-by-string review.)*
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| hymt_legal_message | ❌ | `Ao tocar em Concordar, você declara e garante que:` | `Ao tocar em "Concordo — Ativar o Hunyuan", você declara e garante que:` (minimum: `Ao tocar em "Concordo"`) | The button (`hymt_legal_agree`) is **"Concordo — Ativar o Hunyuan"**; the message quotes a nonexistent button "Concordar" (infinitive, doesn't even match the first word). Same failure as 5 of 6 other languages. Everything else in the block is solid: §5(b) kept, UE/Reino Unido/Coreia do Sul list kept, "declara e garante" carries the affirm-and-warrant force, and clause (1) "Você não reside nem está localizado atualmente…" correctly negates both residing and located ("não… nem…" is proper continued negation, not a weak double negative). |
+| settings_header_ocr | ⚠️ | `Imagem para texto (OCR)` | `Reconhecimento de texto (OCR)` | "Imagem para texto" is a calque; pt-BR settings UIs say "reconhecimento de texto/caracteres". The "(OCR)" suffix saves it from being misread, hence ⚠️ not ❌. |
+| pack_upgrade_mandatory_message | ⚠️ | `Atualize agora ou exclua para escolher outro idioma.` | `Atualize agora ou exclua o pacote para escolher outro idioma.` | "exclua" has no object — in context the nearest candidate is "a atualização" / "a versão", so the objectless verb is genuinely ambiguous (delete the update?). Naming "o pacote" pins the referent and matches the `pack_upgrade_button_delete` = "Excluir" button. |
+| settings_capture_interval_hint | ⚠️ | `Mínimo de %1$s segundos.` | `Mínimo: %1$s s` (reusing the existing "s" suffix style) or `Mínimo de %1$s segundo(s).` | EN comment says the value can be integer "1" → "Mínimo de 1 segundos" is an agreement error. (EN source "Minimum 1 seconds" has the same flaw — upstream drift, but PT can sidestep it.) |
+| tts_language_unsupported_with_engine_message / tts_language_unsupported_unknown_engine_message | ⚠️ | `…não é compatível com %2$s.` / `…com %1$s.` | `…não é compatível com o %2$s.` | The PT file contains no localized language names (0 hits for "japonês"), so the placeholder fills from runtime display names — lowercase in pt ("japonês"). "compatível com japonês" reads clipped/non-native. Language names are uniformly masculine in Portuguese (o japonês, o russo, o alemão…), so adding "o" is safe for every value. "Mecanismo" for engine matches Android pt-BR TTS settings. |
+| accessibility_dialog_message / overlay_icon_a11y_required_message | ⚠️ | `Configurações → Acessibilidade → Apps instalados → …` | `…→ Apps baixados → …` | Faithful to the EN source ("Installed apps"), but stock Android pt-BR labels that Accessibility section «Apps baixados», so the nav path won't match the user's device. Known upstream EN drift — fix here or in source. «Configurações» and «Acessibilidade» are correct. |
+| nav_settings | ⚠️ | `Configurações` | `Ajustes` | 13 chars on the 8sp bottom bar vs EN "Settings" (8). Real truncation/shrink risk. Fine to keep «Configurações» everywhere else (21 other uses); only this bottom-bar label needs the short form. |
+| status_hold_hint | 💬 | `Mantenha pressionado Regiões ou Auto para menus de seleção rápida` | `Mantenha pressionado "Regiões" ou "Auto" para abrir menus de seleção rápida` | Names exactly match the buttons (nav_regions = "Regiões", live_mode_auto_label = "Auto") ✓; caps-only marking plus the gender clash ("pressionado Regiões") mostly prevents the garden path, but quotes would remove all doubt. |
+| floating_menu_btn_capture_region | 💬 | `Região de\ncaptura` | `Capturar\nregião` | Top line "Região de" (9 ch) vs EN "Capture" (7) at 9sp — likely fits, but the verb form is shorter and more button-like. |
+
+Checked clean: hymt_legal_title/agree themselves; live_mode_auto_with_hint ("Auto %1$s" word order is acceptable as a UI label and neatly dodges gender agreement); status_idle ("Toque em Traduzir" matches the composed translate_button_prefix_translate = "Traduzir"); anki_sort_field_empty ("erros de rejeição por duplicação no envio" reads fine, no gibberish; straight `\"` quotes are the file-wide convention); anki_permission_rationale_message / anki_settings_grant_access_subtitle (comma + article "o PlayTranslate" keeps Anki and PlayTranslate from fusing; "Toque em Continuar" matches btn_continue); label_region_drag_hint (repeated "arraste o meio para mover a caixa inteira" keeps the move-scoping on the middle only); translate_button_prefix_translate/reload ("Traduzir/Recarregar Tela cheia" composes naturally); backend_cooldown line ("Nova tentativa às 15:42" / "Nova tentativa em 1 de jun" both read naturally); onboarding_a11y_title / mp_overlay_permission_title («Sobrepor a outros apps» — exact Android pt-BR system wording); quick_tile_add_row_title / settings_hotkeys_tile_add («bloco» + «Configurações rápidas» — exact Android pt-BR QS terms, mutually consistent); crash_dialog_discard «Descartar» and btn_clear «Limpar» (neither reads as Cancelar/Excluir); nav_regions/live_mode_pause_label/live_mode_auto_label (short enough).
+
+## Scan results
+- **Apostrophes:** clean — zero unescaped `'` in the file (all are `\'`). No build risk.
+- **Register:** clean — zero hits for tu/teu/tua/contigo; informal `você` throughout, imperative forms consistent with it.
+- **European Portuguese leakage:** clean — zero hits for transferir/transferência, ecrã, eliminar, guardar, aplicação, carregar no, telemóvel, rato, palavra-passe, ficheiro. File correctly uses baixar/download, tela, excluir, salvar, app, tocar, arquivo-free phrasing.
+- **Brands:** clean — PlayTranslate/Anki/AnkiDroid/DeepL all untranslated; in-string occurrence counts match EN exactly once the `translatable="false"` strings the PT file rightly omits (app_name, tile_label, anki_section_header, settings_header_anki, deepl_settings_title) are accounted for.
+
+Terminology spot-check: all consistent — Settings = «Configurações» (21×, no stray «Ajustes»); «Acessibilidade» uniform; deck = «baralho» (8×; "deck" appears only in key names/xliff ids); metered = «rede limitada» (8×, matches Android pt-BR Data-Saver wording); card = «cartão» (26×, zero «carta»); «pacote de idioma» uniform; hotkey = «atalho» (7×); TTS = «conversão de texto em voz» (8×, exact Android pt-BR term); screenshot = «captura de tela» uniform.
+
+## Verdicts
+- **Register:** pass — consistent informal você, no tuteo, no stiff formality.
+- **Terminology:** pass — internally consistent across all nine spot-checked terms.
+- **Brazilian-vs-European vocabulary:** pass — zero PT-PT leakage; this is genuine pt-BR.
+- **Android-settings wording:** mostly pass — QS («bloco», «Configurações rápidas»), overlay («Sobrepor a outros apps»), and TTS wording match stock Android pt-BR; one mismatch: «Apps instalados» should be «Apps baixados» in the two accessibility nav paths (inherited from EN source drift).
+- **Legal text:** one ❌ — the quoted button name «Concordar» doesn't match the actual «Concordo — Ativar o Hunyuan» button; substance (§5(b), country list, declara-e-garante, dual residing/located negation) is otherwise correct.
+- **Truncation:** one real risk — «Configurações» on the 8sp bottom bar; propose «Ajustes» there only.
+- **Overall:** **fix-then-ship** — 1 ❌ (legal button mismatch) and 6 ⚠️, no build-breakers; caveat: this was a targeted pass over a known-risk hotlist plus whole-file scans, not a full review.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR sets; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| — | — | — | — | No findings. All 29 keys are natural, correct, BR-vocab-clean, você-register-consistent, and terminologically aligned with the existing file. |
+
+## Clean areas (delta)
+- **BR-vs-EU vocabulary** — clean across all 29 keys and re-scanned whole-file: zero hits for transferir/transferência, ecrã, eliminar, guardar, aplicação, telemóvel, palavra-passe, ficheiro, "carregar no". The new strings use genuine pt-BR: `yomitan_auto_update_subtitle` → «Baixar e instalar…» (baixar, not transferir; matches `lang_download`=«Baixar» and the 25+ existing «Baixar…» download strings), `yomitan_import_summary_unknown_file` → «Arquivo desconhecido» (arquivo, not ficheiro; matches `yomitan_invalid_title`=«Arquivo inválido»), `settings_capture_interval_hint` neighbor uses «tela». BR-spelling marker present and correct: `anki_content_frequency_harmonic_desc` → «média harmônica» (circumflex, BR) not EU «harmónica».
+- **você-register** — consistent; no tu/teu/tua introduced. The two new sentences that could have taken a 2nd-person pronoun stay impersonal/imperative, matching the file: `llm_backend_base_url_invalid` → «Use https:// …» (imperative), `anki_content_frequency_stylized_desc` → «Use somente em cartões do JPMN». The «você»-bearing neighbor (`llm_backend_invalid_key_alert_message_fmt`, «…a chave que você inseriu…») is untouched and consistent.
+- **Agreement around placeholders / plurals** — `yomitan_import_summary_count` one/other resolve correctly with a real count: «1 de 1 dicionário importado.» / «4 de 6 dicionários importados.» — both noun and past participle agree (singular «dicionário importado», plural «dicionários importados»); the BR-risk gender/number target nailed. `yomitan_import_summary_more` one/other → «+1 outro» / «+3 outros» is the idiomatic "+N more (item[s])" rendering (better than a literal «mais»); masculine «outro/outros» is the correct generic for elided list entries. `yomitan_importing_progress` «Importando %1$d de %2$d…» reads naturally with integers dropped in; the four `summary_*` "label: %1$s" lines (`duplicates`/`invalid`/`no_space`/`failed`) all take a comma-separated names string cleanly with no agreement contact point.
+- **Terminology reuse** — every term matches the rest of the file. acento tonal: `anki_content_pitch_position`(_desc) → «acento tonal» == `yomitan_category_pitch_accent`=«Acento tonal». frequência: «Lista de frequência»/«…por frequência» align with `yomitan_category_frequency`=«Frequência» and `anki_content_frequency`. dicionário: uniform (no «vocabulário»/«léxico» drift). importar/importação: «Importação concluída»/«Importando…»/«Já importados:» align with `yomitan_importing_title`, `yomitan_import_action`, and `yomitan_duplicate_title`=«Já importado»; sentence-case titles match all sibling `_title` strings («Falha na importação», «Espaço insuficiente»). áudio: `audio_source_picker_title`=«Áudio» matches `anki_content_*_audio_desc`=«Áudio de…». TTS: `audio_source_tts_name`=«Conversão de texto em voz» == `settings_header_text_to_speech`/`settings_cell_tts`/all `tts_*` (8×, the exact Android pt-BR term). «Avançado» (`llm_backend_advanced_header`) matches «avançada/avançados» elsewhere. baralho/cartão reused correctly in the Anki descs («cartões do JPMN», «ordenar os cartões»).
+- **Android-wording / loading-error idioms** — `audio_no_results`=«Nenhum resultado» byte-matches `lang_search_no_results` and `dictionary_status_no_results` (3× identical); `audio_loading`=«Carregando…» matches the file-wide «Carregando…» convention (8+ uses); `audio_error_loading`=«Não foi possível carregar» matches the `word_detail_more_examples_error` pattern and the file's dominant «Não foi possível …» error register. `URL personalizada` is correctly feminine (a URL) and consistent with `label_add_custom_region`=«…personalizada»; the masculine `llm_backend_model_custom_entry`=«Personalizado…» is a different referent (generic model item), not an inconsistency.
+- **Short-label truncation** — none of the 29 are bottom-bar/tiny labels. «Avançado» (8) is a card header, «Áudio» (5) a toolbar title, «URL personalizada» (17) a row label, «Atualização automática» (22) a toggle title — all roomy. «Conversão de texto em voz» (25) is a section header / switch-row label already shipped identically in 8+ places with no truncation, so no new risk.
+- **The `Exemplo:` / quoted-field-name rule** — followed exactly. `anki_content_pitch_position_desc` keeps «Exemplo: 0,2» (label localized, sample as-is). All Anki/Lapis/JPMN field names left untranslated in typographic quotes: «PitchPosition», «PAOverride», «Frequency», «FrequenciesStylized», «FreqSort», «FrequencySort» — and brand spans `<xliff:g brand_lapis/brand_jpmn>` untouched. No raw-quote build risk (all field-name quotes are typographic “ ”, matching the EN source).
+- **Naturalness / no calques** — the descs are rewritten as meaning, not word-for-word: `frequency_harmonic_desc` «(quanto menor, mais frequente)» for "(lower = more frequent)" (not a literal "=" calque); `pitch_position_desc` «Posição (ou posições) de queda do acento tonal… separadas por vírgula» renders "downstep position(s), comma-separated" idiomatically («queda» = downstep). The «do JPMN … dele» possessive in `frequency_stylized_desc` is colloquial-but-natural pt-BR (mildly redundant, not worth flagging).
+
+## Verdict (delta)
+**Ship as-is.** 0 🛑 / 0 ❌ / 0 ⚠️ / 0 💬 across the 29 keys. Checked: BR-vs-EU vocabulary (incl. whole-file re-scan), você-register, placeholder/plural agreement (both `<plurals>` gender+number verified with real counts), terminology reuse (acento tonal / frequência / dicionário / importar / áudio / Conversão de texto em voz / baralho / cartão), Android loading/no-results/error idioms, short-label truncation, and the Anki `Exemplo:`/field-name-as-is rule. This delta does not touch the pre-existing 1 ❌ + 6 ⚠️ above (different keys).
+
+---
+
+# Delta review — 2026-07-14 sync (174 keys)
+
+Scope: the 170 newly translated + 4 changed-English keys (game-audio recording &
+trim editor, History screen, Advanced LLM Configuration / prompt editor, the 38
+`misc_*` dictionary chips, in-app updater, translation-service status lines,
+stream-scope prompt, hotkeys, floating-menu panel, OCR picker).
+
+**Mechanical layer verified programmatically over all 174 keys:** every key present
+and of the right type; all `%1$s`/`%2$s`/`%d` placeholders present and matching EN;
+every `<xliff:g>` span byte-identical to EN (inner content **and** `id`/`example`);
+the bare Latin keyword tokens `{text} {source} {source_code} {target} {target_code}
+{context} {N} {strings}` byte-identical in running prose (`llm_prompt_fatal_*`,
+`llm_prompt_advisory_*`); `\n` preserved in `floating_menu_capture_screen`; zero raw
+`'` or `"`; `<plurals>` = one/other (correct CLDR set for pt). **No 🛑
+build-breaking issues.** (`update_dialog_download` legitimately has no `&amp;` —
+pt-BR uses the word «e».)
+
+**Counts: 0 🛑 · 0 ❌ · 6 ⚠️ · 7 💬**
+
+## Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| game_audio_trim_use_tts | ⚠️ | `Usar TTS em vez disso` | `Usar conversão de texto em voz` (if width allows) — otherwise `Usar TTS` | **Terminology collision inside one flow.** The audio picker names this exact source `audio_source_tts_name` = «Conversão de texto em voz» (the Android pt-BR term, 7× in the file); the button that switches *to* it says «TTS». The file has never used a bare «TTS» before (only inside the product name «Google TTS»). Layout checked: `activity_game_audio_trim.xml` puts `btnTrimUseTts` + `btnTrimNoAudio` + `btnTrimSave` in **one horizontal row**, and «Usar TTS em vez disso» (21) is already the longest of the three — so the 30-char full term is width-hostile. Either way the current string should shrink: «em vez disso» is redundant next to «Sem áudio». If «TTS» is kept, record it as a deliberate width exception. |
+| llm_prompt_row_batch_subtitle · llm_prompt_row_translation_subtitle | ⚠️ | `A solicitação que os serviços na nuvem usam…` / `A solicitação que envolve cada frase que você consulta.` | `O prompt que os serviços na nuvem usam para traduzir uma tela inteira de uma só vez.` / `O prompt aplicado a cada frase que você consulta.` | **2 keys, one fix.** The glossary binds *prompt* to **one noun across all `llm_prompt_*`** and explicitly says *not "request", not "query"*. These two subtitles introduce «solicitação» (= request) for the very object their own row titles call «Prompt em lote» / «Prompt de tradução», so the card reads with two nouns for one thing. (EN gets away with "the request" because it reads as a gloss; in pt «solicitação» carries a bureaucratic "application/form" sense and lands as a second term.) Bonus: «que envolve cada frase» is ambiguous — «envolver» reads first as *to involve*, not *to wrap around*. |
+| hotkey_auto_hint_title · hotkey_auto_hint_dialog_title | ⚠️ | `Toque para iniciar/parar o Auto <xliff:g …>%1$s</xliff:g>` / `Auto <xliff:g …>%1$s</xliff:g>` | `Toque para iniciar/parar o <xliff:g …>%1$s</xliff:g> automático` / `<xliff:g …>%1$s</xliff:g> automático` | **2 keys, one fix.** `HotkeysSettingsActivity.render()` draws all four rows on one screen for JA/ZH: «Segure para mostrar traduções» / «Toque para iniciar/parar **a tradução automática**» then «Segure para mostrar Furigana» / «Toque para iniciar/parar **o Auto Furigana**». Same action, two treatments — one translated, one leaving raw English «Auto» in running prose. `hotkey_auto_hint_dialog_title` is currently byte-identical to English. The already-committed dialog-title pair is parallel («Mostrar traduções» / «Mostrar <hint>»), so the auto pair should be too: «Tradução automática» / «Furigana automático». Both hint values (Furigana, Pinyin) are masculine in pt, so «automático» agrees for every runtime value. *(Alternative, if the intent is to name the bottom-bar button `live_mode_auto_with_hint` = «Auto %1$s»: keep «Auto %1$s» here and change `hotkey_auto_translation_*` to match instead — but do not ship both conventions.)* |
+| stream_kind_prompt_message | ⚠️ | `…e o sistema não informa o que foi compartilhado.` | `…e o sistema não informa qual das duas opções foi compartilhada.` | EN says the system doesn't say **which** was shared (of the two). «o que foi compartilhado» = *what* was shared, which reads as "what content" and quietly undercuts the dialog's whole premise — and clashes with its own title, `stream_kind_prompt_title` = «**Qual** opção de compartilhamento você escolheu?». One word, «qual». |
+| llm_prompt_advisory_missing_target · llm_prompt_advisory_missing_source | ⚠️ | `…o modelo não será informado para qual idioma traduzir.` / `…o modelo não será informado de qual idioma está traduzindo.` | `…o modelo não saberá para qual idioma traduzir.` / `…o modelo não saberá de qual idioma está traduzindo.` | **2 keys, one fix** (optionally 3 — apply to `_missing_count` too, for a uniform «o modelo não saberá …» across the trio). «informado **para** qual» is ungrammatical in pt (*informar* takes *de/sobre*), and in `_missing_source` the single «de» has to serve both «informado de» and «traduzindo de», so one of the two ends up stranded. «não saberá» is idiomatic, shorter, and fixes both. Tokens `{source}`/`{source_code}`/`{target}`/`{target_code}` stay verbatim. |
+| update_unknown_sources_message | ⚠️ | `…permita que o PlayTranslate instale atualizações de apps na tela de configurações que será aberta.` | `…ative "Permitir desta fonte" para o PlayTranslate na tela de configurações que será aberta.` | Android-wording mismatch. The screen this opens is pt-BR **«Instalar apps desconhecidos»** and the switch on it reads **«Permitir desta fonte»** — a user hunting for a toggle called "instalar atualizações de apps" won't find it. Same class as the «Apps instalados» → «Apps baixados» finding from the previous pass (which was applied): inherited EN drift, fixable here or upstream. `update_unknown_sources_button` = «Abrir configurações» is byte-identical to the committed `btn_open_overlay_settings` / `mp_overlay_permission_button` ✓. |
+| misc_yojijukugo | 💬 | `Composto de quatro caracteres` (29) | `Composto de 4 kanji` (19) — or `Composto de 4 caracteres` (24) | Longest chip in the set by 12 chars, and 2× the longest committed `pos_*` («Verbo auxiliar», 14). Chips are width-constrained and render side by side. pt has no native lexicographic term, so a description is right (correctly *not* romanized) — just a shorter one. «kanji» is already a loanword in the file (`misc_kanji_only` = «Somente kanji»), and the tag only ever fires on Japanese. |
+| misc_slur | 💬 | `Insulto` | `Injúria` | Weakest link in the offensiveness cluster: the four are lexically distinct (Pejorativo · Ofensivo · Chulo · Insulto), but semantically «Insulto» and «Ofensivo» collapse into each other for a pt reader, losing the group-directed sense that makes a *slur* its own class. «Injúria» is a real pt term with exactly that force (cf. *injúria racial*), is shorter, and separates cleanly from «Ofensivo». |
+| floating_menu_capture_screen | 💬 | `Capturar\ntela` | keep — but apply the previously-filed fix to its sibling | Not wrong; it's the *pair* that's off. The same floating-menu button renders `floating_menu_capture_screen` = «Capturar\ntela» (verb-first) when the region is full-screen and the committed `floating_menu_btn_capture_region` = «Região de\ncaptura» (noun-first) otherwise. The 2026-06-23 review already suggested «Capturar\nregião» for the latter; applying it makes the two states «Capturar\ntela» / «Capturar\nregião» — one shape, both lines short. |
+| game_audio_trim_duration | 💬 | `%1$s s selecionados · %2$s s gravados` | `Seleção: %1$s s · Gravação: %2$s s` | Reads fine at realistic values («2,4 s selecionados · 147 s gravados»), but the selection genuinely can be 1.0 s → «1,0 s **selecionados**» (strict pt wants *selecionado*). The colon form carries the same information, drops both participles, and is shorter — useful since this string also serves as the card-editor row title. |
+| settings_llm_context_subtitle | 💬 | `Somente online. Fornece aos tradutores LLM online as últimas linhas do texto registrado…` | `Somente online. Envia as últimas linhas do texto registrado aos tradutores LLM para pronomes e nomes mais consistentes.` | «online» twice in one breath, and the dative-before-accusative inversion («Fornece aos tradutores … as últimas linhas») is heavy. The leading «Somente online.» already carries the scope, so the second «online» is redundant. |
+| audio_source_game_enable_hint · settings_ocr_use_manga_subtitle | 💬 | `…ative para capturar o áudio do jogo **para** os próximos cartões` / `AVISO: Alta qualidade, mas lento.` | `…ative para capturar o áudio do jogo nos próximos cartões` / `AVISO: tem alta qualidade, mas é lento.` | Two unrelated polish nits. (1) «para … para» in one clause. (2) «Alta qualidade, mas lento» puts a masculine adjective next to a feminine noun; the intended subject is *o MangaOCR*, but the surface reads as an agreement slip. Everything else in that warning is right — «o modo automático» matches the committed `settings_hide_overlays_during_auto_mode`. |
+| probe_initializing · misc_internet_slang · audio_source_game_ready | 💬 | `Inicializando…` / `Gíria de internet` / `Do que você jogou recentemente` | `Iniciando…` / `Gíria da internet` / `Da sua sessão de jogo recente` | Three one-liners. (1) The chip is a ~1.5 s transient beside a checker pattern and the EN comment says "keep short"; «Iniciando…» is 4 chars tighter. (2) BR says *gíria **da** internet*. (3) «Do que você jogou recentemente» is understandable but loose for a row subtitle. |
+
+## Clean areas (delta) — checked, no findings
+
+- **Brazilian-vs-European vocabulary — clean.** Zero hits across all 174 delta keys
+  for transferir/transferência, ecrã, eliminar, guardar, aplicação, telemóvel,
+  palavra-passe, ficheiro, utilizador, registar, "está a …". The delta is genuine
+  pt-BR: «Baixar e instalar» / «O download não foi concluído» / «baixe … no GitHub»
+  (never *transferir*), «tela» throughout (`error_capture_blocked_secure`,
+  `stream_kind_share_entire_screen`, `ocr_picker_message`), «excluir» for delete,
+  «salvar» for save, «app/apps» never *aplicação*, «arquivo baixado» never
+  *ficheiro*. BR orthography markers correct: «Onomatopeia» (no accent, post-1990),
+  «mangá», «irônico», «histórico».
+- **Register — consistent with the committed file's two-way convention.** Verified
+  against the committed strings, not assumed. *Buttons / action rows / toolbar
+  actions = infinitive*: Excluir · Copiar · Remover · Descartar · Redefinir ·
+  Parar · Manter modelo · Excluir modelo · Usar seleção · Reproduzir seleção ·
+  Baixar e instalar · Tentar novamente · Ver notas da versão · Abrir configurações ·
+  Salvar mesmo assim · Adicionar ao Anki · Compartilhar um app — 100% infinitive,
+  and «Excluir modelo» / «Abrir configurações» are byte-identical to committed
+  siblings (`bergamot_disable_delete`, `qwen_mnn_disable_delete`, `hymt_disable_delete`,
+  `llm_low_memory_delete` / `btn_open_overlay_settings`, `mp_overlay_permission_button`).
+  *Descriptive switch subtitles = 3rd-person indicative*: «Mantém os últimos
+  minutos…», «Salva as frases capturadas…», «Fornece aos tradutores…» — matching the
+  committed `settings_vertical_grow_subtitle` («Alarga as caixas…») and
+  `yomitan_single_dict_subtitle` («As definições vêm…»). *Actionable / CTA rows =
+  você-imperative*: «Importe dicionários…», «ative para capturar…», «Insira a URL…» —
+  matching committed `settings_cell_dictionary_summary` («Consulte definições…»),
+  `settings_anki_get_app_summary` («Baixe o AnkiDroid…»), `yomitan_alias_hint`
+  («Adicione um apelido»). **No você/tu mixing; zero tu/teu/tua in the delta.**
+- **Remover vs Excluir vs Limpar — all three stay distinct**, exactly as English
+  keeps them. Services are *removed*: `tr_service_remove_confirm` «Remover»,
+  `tr_service_delete_cd` «Remover serviço», `tr_service_remove_title_fmt` «Remover o
+  %1$s?». Entries and models are *deleted*: `history_action_delete` /
+  `history_delete_confirm_title` / `settings_ocr_disable_delete` → «Excluir…».
+  History is *cleared*: `history_clear_menu` «Limpar histórico» (matching the
+  committed `btn_clear` = «Limpar»). And `tr_service_remove_message` correctly
+  carries **both** verbs in one sentence — «Isso **remove** o serviço da lista e
+  **exclui** a chave de API salva.» — which is the string most likely to have
+  collapsed them, and didn't.
+- **`prompt` is one noun across `llm_prompt_*`** (aside from the «solicitação»
+  finding above): masculine «o prompt» everywhere — «O prompt não pode ficar vazio»,
+  «Este prompt é muito longo», «O prompt precisa incluir {strings}», «neste prompt»,
+  «por este prompt», and the three row titles «Prompt do sistema» / «Prompt de
+  tradução» / «Prompt em lote». Never *pedido*, never *consulta*, never *comando*.
+  `llm_prompt_keywords_header` = «Palavras-chave» keeps *keyword* distinct from
+  *placeholder* ✓.
+- **The 38 `misc_*` chips.** All four clusters internally distinguishable:
+  offensiveness = Pejorativo · Ofensivo · **Chulo** · Insulto; obsolescence =
+  Arcaico · Obsoleto · Antiquado · Histórico; informality = Coloquial · Informal ·
+  Familiar · Gíria; honorifics = Honorífico · Humilde · Cortês. They read as real pt
+  lexicographic labels, not glosses of English — «Figurado» (the *fig.* of Houaiss),
+  «Pejorativo», «Antiquado», «Eufemismo», «Dialetal», «Irônico» for *Sarcastic* (the
+  pt dictionary label; no `misc_ironic` key to collide with). **The `misc_vulgar`
+  false-friend trap is correctly handled: «Chulo», not «Vulgar»** (which in pt means
+  *common/banal*). «Humilde» / «Cortês» are the established pt renderings of kenjōgo
+  / teineigo. kana/kanji kept as loanwords per the glossary; `misc_yojijukugo` is
+  described, not romanized. Noun-vs-adjective mixing (Gíria, Neologismo,
+  Onomatopeia, Eufemismo, Insulto as nouns) is normal pt lexicographic practice and
+  matches the committed `pos_*` register and brevity.
+- **`settings_yomitan_count_summary` — one/other, both correct for their ranges.**
+  `one` → «1 dicionário importado» (singular noun + singular participle); `other` →
+  «3 dicionários importados» (both plural). Gender and number agree in both. The
+  0 case never reaches this plural (`settings_yomitan_empty_summary` covers it).
+- **Grammar around placeholders, read with real values.** «Manter o modelo baixado
+  (68 MB) ou **excluí-lo** para liberar espaço?» (correct enclisis, masculine
+  *modelo*); «Espaço livre insuficiente … (**necessário:** 230 MB)» — restructured
+  with a colon, dodging agreement entirely; «Ative-**o** para manter as frases…»
+  (masculine *o histórico*); «Todas as linhas salvas serão **excluídas**» (feminine
+  plural ✓); «A persona e as instruções **enviadas**» (feminine plural across a
+  coordinated subject ✓); «A tradução está pausada — … **Ela** é retomada» (feminine
+  ✓); «Hoje: 12.345 tokens» (locale-grouped ✓); «Tamanho do download: 128 MB» ✓.
+  `tr_service_remove_title_fmt` = «Remover **o** %1$s?» is precedented by the
+  committed `hymt_disable_title` / `qwen_mnn_disable_title` / `yomitan_delete_title`
+  («Desativar o Hunyuan-MT?», «Excluir o Jitendex.org?») and reads as *o [serviço]
+  OpenAI*; note the committed `settings_ocr_delete_title` drops the article
+  («Excluir PaddleOCR?»), so dropping it here would also be defensible and would
+  sidestep the *a OpenAI* (company, feminine) reading — left unflagged as the
+  precedent supports both.
+- **Cross-references into the committed file.** `ocr_source_label` = «Reconhecido
+  por %1$s» is a structural mirror of the committed `translation_source_label` =
+  «Traduzido por %1$s» ✓ (exactly what the glossary asks). `add_online_service_title`
+  / `tr_service_add_online` use «serviço de tradução», matching the committed page
+  title `settings_cell_translation_services` = «Serviços de tradução» ✓.
+  `llm_backend_provider_label` = «Provedor» matches the committed
+  `tr_service_order_footer` («a política de privacidade de cada **provedor**») ✓.
+  `floating_menu_panel_overlays` = «Sobreposições» matches the committed
+  `settings_overlay_mode_title` / `settings_hide_overlays_during_auto_mode` ✓.
+  `anki_game_audio_row_subtitle`'s «cartões de frase» is byte-identical to the
+  committed `anki_content_words_table` ✓. `settings_yomitan_empty_summary`'s
+  «consultas de palavras» is byte-identical to the committed
+  `onboarding_welcome_learn_body` ✓. `cd_choose_ocr` == `ocr_picker_title` ✓ (as in
+  EN). «captura/capturadas» reuses the app's established capture verb ✓.
+  `settings_debug_log_trace` keeping English *trace* matches the committed
+  `settings_debug_log_pinhole` and `crash_dialog_message` («stack trace») ✓.
+  «Segure» (hotkey combo) vs the committed «Mantenha pressionado» (UI long-press) is
+  **not** drift — EN distinguishes them too (`status_hold_hint` = "Long-press").
+- **Deliberate decisions honored:** `stream_kind_share_one_app` /
+  `_share_entire_screen` follow the system consent dialog's own pt-BR wording (not
+  re-derived from EN); `llm_prompt_kw_source_desc` / `_target_desc` keep *Japanese* /
+  *English* in Latin as the literal runtime expansions; `llm_status_low_memory_badge`
+  left untouched (its dash not flagged); `service_llm_badge` = «LLM» kept as the
+  initialism per the glossary.
+
+## Verdict (delta)
+
+**Fix-then-ship.** 0 🛑 / 0 ❌ / 6 ⚠️ / 7 💬 across 174 keys. Nothing is
+*wrong* — no mistranslation, no broken cross-reference, no agreement bug that fires
+on a real runtime value, and the two highest-risk groups (the 38 `misc_*` chips and
+the `Remover`/`Excluir`/`Limpar` triad) came through clean, including the
+`misc_vulgar` false-friend trap. The six ⚠️ are all **consistency** defects: three
+are one term/pattern rendered two ways inside a single screen (TTS on the trim row,
+*prompt* vs *solicitação* on the services card, *Auto X* vs *tradução automática* on
+the hotkeys screen), one is a precision loss that contradicts its own dialog title,
+one is a Portuguese grammar slip after *informado*, and one is inherited
+Android-wording drift from the English source. All have one-line fixes.
+
+---
+
+# Delta review round 2 — 2026-07-14
+
+Fresh independent pass over the corrected file. Primary target: **regressions
+introduced by the round-1 fixes** (19 strings changed). Every changed string
+re-derived from scratch; every placeholder read with a real runtime value; the 38
+`misc_*` labels re-checked for `.distinct()` collapse.
+
+**Mechanical layer re-verified programmatically over all 174 keys:** every key
+present and of the right type; `%1$s`/`%2$s`/`%d` parity with EN; every `<xliff:g>`
+span byte-identical to EN (inner text **and** `id`/`example`); the bare
+`{text} {source} {source_code} {target} {target_code} {N} {strings}` keywords
+byte-identical in running prose; `<b>`/`\n`/`\{ \}`/`&lt;&gt;&amp;` counts match;
+no raw `'` or `"`; `<plurals>` = one/other. **No 🛑.**
+
+**Counts: 0 🛑 · 0 ❌ · 1 ⚠️ · 1 💬**
+
+## Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| probe_initializing | ⚠️ | `Iniciando…` | `Inicializando…` (revert) | **Regression from round 1, on a false premise.** Round 1 shortened this "4 chars tighter" for a width-constrained chip. **The chip has no width constraint.** `StreamKindProbe.ProbeView.onMeasure()` does `setMeasuredDimension(SIZE_PX + (labelPaint.measureText(labelText) + 2*labelPadding))` — it *sizes itself from the localized string* — and its own comment says so: *"Width is MEASURED from the localized string — every locale fits exactly, no fixed guess."* The 4 characters bought **0 dp** (measured: 86.5 dp vs 106.7 dp chip, both fine). What they cost: (a) precision — «Iniciando…» is *Starting…*, not *Initializing…*; (b) it now **byte-collides with the committed `settings_ocr_downloading_msg` = «Iniciando…»**, whose EN genuinely *is* "Starting…". Two distinct EN states, one pt string. They never co-render, so nothing breaks — but the change is a pure loss and the revert is free. |
+| hotkey_auto_hint_title · hotkey_auto_hint_dialog_title | 💬 | `…parar o %1$s automático` / `%1$s automático` | keep — but see note | **The fix is correct; this is a latent boundary condition.** Verified: `hintLabel` is filled from `overlay_mode_option_furigana` / `_pinyin` only (`HotkeysSettingsActivity:101`), and **both are masculine in pt** (*o furigana*, *o pinyin*) — so «o %1$s automático» agrees for every value the code can produce today. ✓ But the phrasing hard-codes masculine agreement, and `HintTextKind` already reserves a third value, `HARAKAT` (`Language.kt:217`, *"reserved so the architecture stays forward-compatible"*; deferred pending a diacritizer). Its natural pt label would be **feminine** («Vocalização») and would silently produce *«o Vocalização automático»*. Not a bug now — flagging so whoever wires HARAKAT up revisits this string (and the six other locales that took the same shape). Related, for the code owner: `HotkeysSettingsActivity`'s `when` maps HARAKAT through `else ->` to the **Furigana** label, so it would also mislabel the row. |
+
+## The trim-button row — measured
+
+The brief asked for a hard number. `activity_game_audio_trim.xml` bottom row:
+`btnTrimUseTts` (TextButton) · 4dp · `btnTrimNoAudio` (TextButton) · `Space` ·
+`btnTrimSave` (filled Button), inside a horizontal `LinearLayout` with 12dp padding.
+
+**One correction to the brief's premise:** the row is not weight-free — there *is* a
+`Space` with `layout_weight="1"` between NoAudio and Save. It changes nothing about
+the failure mode: a weighted `Space` absorbs *positive* slack only. When content
+exceeds the width, `LinearLayout` clamps its share to 0 and the **last** child
+(`btnTrimSave`) is pushed past the right edge and clipped — it is never re-measured
+smaller, because it sits *after* the weighted child and is therefore measured against
+the full parent width, not the remainder.
+
+Measured with real glyph advances (Roboto Medium, `TextAppearance.M3.Sys.Typescale.LabelLarge`
+= 14sp + 0.00714em letter-spacing), including the **88dp `android:minWidth` floor**
+that every `MaterialButton` inherits from `Base.Widget.AppCompat.Button`, and M3's
+12dp/12dp (text) and 24dp/24dp (filled) horizontal padding:
+
+| row | UseTTS | NoAudio | Save | **row total** | 360dp | 411dp |
+|---|---|---|---|---|---|---|
+| **pt-BR (current)** | «Usar TTS» → 88.0dp *(at the minWidth floor)* | «Sem áudio» → 91.3dp | «Usar seleção» → 130.1dp | **337.4dp** | **FITS, 22.6dp slack** | **FITS, 73.6dp slack** |
+| pt-BR before round 1 | «Usar TTS em vez disso» → 169.4dp | 91.3dp | 130.1dp | 418.8dp | overflow 58.8dp | overflow 7.8dp |
+| pt-BR w/ full term (rejected) | «Usar conversão de texto em voz» → 227.2dp | 91.3dp | 130.1dp | 476.6dp | overflow 116.6dp | overflow 65.6dp |
+| EN (baseline) | "Use TTS instead" → 128.0dp | 88.0dp | 133.7dp | 377.7dp | overflow 17.7dp | fits, 33.3dp |
+
+**`game_audio_trim_save` is fully visible and reachable on both a 360dp and a 411dp
+phone.** Three things fall out of the numbers:
+
+1. **The round-1 width exception was load-bearing and correctly called.** «Usar TTS em
+   vez disso» overflowed 360dp by 59dp *and 411dp by 8dp* — Save was clipped on both.
+   The full term («Usar conversão de texto em voz») overflowed every width. Settled
+   decision confirmed, not re-litigated.
+2. **«Usar TTS» sits exactly on the 88dp `minWidth` floor** (82.7dp of content clamped
+   up to 88dp). Any label under ~64dp of text costs the same. Shortening it further
+   would buy literally **0dp**; there is no remaining width lever here.
+3. **pt-BR is now 40dp *narrower* than English.** The EN row (377.7dp) already
+   overflows a 360dp phone by ~18dp at default font scale, clipping Save's right edge
+   in English. That is a **layout defect, not a locale defect** — pt-BR is strictly
+   safer than the source. Reported here for the code owner: `btnTrimSave` needs
+   `layout_weight`/ellipsize, or the row needs to wrap. pt-BR's own headroom on 360dp
+   runs out at about **fontScale 1.15** (row → 363dp); 411dp holds to ~1.3.
+
+## Clean areas (round 2) — checked, no findings
+
+- **All 19 round-1 edits re-derived. 18 are right; the 19th is the ⚠️ above.**
+  `misc_female_speech`/`_male_speech` → «Fala feminina/masculina» **fixes a real
+  false friend** the round-1 note undersold: *«Termo feminino»* in pt reads first as
+  *feminine-gender word* (grammatical gender), which is not what the tag means. «Fala»
+  kills that reading, matches the key name (`misc_female_speech`) and the EN comment
+  ("used chiefly by/about women"), and collides with nothing («a fala original» in
+  `anki_game_audio_row_subtitle` is a different screen and a different sense).
+  `misc_slur` → «Injúria» separates cleanly from «Ofensivo» and keeps the
+  group-directed force (*injúria racial*); it replaces a noun with a noun, so it does
+  not disturb the set's noun/adjective mix. `error_capture_blocked_secure` → «o app
+  capturado» now **byte-matches its sibling** `error_single_app_not_fullscreen` («o app
+  capturado não está ocupando a tela inteira») — the fix created consistency rather
+  than breaking it. `game_audio_trim_duration` → «Seleção: … · Gravação: …» dodges the
+  *1,0 s selecionados* agreement bug and re-uses «seleção» from `game_audio_trim_play`
+  /`_save`. `stream_kind_prompt_message` → «qual das duas opções foi compartilhada»
+  (feminine agreement ✓) now echoes its own title `stream_kind_prompt_title` («Qual
+  opção de compartilhamento…»). `settings_ocr_use_manga_subtitle` → «tem alta
+  qualidade, mas é lento» is a normal pt null-subject clause (pro-drop) with the
+  subject recoverable from the row title «Usar o MangaOCR» — no agreement slip left.
+- **«solicitação» is fully purged** — 0 hits file-wide. *prompt* is now one masculine
+  noun across all 10 `llm_prompt_*` strings that name it.
+- **The three `llm_prompt_advisory_missing_*` are now uniform and grammatical.**
+  «Falta {N}/{source}/{target}…: o modelo não saberá …» — singular «Falta» is correct
+  with the *ou*-coordinated subjects; «não saberá **de** qual idioma está traduzindo»
+  / «**para** qual idioma traduzir» take the right prepositions and mirror EN's own
+  progressive-vs-infinitive split. All tokens verbatim.
+- **`update_unknown_sources_message` names the real toggle.** Android pt-BR shows
+  **«Instalar apps desconhecidos»** with a **«Permitir desta fonte»** switch; the
+  string now says «ative "Permitir desta fonte" para o PlayTranslate». Findable.
+- **The 38 `misc_*` labels are all distinct** — verified programmatically, including
+  case- and accent-folded. **Nothing collapses through `renderMisc`'s `.distinct()`**
+  (`MiscLabels.kt:31`). All four clusters still separate after the edits:
+  offensiveness = Pejorativo · Ofensivo · Chulo · **Injúria** · Sensível;
+  obsolescence = Arcaico · Obsoleto · Antiquado · Histórico · Raro;
+  informality = Coloquial · Informal · Familiar · Gíria · Gíria da internet · Gíria de
+  mangá; honorifics = Honorífico · Humilde · Cortês. The `misc_vulgar` false-friend
+  trap stays correctly handled («Chulo», not «Vulgar»). Per the brief, **no label was
+  considered for shortening** — they wrap, they don't truncate. The `misc_historical`
+  = «Histórico» / `history_screen_title` = «Histórico» homograph is unavoidable in pt
+  (one word for *historical* and *history*), the two never co-render, and both are the
+  right word — checked and accepted.
+- **Placeholders read with real values.** «Furigana automático» / «Pinyin automático»
+  ✓ (both masculine — the round-1 assertion **verified in code**, not assumed);
+  «Reconhecido por PaddleOCR» ✓ (mirrors the committed `translation_source_label`);
+  «Remover o OpenAI?» ✓; «Hoje: 12.345 tokens» ✓ — confirmed locale-grouped in code
+  (`UsageTracker.todayString()` = `NumberFormat.getNumberInstance(Locale.getDefault())`),
+  so pt-BR really does get a dot as the thousands separator, not the EN comma;
+  «Manter o modelo baixado (68 MB) ou excluí-lo…» ✓; «Ative-o…» ✓ (masc. *o
+  histórico*); «Ela é retomada…» ✓ (fem. *a tradução*); «A persona e as instruções
+  enviadas» ✓ (fem. pl. across a coordinated subject).
+- **`settings_yomitan_count_summary` plurals.** one → «1 dicionário importado», other
+  → «3 dicionários importados» — noun *and* participle agree in both. pt's CLDR `one`
+  category also covers **0**, which would read «0 dicionário importado» — but
+  `RootSettingsViewModel.yomitanDigest()` short-circuits `count == 0` to
+  `settings_yomitan_empty_summary`, so the zero form is unreachable. Verified.
+- **`game_audio_trim_duration` does not wrap.** «Seleção: 2.4 s · Gravação: 147 s» =
+  213.7dp at 15sp (`Text.PT.RowTitle`) against 264dp available on a 360dp phone
+  (48dp side insets); worst realistic case «10.0 s / 999 s» = 222.2dp. Only ~8dp wider
+  than EN.
+- **BR-vs-EU vocabulary, register.** Re-scanned all 174 delta keys: zero hits for
+  transferir/ecrã/eliminar/guardar/aplicação/telemóvel/ficheiro/utilizador/registar/
+  "está a …". Zero tu/teu/tua. `você` appears in exactly the four places where 2nd
+  person is natural. BR orthography markers correct (Onomatopeia, mangá, Irônico,
+  Cortês, Injúria).
+- **The four delta strings identical to English are all correct, not leftovers:**
+  `misc_familiar`, `misc_formal`, `misc_informal` (the pt words *are* these), and
+  `service_llm_badge` = «LLM» (settled initialism).
+- **Short-label expansion.** Nothing in the delta lands in the tiny-label danger zone
+  (8sp bottom bar, two-line capture button). The worst ratios — «Personalizado» (2.2×),
+  «Escolher ferramenta de OCR» (1.7×), «Salvar mesmo assim» (1.6×) — sit in dialog
+  buttons, dialog titles and settings rows, all of which wrap or have room.
+- **Settled decisions honored, not re-litigated:** `game_audio_trim_use_tts` = «Usar
+  TTS» (width exception — and now *measured*, see above); the AOSP share-button
+  wording; `llm_prompt_kw_source_desc`/`_target_desc` keeping *Japanese*/*English*;
+  `llm_status_low_memory_badge`'s dash; `misc_*` never shortened for width. The two
+  round-1 💬s that were declined (`misc_yojijukugo`, `audio_source_game_ready`) are
+  not re-filed — declining `misc_yojijukugo` is now positively *correct* under the
+  no-shortening rule.
+
+## Code defects visible from pt-BR (not locale bugs — do not fix in `values-pt-rBR`)
+
+- Already known: `GameAudioTrimActivity` / `SentenceAnkiContentFragment` format
+  seconds with `Locale.US`, so `game_audio_trim_duration` renders **«Seleção: 2.4 s»**
+  where pt-BR requires **«2,4 s»**. `humanSize()` likewise forces a decimal point —
+  «Tamanho do download: 1.2 GB» should be «1,2 GB». (The *unit* half of the
+  `humanSize()` bug is invisible here: pt-BR uses MB/GB anyway.)
+- New, from this pass: the trim button row overflows a 360dp phone **in English**
+  (see the table above) — `btnTrimSave` needs a weight or the row needs to wrap.
+- New, from this pass: `HotkeysSettingsActivity`'s `hintLabel` `when` sends
+  `HintTextKind.HARAKAT` through `else ->` to the *Furigana* label. Dormant today
+  (HARAKAT is reserved and unused), but it will mislabel the row and break pt's
+  masculine agreement the day it's wired up.
+
+## Verdict (round 2)
+
+**SHIP.** 0 🛑 / 0 ❌ / 1 ⚠️ / 1 💬 across 174 keys. The round-1 corrections landed
+cleanly: 18 of 19 are right, several are better than their own rationale claimed, and
+none introduced an agreement, terminology or cross-reference regression. The single ⚠️
+(`probe_initializing`) is a free revert with zero user-visible impact, and the 💬 is a
+forward-looking note, not a defect. The two highest-risk surfaces both came through:
+the 38 `misc_*` chips are all distinct with every cluster intact, and the trim row now
+fits with 23dp to spare on a 360dp phone — 40dp narrower than the English source.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly one/other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "Rápido, mesmo em telas com muito texto" | "Ágil, mesmo em telas com muito texto" | The English comment forbids reusing the literal Fast tier label; the first pass reused «Rápido», the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+
+### Clean areas (delta) — checked, no findings
+
+**Brazilian vocabulary only** — tela (never ecrã), arquivo, salvo (never guardado), app, buscar, remover — and **você** throughout. The definite article before the brand follows the committed file: «O PlayTranslate … é a versão mais recente» (`update_none_message`), «a acessibilidade está ativada para o PlayTranslate» (`a11y_stuck_message`), matching `update_dialog_message` and `anki_permission_rationale_message`. **mecanismo** was chosen for *engine* because it is Android's own pt-BR word for a pluggable engine, leaving **ferramenta** for *tool* and **modelo** for the downloadable model — all three meet in `settings_ocr_delete_camera_import_note`. **instantâneo** for the camera freeze-frame keeps «captura de tela» free (`anki_group_screenshot`). “ ” quotes in `a11y_stuck_message_xiaomi`. `settings_support_check_updates_title_available` byte-matches `update_dialog_title` (Atualização disponível). Plurals one/other, with agreement read at each band.
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ found and fixed, no ❌.
+
+---
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Keys under review: `card_words_in_sentence`, `anki_added_sentence_success`,
+`anki_added_word_success`, `game_audio_zoom_hint`, `anki_first_field_unmapped`,
+`anki_first_field_empty`, `history_hide_translations_toggle_title`,
+`history_hide_translations_toggle_subtitle`.
+
+Mechanical layer verified programmatically over these 8 keys: all present, no extras;
+placeholder multisets identical to EN (`%1$s` in the two first-field strings, none
+elsewhere); every `<xliff:g>` span byte-identical to EN including `id` and `example`
+(`field_name`/`Key`, `brand_anki`/`Anki`); `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;`
+counts match; no raw `'` or `"` in visible text; `name="…"` untouched; Anki left
+untranslated. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | ⚠️ | "Pince para mostrar mais ou menos áudio" | "Aproxime ou afaste os dedos para mostrar mais ou menos áudio" | *Pinçar* is a Microsoft-terminology rendering of "pinch", not the wording Brazilian users meet on Android — Google's pt-BR (Maps, Fotos, Acessibilidade) says **"Aproxime ou afaste os dedos" / "Junte ou afaste os dedos"**. Bare imperative "Pince" gives no clue that two fingers are involved, and the comment says this caption exists precisely because pinch is *the one gesture with no visual affordance* — so it has to teach the gesture, not name it. Every sibling locale that isn't calquing a Latin cognate spells the gesture out (ru «Сведите или разведите пальцы», de "Ziehe zwei Finger zusammen oder auseinander", ko 두 손가락을 모으거나 벌려, vi "Chụm hai ngón", ar قرّب إصبعيك أو باعد بينهما, tr "iki parmağınızla sıkıştırın"); fr *Pincez* / es *Pellizca* work only because those verbs are the established gesture words in their locales, and *pinçar* is not in pt-BR. **Brevity is not a defence here:** the caption is a `match_parent` / `wrap_content` `TextView` at 11sp in `anki_game_audio_panel.xml` with no `maxLines` and no `ellipsize`, so it wraps freely — de already ships 82 chars in that exact view against pt-BR's 38. The long form (57 chars) costs one wrapped line and buys a gesture the user can actually perform. |
+
+### Clean areas (delta) — checked, no findings
+
+**Quoting convention is defensible.** Both first-field strings use curly “ ” — the
+locale's documented quote pair, and a per-string mirror of EN, whose own comment
+declares "The “ ” curly quotes are intentional typography". That is the rule the whole
+pt-BR file already follows: curly where EN is curly or where EN has no quotes and pt-BR
+adds them for an inline name (`anki_content_pitch_position_desc` “PitchPosition”,
+`anki_content_frequency_values_desc` “Frequency”, `settings_ocr_footer_guidance`,
+`a11y_stuck_message_xiaomi` “Sem restrições”), escaped `\"` where EN is escaped
+(`anki_content_source_pick_title`, `status_no_text`, `onboarding_a11y_enable_title`,
+the `anki_content_flag_*_desc` "x" markers). Note for **upstream, not for this locale**:
+`anki_first_field_unmapped` (curly) and `anki_content_source_pick_title` (straight) quote
+the *same* user field name on surfaces that appear seconds apart — the toast fires and
+the mapping dialog opens right behind it — so the user sees “Key” then "Key". pt-BR
+reproduces EN's own split byte-for-byte; the inconsistency lives in
+`values/strings.xml`.
+
+**One-tap toasts — agreement and compound both hold.** *Cartão* is masculine, so
+"Cartão de frase **adicionado**" / "Cartão de palavra **adicionado**" agree correctly
+(the trap here is a translator reaching for *carta*/*tarjeta*-style feminine agreement;
+es and fr legitimately have "añadida"/"ajoutée" because their noun is feminine). The
+compounds match the mode chips the toast is making visible — `anki_mode_sentence`
+= "Frase", `anki_mode_word` = "Palavra" — and "cartão de frase" is the file's existing
+term (`anki_game_audio_row_subtitle`, `anki_content_words_table`,
+`anki_content_flag_sentence`), so the toast reads as the same object the rest of the UI
+names. Naming the subject where `anki_added_no_audio` leaves it bare ("Adicionado ao
+Anki (áudio indisponível)") is right, not a divergence: these two strings exist *because*
+the applied mode is otherwise invisible.
+
+**"nota" is the correct term, and it is AnkiDroid's own.** Anki/AnkiDroid ship
+pt-BR with the Note/Card distinction intact — *nota* vs *cartão* — so a user who reads
+"o Anki usa o primeiro campo para identificar a nota" maps it straight onto what
+AnkiDroid shows them. Introducing it here rather than collapsing it into *cartão* is the
+better call, because the sentence is specifically about note-level duplicate identity.
+Residual friction is upstream: the app says *card type* (pt-BR "tipo de cartão",
+`anki_field_mapping_unconfigured`, `anki_card_type_no_models`) where AnkiDroid pt-BR says
+*tipo de nota*. That mismatch is inherited from the EN source and must not be "fixed"
+in the locale file alone.
+
+**`anki_first_field_unmapped` — verb, preposition, article, length all check out.**
+*Mapear* is the file's mapping verb (`anki_content_source_pick_title` = "Mapear",
+`anki_card_type_basic_no_mapping` = "mapeamento de campos"), and "Mapeie" is the você
+imperative the file uses throughout ("Configure", "Salve", "Toque em"). "no campo “X”"
+earns its extra words: it supplies a masculine head noun in front of a *user-defined*
+field name, so *nenhum* value of `%1$s` can drag the sentence into a gender error — the
+same protection the fronted "O campo" gives `anki_first_field_empty`. "para que o Anki
+identifique" follows the file's brand-article convention (`anki_send_failed_message`
+"O AnkiDroid não aceitou o cartão", `anki_not_installed_message`, `anki_models_unavailable`
+"conectar ao AnkiDroid"). On the two-line toast clamp: 66 chars with a 3-char field name
+is mid-pack, not a pt-BR outlier (es 66, tr 69, de 62, fr 62, ru 57, EN 51) — the clamp
+risk is shared and comes from long user field names, not from this translation. If
+headroom is ever wanted, "para o Anki identificar a nota" (personal infinitive, equally
+idiomatic in BR) trims it without touching the gender anchor.
+
+**`anki_first_field_empty` reads as a native alert.** Fronting "O campo" before the
+quoted name is the load-bearing choice — "“Expressão” está vazio/vazia" would be
+unresolvable, "O campo “Expressão” está vazio" is always right. "então" as the
+consequence connector matches EN's own conversational "so" and sits correctly in a
+você-register app (*portanto* would over-formalize). *neste cartão* (the card at hand)
+vs anaphoric *esse campo* (the field just named) is the standard BR este/esse split, not
+a slip. Making "it needs a value" explicit as "esse campo precisa ter um valor" resolves
+an ambiguity the EN leaves open (field or note?), and the alert has no length budget to
+protect.
+
+**History strings sit inside their family.** *Ocultar* is the file's established hide
+verb (`overlay_hide_for_now`, `settings_hide_overlays_during_auto_mode`,
+`cd_toggle_translation_visibility`, `floating_icon_close_label_hide`) — no second verb
+introduced. *texto capturado* reuses the app's captured-verb (`history_toggle_subtitle`
+"frases capturadas", `settings_cell_history_summary_*`, `tr_service_order_footer` "o
+texto capturado"), and the sentence/text split mirrors EN's own. *linha* for a History
+row matches `history_empty_none` ("As linhas aparecem…") and
+`history_clear_confirm_message` ("Todas as linhas salvas"). The 3rd-person + imperative
+mix is EN's structure and the siblings' style: "Mostra apenas…" has the same implicit
+subject as "Salva as frases capturadas" (`history_toggle_subtitle`) and "Guarda uma
+foto…" (`history_capture_image_toggle_subtitle`), while "Toque em uma linha" matches
+`anki_words_helper` ("Toque em uma palavra para destacá-la"). **Dropping EN's possessive
+("its translation" → "a tradução") is the right call, not an omission** — in a você-register
+pt-BR app "sua tradução" reads first as *your* translation, and "a tradução dela" is
+clunky; the referent is pinned by "uma linha" three words earlier in the same sentence.
+
+**`card_words_in_sentence`.** "Palavras na frase" is sentence case, so the card CSS
+`text-transform` yields PALAVRAS NA FRASE cleanly (no accents to mangle); *frase* matches
+`anki_mode_sentence`; 17 chars, same as EN. The na/da choice is genuinely split across
+the locale set (es "Palabras **en** la frase", fr "Mots **de** la phrase") — pt-BR's
+reading is fine either way and not worth a churn on a string that is baked into every
+sentence card already sent.
+
+### Verdict (delta)
+
+One ⚠️ (`game_audio_zoom_hint`), no ❌, no 🛑. The other seven are clean.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| settings_debug_angle_gate | ⚠️ | «Limite de ângulo clássico (10°)» | «Limiar clássico de ângulo (10°)» | Two issues in one label. «Limite» is a *limit* (a ceiling you must not exceed); the technical term for a detection threshold is «limiar», and the switch changes the angle at which slanted-text detection *triggers*, not a cap. And the postposed «clássico» binds to «ângulo», reading "classic angle" — the EN comment is explicit that the *threshold* is the legacy one (10° instead of the current 3°). The file had no prior «limiar»/«limite» precedent, so this string sets the term. |
+
+### Clean areas (delta) — checked, no findings
+
+**Update vocabulary reused from the app updater.** «Atualização disponível» and «Não foi
+possível verificar atualizações» are byte-identical to `update_dialog_title` /
+`update_check_failed_title`; `yomitan_update_check_failed_message` follows
+`yomitan_download_error_message`'s «Verifique sua conexão e tente novamente»;
+`yomitan_update_scan_active_message` closes with `anki_models_unavailable`'s «Tente
+novamente em instantes»; «Verificando atualizações» extends `update_progress_verifying`
+«Verificando…»; «em segundo plano» matches `onboarding_notif_row_silent_sub`.
+
+**Gender is anchored to the implied head noun, not to the runtime value.** «O %1$s pode ser
+atualizado», «Os dados do %1$s», «O %1$s está na versão mais recente», «O %1$s agora está
+atualizado» — the leading article follows the file's own `yomitan_duplicate_message` («O
+%1$s já foi importado») and `yomitan_delete_title` («Excluir o %1$s?»), i.e. agreement with
+*dicionário* (m.), so an arbitrary title cannot destabilise the sentence.
+
+**«agora» is present where EN says "now".** `yomitan_update_done_message` fires after a
+successful install and `yomitan_update_none_message` when nothing happened; keeping
+«agora» is what separates them. (Two other locales lost that contrast this round and were
+fixed.)
+
+**Brazilian vocabulary throughout.** baixar / Baixar de novo (never transferir), app (per
+`yomitan_outdated_label`'s «uma atualização do app»), tela not ecrã, and the delta
+introduces no eliminar/aplicação Europeanisms.
+
+**«Idioma de origem» is the file's own term**, from `llm_prompt_kw_source_desc` («do idioma
+de origem»), and distinct from «Idioma do jogo» (`pack_upgrade_label_source`) — the row
+names the dictionary's declared language, not the capture language.
+
+**Register.** Informal você throughout («Verifique sua conexão», «Tente novamente»,
+«desative»).
+
+### Verdict
+
+**PASS after fix.** One ⚠️, no ❌, no 🛑. The only defect was in the debug row, where a
+term was being coined for the first time in this file and the wrong one was reached for.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+Three applied — one ❌, one ⚠️, one 💬.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| anki_card_too_large_title | ❌ | «Cartão muito grande» | «Cartão grande demais» | *muito grande* is "very large"; the string means "too large", and the body of the very same dialog already said «grandes demais». The title and its own body disagreed on the claim, and the title is the half the user reads first. This is the "review a new alert family as a set" lesson from the 2026-08-19 sync producing a real catch: neither string is wrong read alone. |
+| anki_card_too_large_simplify | ⚠️ | «Salvar simplificado» | «Salvar versão simplificada» | Same elided-noun fragment as the Spanish button; naming *versão* gives the adjective something to agree with. |
+| settings_debug_short_text_routing | 💬 | «Roteamento offline de textos curtos» | «Roteamento offline para textos curtos» | Parallel to the Spanish change: the attachment was right, *para* removes the possible second reading. |
+
+### Clean areas (delta) — checked, no findings
+
+**Brazilian vocabulary only.** *Salvar* (never guardar), *cartão*, *tela* is not exercised
+here but *aplicativo*-family wording is avoided since the brand name carries it. *remover*
+and *encurtar* in the advice; no transferir / ecrã / eliminar / aplicação anywhere in the
+delta.
+
+**The definite article before the brand.** «para enviar ao AnkiDroid» and «para o AnkiDroid
+aceitar» keep the article that the committed `anki_send_failed_message` uses («O AnkiDroid
+não aceitou o cartão»), and the toast keeps «Adicionado ao Anki» byte-identical to
+`anki_added_no_audio`.
+
+**você register.** «Tente remover algumas palavras ou encurtar a frase» matches
+`anki_send_failed_message`'s «Verifique se… e tente novamente».
+
+**Terminology.** cartão (card), definições, dicionário, «texto simples» for plain text — the
+last from `yomitan_styling_subtitle`'s «desative para sempre usar texto simples». palavras
+and frase in the advice match `anki_mode_word` «Palavra» and `anki_mode_sentence` «Frase».
+«no dispositivo» for on-device comes from `llm_prompt_row_system_subtitle` «na nuvem e no
+dispositivo».
+
+**Debug rows.** «Forçar o carregamento de pesos via mmap» matches
+`settings_debug_force_single_screen` «Forçar tela única» and
+`settings_debug_force_crash_title` «Forçar travamento».
+
+### Verdict
+
+**PASS after fixes.** The delta's only ❌ across all twelve locales was here, and it was
+invisible string-by-string — it surfaced only when the title and its own body were read as
+one screen.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** «Ativar/desativar pinyin inline» mirrors the furigana
+string.
+
+**The ⋯.** «Mais ações» parallels «Toque para ver mais opções».
+
+**Row names.** «Ler em voz alta» and «Editar texto»; Brazilian vocabulary throughout.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| icon_gesture_hold (+ icon_gestures_no_menu_message) | ⚠️ | Manter pressionado | Segurar | The width problem es has (18 letters); the file's own hotkey says «Segure para mostrar traduções». |
+| settings_overlay_min_text_warning | 💬 | …ao jogar jogos com muitas animações | …principalmente em jogos com muitas animações | jogar jogos. |
+
+### Clean areas (delta) — checked, no findings
+
+**Vocabulary.** você; BR terms (tela, configurações). The helper avoids excluir, which
+means delete in pt-BR, and says «deixá-la de fora do cartão». Straight \" quotes as
+`overlay_hide_controls_message`; «Idioma do jogo: %1$s».
+
+**Terms.** Reused: menu rápido, Alterar o idioma do jogo, Capturar tela, Iniciar/parar a
+tradução automática, Não foi possível traduzir, chave de API inválida, cota … esgotada,
+EXPERIMENTAL., Descartar, sobreposição.
+
+### Verdict (round 1)
+
+1 ⚠️ + 1 💬, to apply.
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fixes present: «Segurar» as the gesture, matched in the alert («ao gesto Segurar ou Tocar»); the warning ends «…principalmente em jogos com muitas animações». Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 tools/mech_check.py keys.txt pt-rBR` reports `checked 1 locales x 41 keys; problems: 0` (every key present; `<xliff:g>` spans and placeholders byte-identical to English; the email body's four `\n` kept; no unescaped `'` or `"`, stray tag, double space or edge whitespace), and `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `missing=0 orphan=0 modified=0`, in sync (also 0 modified against the sync's English base). The two orphans `settings_debug_export_logs_title` / `_subtitle` are gone; `settings_debug_export_logs_subject` stays. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice`: the body is one of the three keys, then `append(' ').append(kill_notice_restored)` only when `activeOverlayUi?.hasAnyFloatingIcon == true`, so the sentence shows only with an icon actually on screen; `OverlayAlert` title and body wrap.
+- `settings_row_hub.xml`: the Support summary is `singleLine` + `ellipsize="end"`. `KeepRunningActivity.bindReportBugRow` puts the same title and subtitle in `settings_row_link`, which has no `maxLines` (wraps), as do the cards. `lineOf` gives `XIAOMI_BATTERY` the generic `keep_running_battery_line`, and the stuck accessibility card gets `a11y_stuck_title` + `keep_running_accessibility_restart_line`.
+- `LogExporter.emailFiles`: with no email app, the toast (`LENGTH_LONG`, `SUPPORT_EMAIL`) is followed by `shareFiles` with the bug-report subject under the `share_chooser_share_logs` chooser; `BugReport.share` (hold) uses `settings_debug_export_logs_subject`.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_xiaomi_autostart_line | 💬 | `Sem isso, a Xiaomi para o <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> e não deixa que ele volte.` | `Sem isso, a Xiaomi encerra o <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> e não deixa que ele volte.` | Since the spelling reform dropped the accent on «pára», the verb looks like the preposition: «a Xiaomi para o PlayTranslate» reads as "Xiaomi for PlayTranslate" until «e não deixa» forces the verb. «encerra» is the everyday verb for an app being shut down and has no twin. The file's other forms of «parar» (parou, parando, parado) are unambiguous and stay. |
+| keep_running_xiaomi_lock_line | 💬 | `Abra Recentes, mantenha pressionado o card do <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> e toque no cadeado. A limpeza de memória ignora apps bloqueados.` | `Abra Recentes, mantenha pressionada a janela do <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> e toque no cadeado. A limpeza de memória ignora apps bloqueados.` | Xiaomi's own pt-BR user guide (MIUI 13, PT-BR PDF on a Xiaomi domain, fetched today) calls each item in Recentes «uma janela de app» ("Toque em uma janela de app", "Deslize uma janela de app"). No other user-facing string in this file uses «card» as a Portuguese word (it says «cartão» for Anki cards). The participle agrees with the new feminine object. «Recentes» itself is Xiaomi's word (see Clean areas). |
+
+### Clean areas (delta) — checked, no findings
+
+**Kill notice, as the user meets it.** Title «O Android fechou o PlayTranslate». In `_memory` and `_other`, "while it was on" becomes a relative clause («fechou o PlayTranslate, que estava ativado»), so «ativado» lands on PlayTranslate and not on «Seu celular», the sentence's subject. `_stopped`, whose subject is PlayTranslate, uses «enquanto estava ativado». «ativado» is the file's "on" (`capture_lifecycle_state_on`). «foi parado … o parou» is the file's verb for a stopped app or service (`a11y_stuck_message` «o Android parou o serviço»). AOSP 16 labels the button «Forçar fechamento», but this sentence describes what happened and leaves the cause to the user, as the English does. `kill_notice_restored` after each body: «Ele … ativado» is masculine, like both true referents, «o PlayTranslate» and «o ícone flutuante». After `_memory` and `_stopped` it continues the previous sentence's subject (the icon). After `_other`, the plural «Alguns celulares» cannot take it, so it reaches back to the icon or the app; the «ativado» echo points at the app. The code adds the sentence only when an icon is on screen, so either reading is true, and the «Seu celular» and «o gerenciador» readings make no sense. Buttons «Ver opções» and «Agora não» (= `btn_not_now`).
+
+**Support card, in order.** Buscar atualizações · Entrar no Discord · Se o ícone desaparecer · Relatar um bug · Apoiar o PlayTranslate. «Se o ícone desaparecer» breaks the run of infinitives, but it leads with the symptom as the English comment asks. With its summary it reads as one instruction («Se o ícone desaparecer: impeça o celular de fechar o PlayTranslate»), in the help-topic form pt-BR uses for troubleshooting. It fits the toolbar (228 of 272 dp) and is byte-identical in both keys. Summary widths: 246 dp (English 252). The report-bug subtitle's first sentence is 232 dp and fits 249. The whole string is 385 dp, so the hold hint clips on every phone (known issue 2). Portuguese has no one-word "to email", and on the Fix page the subtitle wraps in full. On the hold word, the file's split holds: short labels say «Segure»/«Segurar» (`icon_gesture_hold`, `hotkey_show_translations_title`, `dialog_hotkey_setup_countdown`), and step-by-step instructions say «Mantenha pressionado» (`translate_button_subtitle_hold_*`, the Xiaomi lock line). «Segure para compartilhar.» is a complete, idiomatic hint, and Xiaomi's own pt-BR guide writes «Pressione e segure». «Mantenha pressionado para compartilhar.» measures 478 dp in place of 385. Dropping "instead" is fine, since the two sentences already contrast.
+
+**Fix disappearing icon page.** Intro «diminuem a chance de o celular fechar…» (the uncontracted «de o» before an infinitive's subject is the correct written form). Card titles are all infinitives (Definir, Usar, Adicionar, Permitir, Bloquear, Gerenciar, Desativar). `keep_running_battery_line` reads right under both the generic and the Xiaomi «… como “Sem restrições”» titles. The OPPO and vivo lines are byte-identical, and «Sem isso» covers "Without these". The restart line repeats `a11y_stuck_message`'s sentences under `a11y_stuck_title`. The tile title equals `quick_tile_add_row_title`. «limpeza(s) de memória» is the same in the accessibility and Xiaomi lines. The Huawei lines render known issue 1 faithfully. Empty label: «… reproduza-o e depois relate um bug.» uses the row's own verb (Relatar um bug). The page title sets up «o problema», and «reproduzir» echoes `crash_email_body`.
+
+**Email flow.** The chooser titles are parallel: «Enviar relatório de erro» (the file's crash-report term: `crash_dialog_message`, `toast_no_crash_report`) and «Enviar relatório de bug». AOSP pt-BR's own `bugreport_title` is «Relatório de bug». The subject mirrors `crash_email_subject`, en dash included. The body mirrors `crash_email_body`, and «estão anexados» is the right masculine plural for the mixed pair. The toast is 2 lines at 296 and 320 dp with the address whole on line 2. «Nenhum app de e-mail encontrado.» measures 3 lines, so the verbless form is the right trade. Then «Compartilhar registros»: «registros» means logs throughout.
+
+**Platform labels.** AOSP «Sem restrições» is exact in both battery titles. «o uso da bateria» follows AOSP's «Uso da bateria por apps» as the English follows "App battery usage". Samsung: all five labels match the official cells, re-read today on samsung.com/br (galaxy-battery/optimization): «Assistência do aparelho», «Bateria», «Limites de uso em segundo plano», «Apps nunca suspensos automáticos» (printed exactly so; AdGuard pt-BR's «Aplicativos nunca suspensos automaticamente» is secondary and loses), and «Aplicativos suspensos». That page says «celular» too. Xiaomi: the official MIUI 13 PT-BR user guide (https://alsgp0.fds.api.xiaomi.com/gl123/Generic%20User%20Guide%20for%20MIUI%2013/Generic%20User%20Guide%20for%20MIUI%2013%20PT-BR.pdf, pp. 12-13 for Recentes, the camera chapter for the permission) confirms «Inicialização automática» as the app-info permission («gerenciar as permissões da inicialização automática nas informações do app») and «Recentes» as the screen («Abrir Recentes», «Abra a janela Recentes»). So the autostart title, `a11y_stuck_message_xiaomi` and «Bloquear o PlayTranslate em Recentes» are right, and the secondary «Início automático» loses. The per-app «Economia de bateria» → «Sem restrições» is not in the guide; AdGuard pt-BR (secondary) prints exactly that. Huawei (no Brazilian pages), OPPO and vivo stay UNVERIFIED. The delta equals the research's guesses, so I have nothing to assert there.
+
+**Quotes.** Curly “ ” on the five label strings (both «Sem restrições» titles, the three Huawei switches, the Huawei option, the Samsung list) match the closest precedent, `a11y_stuck_message_xiaomi`'s «“Sem restrições”», and the documented pt-rBR style. The file's straight \"…\" strings sit on other screens (status hint, gestures alert, update and restricted-settings messages), and none is a neighbour of these. Within the delta the scheme is consistent: option, switch and list names are quoted, and → paths are unquoted, as in `overlay_icon_a11y_required_message`.
+
+**Vocabulary and agreement.** você imperatives throughout (Impeça, Envie, Segure, Descreva, Ative, Abra, reproduza-o, relate). Brazilian vocabulary only (tela, configurações, app/aplicativos, e-mail, segundo plano), with no ecrã, telemóvel, aplicação, eliminar or transferir. «celular» follows known issue 3, and the email body keeps «dispositivo» for "Device info", as `crash_email_body` does. Every contact with «o PlayTranslate» agrees in the masculine: fechou o, que estava ativado, foi parado / o parou, Ele … ativado, o usa, do PlayTranslate, para o, é fechado, sai dele, que ele volte. Clitics are placed correctly (o parou, reiniciá-lo, reproduza-o, o usa). The only en dash is the subject's, there is no em dash, curly quotes are paired, and → appears only in the two path lines.
+
+### Verdict (round 1)
+
+0 🛑, 0 ❌, 0 ⚠️, 2 💬, both on Xiaomi card lines: the «para» verb that reads as a preposition, and Xiaomi's «janela» in place of «card». **PASS** as is; the two 💬 are cheap and worth applying.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite, plus the final review of the first pass's 41 keys)
+
+Mechanical layer: `python3 tools/mech_check.py f2/keys2.txt pt-rBR` reports `checked 1 locales x 15 keys; problems: 0`; `python3 tools/mech_check.py keys.txt pt-rBR` (the first pass's 39 remaining keys) reports `checked 1 locales x 39 keys; problems: 0` (every key present; `<xliff:g>` spans, both `app_name` / `app_name2` spans of the three two-span lines included, and placeholders byte-identical to English; `\n` counts kept; no unescaped `'` or `"`, stray tag, double space or edge whitespace); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `missing=0 orphan=0 modified=0`, in sync. The four keys English removed (`restricted_settings_title` / `_message`, `keep_running_huawei_close_after_lock_title` / `_line`) are gone from the file. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` returns `message + "\n\n" + addendum` on API 33+ only. Its callers are `MainActivity.showAccessibilityDialog` and `SettingsRenderer.showOverlayIconA11yAlert` (system AlertDialogs), `AccessibilityAlert` (the OverlayAlert for the three `a11y_required_*_message`) and `KeepRunningActivity.lineOf` (the accessibility card, only when the service is not stuck). `SettingsRenderer.showA11yStuckAlert` never adds the addendum, and it appends `a11y_stuck_message_xiaomi` only when `Build.MANUFACTURER` is Xiaomi.
+- `KeepRunningActivity.openFirst` tries each ROM intent in turn. When none launches, it shows `keep_running_screen_unavailable` as a `LENGTH_LONG` toast and then opens App info (`ACTION_APPLICATION_DETAILS_SETTINGS`). `XIAOMI_BATTERY` now has its own line (`keep_running_xiaomi_battery_line`), and the Xiaomi lock card has no action and no icon.
+- `KeepRunningItems.ids`: Xiaomi gets autostart, battery and lock, with no generic battery card. Every other ROM gets its own card, then the generic battery card (hidden once exempt), then the accessibility card (API 30+), then the tile card (API 33+).
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_battery_line | 💬 | `Se o celular fechar o <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>, isso permite que ele reinicie sozinho.` | `Se o celular fechar o <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>, isso permite que o app reinicie sozinho.` | «ele» has two masculine candidates: «o celular», which is the clause's subject, and «o PlayTranslate». On top of that, «o celular reinicia sozinho» is the everyday Brazilian phrase for a phone that reboots by itself, so for a moment the line can read as the setting letting the phone restart. The card title resolves it, and «o app» removes the stumble at no cost. The OPPO/vivo «impedir que ele reinicie» has no such problem: the phone is the subject of «impedir», so «ele» cannot be the phone. |
+| keep_running_huawei_app_launch_title | 💬 | `Gerenciar a inicialização de apps manualmente` | `Gerenciar a inicialização dos aplicativos manualmente` | The line now tells the user to search for «Inicialização dos aplicativos», Huawei Brazil's own name for the screen (pt-br00409854, fetched today; see Clean areas). The title paraphrases it as «inicialização de apps», so the card names one screen in two ways. In English, title and line use the same words ("App launch"). Echoing the label in lowercase matches how «Permitir a inicialização automática» echoes Xiaomi's label. The page covers EMUI 8.X/9.X, older than the app's Android 10 minimum, so EMUI 10+ wording is unverified either way. The translator flagged this alignment for later. |
+
+### Clean areas — checked, no findings
+
+**The addendum, read after each of its six hosts.** `accessibility_dialog_message` and `overlay_icon_a11y_required_message` both end on the path «… → Ativar.», and «se a chave estiver acinzentada» picks up the switch that path turns on. After the three `a11y_required_*_message` and `keep_running_accessibility_line`, «a chave» has no antecedent, and neither has "the switch" in English. «acinzentada» and «toque nela» make it a control rather than «chave de API», the file's other sense of the word. «chave» is also AOSP pt-BR's word for a toggle: `bluetooth_show_leaudio_device_details` renders "Show LE audio toggle" as «Mostrar a chave do Bluetooth LE Audio…». «No Android 13 ou mais recente» copies `requires_android_11_message`'s «o Android 11 ou mais recente». Both labels are exact AOSP pt-BR (Android 16 QPR2 Settings, read locally): «Informações do app» (`application_info_label`) and «Permitir configurações restritas» (`app_restricted_settings_lockscreen_title`, also the deleted `restricted_settings_message`'s wording). The ⋮ menu gets no position, as in English. The sentence order (tap once, open, ⋮, select) is kept. None of the six hosts carries a quote of its own, so the curly “ ”, the locale's documented style, mixes with straight \"…\" on no surface.
+
+**Stuck alert, as a set** (title, message, Xiaomi paragraph, «Abrir configurações de acessibilidade»). `a11y_stuck_message` is the reviewed text minus the cause sentence, with nothing else changed. «não está funcionando corretamente» still echoes AOSP's «Não está funcionando.» (`accessibility_summary_state_stopped`). The Xiaomi paragraph follows exactly the three moves English made: «ative» → «permita» (allow), «a economia de bateria» → «o uso da bateria» (its battery use), «vai continuar» → «pode continuar» (may). «também» ties it to the re-toggle instruction above it. «Sem restrições» stays quoted as the one constant option, while the two entries stay unquoted, as the comment asks. «Sem isso» covers both settings.
+
+**Cards, title + line.** The generic battery title copies AOSP's `high_power_prompt_title` «Permitir execução contínua do app em segundo plano?», with the article and PlayTranslate in place of «app», and quotes neither «Sem restrições» nor «Não otimizada», as English quotes neither. The tile line only loses the swipe-and-tap clause; «Reativa» takes the tile as its subject, as «Executa» takes the service on the accessibility card. Xiaomi battery: «Definir o uso da bateria como “Sem restrições”» over «Nas configurações do sistema do PlayTranslate, abra a opção de bateria (…) e escolha “Sem restrições”». «configurações do sistema» repeats the alert's «nas configurações do sistema do app» and keeps PlayTranslate's own Settings screen out of it. The lock line keeps the round-1 sentence, and its new «deslize a janela para baixo» uses Xiaomi's own verb for Recents cards («Deslize uma janela de app…», MIUI 13 PT-BR guide p. 13). OPPO and vivo: «encerrar» for "stop" (no «para», the round-1 lesson), the closing sentence byte-identical, both `app_name` spans in place and reading naturally, «Sem isso» for "Without these". The vivo title says «o consumo de energia em segundo plano» and the line «alto consumo de energia em segundo plano», as English pairs "background power use" with "high". Samsung: the line's labels are the official samsung.com/br cells verified in the round-1 section («Bateria», «Limites de uso em segundo plano», «Apps nunca suspensos automáticos», byte-identical to the title's). «A Samsung suspende…» uses Samsung's own vocabulary (Aplicativos suspensos), and «Assistência do aparelho» left the path when English dropped Device care.
+
+**Search words** (5 of the 6 allowed web calls, two fetches and three searches, plus the local MIUI guide).
+- Xiaomi «inicialização automática»: Xiaomi's official MIUI 13 PT-BR guide (local copy re-read) gives «Configurações > Apps > Permissões > Inicialização automática». AdGuard's pt-BR KB (https://adguard.com/kb/pt-BR/adguard-for-android/solving-problems/background-work/, secondary) gives HyperOS's «Inicialização automática em segundo plano», which contains the word, so a search matches both. AdGuard's «Início automático» (its "Option 2" and MIUI 12.0.8) is a volunteer translation and loses to Xiaomi's guide.
+- Huawei: Huawei Brazil's page (https://consumer.huawei.com/br/support/content/pt-br00409854/, EMUI 8.X/9.X, fetched today) prints «Iniciar ou Inicialização dos aplicativos», «Gerenciar tudo automaticamente», «Início automático», «Início secundário» and «Executar em segundo plano». The line takes the newer screen name and the three switch labels exactly. The per-app switch is described unquoted («desative o gerenciamento automático do PlayTranslate»), since only the global label is printed. AdGuard's «Iniciar aplicativo» / «Gerenciar manualmente» are secondary and lose.
+- OPPO: AdGuard pt-BR's OnePlus label «Inicialização automática do aplicativo» (secondary) contains the search word. ColorOS and realme UI in pt-BR stay unverified (the search found only English and es sources).
+- vivo: no pt-BR source found. vivo sells in Brazil as Jovi (Funtouch 15), so the card does reach Brazilian users. Its word stays unverified (known issue 2).
+- Style: lowercase inside “ ” marks a term to type. Huawei's is capitalized because it is the label itself.
+
+**Toast, then App info.** It measures 2 lines at both 296 and 320 dp (lines of 267 and 278 dp). «Pesquise» is AOSP's own search verb (`search_settings` «Pesquisar»). Dropping "instead" loses nothing, since App info opens behind the toast. «a configuração nas Configurações» is an echo, but the capital C marks the app, it is the normal pt-BR collision, and it ties to the intro's «Essas configurações». «opção» would be vaguer.
+
+**Round-1 fixes.** Both landed. The «encerra» fix is superseded by the rewrite, and the new Xiaomi line has no «para» verb («pode impedir que o PlayTranslate reinicie depois de fechá-lo»). «mantenha pressionada a janela» is present.
+
+**The first pass's keys, final read.**
+- Kill notice: re-read with «Ele já está ativado de novo.» after each body. After `_memory` and `_stopped` it continues the icon. After `_other` the plural «Alguns celulares» cannot take it, and every remaining reading is true. Buttons are «Ver opções» and «Agora não» (= `btn_not_now`).
+- Support rows, measured again: the keep-running summary is 246 dp; the report-bug subtitle's first sentence is 232 dp and fits 249. On a 360 dp phone (216 dp) the row still shows «Envie os registros por e-mail ao sup…» (214 dp), so the tap action survives. The toolbar title is 228 dp of 272.
+- Email flow: the toast is 2 lines at 296 and 320 dp, with the address whole on line 2. Subject, body and chooser mirror the crash-report strings.
+- `keep_running_empty`: reads right in the cards' place.
+- Language and form across all 44 keys in scope (the first pass's 39 and the follow-up's 15 share 10): você throughout, Brazilian vocabulary only (celular, tela, app, baixados, segundo plano), every «o PlayTranslate» contact masculine. Curly quotes are paired, there is no em dash, and the only en dash is the subject's. Key order and the addendum's position match English.
+
+**Source side (not a locale issue).** `btn_open_app_settings` («Abrir configurações do PlayTranslate») has no caller left in the working tree. Its only use, MainActivity's restricted-settings dialog in HEAD, went with `restricted_settings_*`, so it is an English orphan candidate for the next sync.
+
+### Verdict (round 1)
+
+0 🛑, 0 ❌, 0 ⚠️, 2 💬 (the battery line's «ele», and the Huawei title echoing «Inicialização dos aplicativos»). Every label I could check matches its official source (AOSP, Huawei Brazil, Xiaomi's MIUI 13 guide, Samsung Brazil). **PASS** as is; both 💬 are optional and cheap.
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 tools/mech_check.py f2/keys2.txt pt-rBR` reports `checked 1 locales x 15 keys; problems: 0`, and over the first pass's keys (`keys.txt`, which holds the touched `keep_running_huawei_app_launch_title`) `checked 1 locales x 39 keys; problems: 0` (every key present; `<xliff:g>` spans, both spans of the three `app_name` / `app_name2` lines included, and placeholders byte-identical to English; `\n` counts kept; no unescaped `'` or `"`, stray tag, double space or edge whitespace). `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `missing=0 orphan=0 modified=0`, in sync. `git diff` of the locale file against HEAD touches 48 names, every one of them a key of this sync (the first pass's, the follow-up's, or the four removals); of the five names in `f2/keys-touched-outside.txt`, `a11y_required_hotkey_message`, `quick_tile_added_row_subtitle` and `requires_android_11_message` are untouched here, and `keep_running_xiaomi_autostart_title` still reads as round 1 left it. **No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `keep_running_battery_line`: applied, byte-identical to the suggestion («… isso permite que o app reinicie sozinho.»). The line now appears only under the generic battery title, since `XIAOMI_BATTERY` has its own line. «o app» leaves no doubt that the app restarts, not «o celular», and «reinicie» matches the Xiaomi, OPPO and vivo lines.
+- `keep_running_huawei_app_launch_title`: applied, byte-identical («Gerenciar a inicialização dos aplicativos manualmente»). Title and line now name the screen in the same words, and «Gerenciar … manualmente» still pairs with the line's «desative o gerenciamento automático». When the screen fails to open, the toast's «a configuração» now points at the exact words the line says to search.
+
+#### Findings (round 2)
+
+No new findings.
+
+#### Verdict (round 2)
+**PASS.** 0 🛑, 0 ❌, 0 ⚠️, 0 💬; nothing open. I read the strings fresh as sets: the addendum after all six hosts, the stuck alert with and without the Xiaomi paragraph, each card's title and line, and the toast. I re-measured the toast: 2 lines at both 296 and 320 dp (267 and 278 dp). The AOSP labels match the local Android 16 QPR2 pt-BR Settings file (`application_info_label`, `app_restricted_settings_lockscreen_title`, `high_power_prompt_title`, `manager_battery_usage_unrestricted_title`). «Recentes», «janela de app» and «Inicialização automática» match the local MIUI 13 PT-BR guide. The web calls (4 of 4) found nothing newer. Kaspersky's pt-BR Huawei article (195525) redirects through support.kaspersky.com.br to the US English page, and no Huawei EMUI 10+ or vivo (jovi) source in pt-BR turned up. So the Huawei labels still rest on Huawei Brazil's EMUI 8/9 page, and OPPO and vivo stay unverified (known issue 2). The toast drops "your phone's", but App info opens behind it, and «nas Configurações do celular» measures 3 lines, so the current wording is the right trade.
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync". The three keys are present once each, beside the same neighbours as in English, and the file parses as XML. This delta has no `<xliff:g>`, placeholder, plural, markup, apostrophe, ASCII quote or dash. "Bilibili" stays in Latin script, twice in the note. **No 🛑 build-breaking issues.**
+
+Render code read before reviewing: the note is `tvProviderNote` (RowSubtitle, wraps, no `maxLines`), shown in place of the API-key section under the untranslated title "Bilibili Index-Translate". The picker line is a 13 sp wrapping TextView, used when the account takes no key. The keyless body appears under `tr_service_remove_title_fmt` for Lingva and Bilibili Index-Translate.
+
+| key | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_index_translate_note | 💬 | `Operado pela Bilibili, que não publica limites de uso para ele.` | `Operado pela Bilibili, que não publica limites de uso para este serviço.` | The string never names the service: «Gratuito» and «Operado» agree with an implied «serviço». So the closing «para ele» has no noun to point back to, and reads as English's "for it" carried over. Naming the service, as es does («para este servicio»), removes the dangling pronoun. Optional. |
+
+Clean areas: The note keeps all three English facts: free and keyless; run by Bilibili, with no published limits; the captured text goes to Bilibili. «pela Bilibili» and «à Bilibili» use the feminine article for the company, as the file does elsewhere («da Tencent», «A Samsung»). The title's masculine «Remover o …» names the service, so the two do not clash. «limites de uso» is in line with «limite diário» (`translation_error_daily_quota`) and the Samsung «Limites de uso em segundo plano». «O texto capturado» is the captured-text term of `tr_service_order_footer`, and «chave de API» is `llm_backend_api_key_label`. The keyless picker line keeps the sibling's first sentence and its «ou digite um ID de modelo em Personalizado….» byte for byte. «Personalizado…» matches `llm_backend_model_custom_entry`. «Tente novamente» is the file's retry phrase (`hidden_word_save_failed`, `settings_ocr_download_failed`), in the você form. Read as one screen, the delete alert is «Remover o Lingva?», then «Isso remove o serviço da lista.», then the button «Remover». The body is the sibling without its key clause, and it keeps remover (remove) apart from excluir (delete). BR vocabulary throughout.
+
+### Disposition (2026-10-14)
+
+Applied the 1 💬 («para este serviço»).
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for pt-rBR (all 39 present; every `<xliff:g>` span, placeholder, markup count and escape as in English; no raw `'` or `"`; no edge or double space; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `values-pt-rBR missing=0 orphan=0 modified=0`, "in sync". `git diff` of the locale file touches exactly the 24 Part A keys. No `<plurals>` in scope. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** Error pill: `TranslationErrorPills` (14 sp, `maxLines=2`, ellipsized); `NOT_RUNNING` comes only from PlayTranslate Cloud (`PtCloudErrors`), so `%1$s` is always "PlayTranslate Cloud". Cloud page (`activity_pt_cloud_settings.xml`, `settings_row_switch.xml`): titles 15 sp and subtitles 13 sp wrap freely; the key hint is a `singleLine` 13 sp monospace EditText (about 278 dp of room on a 360 dp phone); the status row is title (weight 1) plus a wrap-content value. Hub cell (`settings_row_hub.xml`): summary `singleLine` + `ellipsize="end"`, 216 dp on a 360 dp phone. Capture & overlay: the cloud card sits under the OCR header, above the engine card. Services row: `tvRowSubtitle2`, no `maxLines`. Quick menu: the two strings are the strip's `contentDescription` only. Toast: `LENGTH_LONG`, two lines at 296 dp. Thinking row: `buildPillToggle` (13 sp autosizing down to 10 sp, then ellipsized; 8 dp pill padding at four segments). Crop pill: `RegionEditorControls.pill` (14 sp, `singleLine`, ellipsized, 16 dp padding) with 16 dp margins in the workspace card, which is inset 12 dp from each screen edge; the crop page hides the workspace header, so `anki_screenshot_crop` is read only by TalkBack there and on the crop button. Group headers: `addGroupHeader` uppercases with `Locale.ROOT`, which is correct for every Portuguese letter (Ç, Ã, Õ, accented vowels). Load more: `maxLines=1`, ellipsized.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_reasoning_off | 💬 | Desativado | Nenhum | With four segments on a 360 dp phone, each label gets about 56 dp (296 dp row, minus 6 dp of track padding, divided by 4, minus 2 × 8 dp of pill padding). Labels autosize from 13 sp down to 10 sp and are then ellipsized. «Desativado» measures 55.0 dp regular at 11 sp and 53.4 dp bold at 10 sp (Arial), so it fits without an ellipsis, but it always renders at 10–11 sp beside 13 sp «Baixo · Médio · Alto», and the comment's comfortable limit is about 8 letters. «Nenhum» fits at 13 sp (52.0 dp bold), agrees with «nível», is the file's "None" (`settings_digest_none`), and names what the segment sends: the API value `none` (`Reasoning.apiName`). Optional. |
+| anki_screenshot_crop_instruction | ⚠️ | Arraste as bordas para cortar a captura de tela | Arraste as bordas para cortar a captura | The pill is one ellipsized line inside the workspace card. On a 360 dp portrait phone (a portrait game) that leaves about 270 dp (360, minus 24 for the card inset, 32 for the pill margins and 32 for its padding). The current text measures 290 dp, so «de tela» turns into «…» there. It fits from about 393 dp up and in landscape, so only the narrowest phones are hit, but the clipping is confirmed in code. The suggestion measures 244 dp and fits everywhere. It keeps the shape of `region_overlay_drag_instruction`, which already shortens to «as capturas», and on this page «a captura» can only be the screenshot. |
+| llm_backend_reasoning_subtitle | 💬 | Quanto o modelo raciocina antes de responder. Quanto mais alto, mais lento, e o raciocínio é cobrado como tokens de saída. | Define quanto o modelo raciocina antes de responder. Quanto mais alto, mais lento, e o raciocínio é cobrado como tokens de saída. | Two sentences in a row open with «Quanto», in two senses ("how much", then "the more"). Spanish tells them apart with an accent (Cuánto / Cuanto); Portuguese cannot, so the second reads like a restart. A verb on the first fragment ends the echo and makes it a full sentence, like its sibling's «O modelo raciocina antes de responder». |
+| pt_cloud_ocr_row_subtitle | 💬 | OCR no servidor, sem carga para o dispositivo | OCR no servidor, sem pesar no dispositivo | «sem carga para o dispositivo» puts "zero device load" into Portuguese word for word. «pesar no» is how Brazilian copy says a job weighs on a device («não pesa no celular»), and it keeps the line as short as the engine notes beneath it. Optional; the current line is understood. |
+
+**Outside the delta (code, not a string, so it has no table row).** Under the status row, the cloud page shows `cooldownLine`. For PlayTranslate Cloud that line's description is an English constant in `PtCloudErrors`: "Not running", and also "Rate limited", "Server error", "Bad key" and "No membership". So with the server stopped, the page can show «Serviço … Parado» above "Not running · Nova tentativa às 15:42". Every service's cooldown line works this way ("Connection failed" and "Rate limited" in the store backends). The fix belongs in code (a string resource per cause), not in `values-pt-rBR`. Read in code, not seen on a device.
+
+### Clean areas (checked, no findings)
+
+**Form.** você throughout: «seu dispositivo», «você recebeu», and the imperatives Cole, Arraste, pesquise. None of the 39 strings asks a question or exclaims. No em dash, no straight quote, no apostrophe.
+
+**Error pill.** «PlayTranslate Cloud: parado» has the family's lowercase "service: status" shape (… não está respondendo, … não foi possível conectar, … resposta inesperada). «parado» is masculine, agreeing with the service, and it matches the status row's «Parado». At 165 dp it is one line of the two-line pill.
+
+**Cloud page, read as one screen.** The switches «Reconhecimento de texto» and «Tradução de texto» are two parallel nouns, so they read as a pair. «Reconhecimento de texto» is the file's OCR term (`settings_header_ocr`, `slow_ocr_prompt_title`).
+
+The two subtitles:
+- «OCR mais potente em uma GPU de servidor. Toda a potência do seu dispositivo fica para o jogo.» reads as natural Brazilian gaming copy. The potente/potência echo mirrors English's stronger/power, and «uma GPU» is correctly feminine.
+- «Inclui modelos de tradução pagos e escolhe o melhor para cada tarefa.» is natural, and «o melhor» agrees with «modelo».
+
+The key:
+- «Chave de cliente» follows «Chave de API» (`llm_backend_api_key_label`) and the services row's «Chave ••••…» (`tr_service_key_tail_fmt`).
+- «Cole» is the verb of `hint_deepl_key` and AOSP pt-BR's «Colar».
+- The hint is 29 characters, about 226 dp in the 13 sp monospace field (0.6 em a glyph) against about 278 dp.
+
+The status row:
+- «Serviço» takes seven values: «Em execução», «Iniciando», «Parado», «Não foi possível conectar», «Resposta inesperada (500)», «Verificando», «Não verificado».
+- «em execução», «Verificando…» and «Iniciando» are AOSP pt-BR's own words (`heavy_weight_notification`, `lockscreen_glogin_checking_password`, `android_upgrading_starting_apps`). The file already says «Verificando…» (`update_progress_verifying`). «Em execução» / «Parado» is also the pair Windows' Brazilian service status shows (from memory).
+- «Parado» and «Não verificado» agree with «Serviço».
+- The three pairs the brief names match their pill twins word for word, capitalized as standalone values: `translation_error_unreachable`, `translation_error_bad_response` and `translation_error_not_running`.
+- The widest value (157 dp) fits on one line beside «Serviço».
+
+**Settings hub.** Measured at 13 sp against the 216 dp a summary gets on a 360 dp phone: «OCR e tradução no servidor» 162 dp, «Somente OCR no servidor» 153, «Somente tradução» 106, «Desativado» 65. All four are one line. «no servidor» is what the English comment says "Server-grade" means. «Somente» is the file's word in «Somente online» and the `misc_*_only` tags. «Desativado» is the file's Off (`capture_lifecycle_state_off`, `settings_cell_history_summary_off`).
+
+**Capture & overlay.** The cloud row's subtitle has the engine notes' "what, then what it costs" comma shape («Ágil, mesmo em telas com muito texto», «Encontra textos pequenos, mais lento»). The wording is the 💬 above.
+
+**Translation services.** «Os melhores modelos de tradução pagos, já incluídos» stands where the other rows read «Requer conta». «já incluídos» is the everyday Brazilian commerce phrase, so the tagline reads as native copy, and the line wraps.
+
+**Quick menu.** «disponível» and «indisponível» match `backend_status_unavailable_default` «Indisponível» and AOSP's «indisponível». They are lowercase after the colon, as in the pill family.
+
+**Toast.** «Não foi possível abrir essa tela. Em vez disso, pesquise a configuração nas Configurações.» says what the new English says.
+- «Não foi possível abrir» is the file's pattern (`image_import_decode_failed`, `update_error_install_launch`).
+- «Em vez disso» is the file's "instead" (`update_error_wrong_package`, `keep_running_xiaomi_lock_line`).
+- «pesquise … nas Configurações» uses the cards' own «Nas Configurações, pesquise».
+- The «a configuração nas Configurações» echo is the decision recorded on 2026-10-07, so I do not raise it again.
+- It measures 2 lines at 296 dp (286 + 276 dp in Arial; Roboto runs narrower) and at 320 dp. It is the tightest string in the delta, so adding words such as «do celular» would mean dropping «Em vez disso,».
+
+**Part B.**
+- **Group headers.** «Conjugação», «Declinação» and «Formas» are the standard grammar terms, one noun each. `Locale.ROOT` uppercases them correctly (CONJUGAÇÃO, DECLINAÇÃO) beside DEFINIÇÕES.
+- **Crop button and page title.** «Cortar captura de tela» pairs with the ✕'s «Remover captura de tela» and uses the file's screenshot term (`anki_group_screenshot`). «Cortar» also stays clear of AOSP pt-BR's «Recortar» (cut).
+- **Thinking titles.** «Modo de raciocínio» and «Nível de raciocínio» use one word for "thinking", as both comments require. It is the same root as the subtitles' «raciocina … raciocínio».
+- **Thinking subtitles.** «é cobrado como tokens de saída» reads naturally. The comma before «e» is right, since a new subject follows.
+- **Levels.** «Mínimo · Baixo · Médio · Alto» agree with «nível» and fit at 13 sp (Mínimo is 45.5 dp bold, against about 56).
+- **Load more.** «Carregar mais (2)» is 102 dp in the one-line 13 sp row, beside «Outra correspondência» and «Consultando…». The count in parentheses needs no plural.
+
+### Brazilian Portuguese appendix: BR vocabulary, agreement, the marketing lines
+
+- **BR-vs-EU audit over all 39 keys.**
+  - Brazilian forms only: tela (captura de tela, essa tela), Configurações, dispositivo, chave, Cole, pagos, tarefa, Carregar mais, cobrado.
+  - Gerunds where pt-PT writes «a» + infinitive: «Iniciando», «Verificando» (pt-PT «A iniciar», «A verificar»).
+  - None of ecrã, ficheiro, telemóvel, utilizador, aplicação, transferir, eliminar or registar.
+  - «em uma GPU» is the form Brazilian UI text prefers, where pt-PT copy tends to write «numa».
+- **Agreement with an implied noun.**
+  - The service: «Desativado» (hub), «parado» / «Parado» and «Não verificado» (the row title is «Serviço»).
+  - The model: «Mais lento», «o melhor».
+  - The level: «Mínimo», «Baixo», «Médio», «Alto», and the suggested «Nenhum».
+  - The models: «já incluídos».
+
+  «uma GPU» is feminine, and «OCR» goes without an article in every string.
+- **Placeholders, read with real values.** Both `service` spans fill with "PlayTranslate Cloud", and nothing after the colon needs an article. `http_code` and `count` sit in parentheses, so «Carregar mais (1)» needs no singular form.
+- **The marketing lines as Brazilian UI copy.**
+  - «OCR e tradução no servidor»: a plain spec line.
+  - «Toda a potência do seu dispositivo fica para o jogo»: idiomatic gaming copy.
+  - «Inclui modelos de tradução pagos e escolhe o melhor para cada tarefa»: natural.
+  - «Os melhores modelos de tradução pagos, já incluídos»: natural.
+
+  Only «sem carga para o dispositivo» reads translated (💬 above).
+
+### Disposition (2026-10-27)
+
+All four findings applied: `anki_screenshot_crop_instruction` «Arraste as bordas para cortar a captura»; the optional 💬 `llm_backend_reasoning_off` «Nenhum» too, so the segment stays at 13 sp beside its siblings and matches es «Ninguno»; `llm_backend_reasoning_subtitle` «Define quanto…»; and `pt_cloud_ocr_row_subtitle` «…, sem pesar no dispositivo». The cooldown line's English description is a code finding, verified in code; reported, not fixed.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for pt-rBR (all 39 present; every `<xliff:g>` span, placeholder, markup count and escape as in English; no raw `'` or `"`; no edge or double space; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-pt-rBR/strings.xml` reports `values-pt-rBR missing=0 orphan=0 modified=0`, "in sync". `git diff` of the locale file touches 27 names: the 24 Part A keys and the three Part B keys round 1 changed (`anki_screenshot_crop_instruction`, `llm_backend_reasoning_subtitle`, `llm_backend_reasoning_off`). No `<plurals>` in scope. **No 🛑 build-breaking issues.**
+
+Round-1 changes checked. Nothing moved beyond the Disposition: the file's hash equals the post-fix record (`SP/locale-hashes-after-fixes.txt`), and the 24 Part A values equal the translator's drafts (`SP/drafts.py`) except the one fixed key. Widths below are Roboto, the font Android draws, extracted from Robolectric's runtime jar.
+- `anki_screenshot_crop_instruction` «Arraste as bordas para cortar a captura»: confirmed. It measures 243.8 dp at 14 sp, against 272 dp in the floating workspace on a 360 dp portrait phone and 296 dp in the review sheet's dialog. It keeps the shape of `region_overlay_drag_instruction` («Arraste as bordas para restringir as capturas a esta região»), and «cortar» matches the button's «Cortar captura de tela», clear of AOSP pt-BR's «Recortar» (cut).
+- `llm_backend_reasoning_off` «Nenhum»: confirmed. It now sits at 13 sp (49.2 dp, and 49.4 dp in Roboto Black, the face a selected segment gets), where «Desativado» rendered at 11 sp. It agrees with «Nível de raciocínio», is the file's None (`settings_digest_none`), matches es «Ninguno», and never shares a row with «Mínimo» (`Reasoning.reported` drops Minimal beside Off).
+- `llm_backend_reasoning_subtitle` «Define quanto o modelo raciocina antes de responder. …»: confirmed. The two «Quanto» no longer open consecutive sentences, and under «Nível de raciocínio» the row describes itself. The second sentence is byte-identical to before.
+- `pt_cloud_ocr_row_subtitle` «OCR no servidor, sem pesar no dispositivo»: confirmed. It is the Brazilian idiom («não pesa no celular»), and «no dispositivo» keeps «pesar» a verb, so it never reads as «sem pesar» ("without regret"). It keeps the engine notes' "what, then what it costs" shape («Ágil, mesmo em telas com muito texto») and wraps freely.
+
+#### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_screen_unavailable | 💬 | Não foi possível abrir essa tela. Em vez disso, pesquise a configuração nas Configurações. | Não foi possível abrir essa tela. Pesquise a configuração nas Configurações. | Fits, with almost no room to spare. The toast shows at most two lines (the platform's `transient_notification.xml` has `maxLines="2"` and `ellipsize="end"`), 296 dp wide on a 360 dp phone. In Roboto 14 sp both lines are nearly full (283 and 276 dp). From 1.05× text size it needs a third line, so the ellipsis lands on «Configurações», the place to search (Pixel's first step up is 1.15×, from memory). English holds two lines through 1.2×, and es through 1.3×. Without «Em vez disso,» the toast measures 475 dp and holds two lines through 1.15×. Its second sentence is then byte-identical to the one passed on 2026-10-07, which found that dropping "instead" loses nothing, since App info opens behind the toast; the recorded «a configuração nas Configurações» echo stays as it was. Optional. |
+
+#### Verdict (round 2)
+
+**PASS** (0 🛑, 0 ❌, 0 ⚠️, 1 💬). The four round-1 fixes landed as the Disposition says and read right on their screens, and no other value moved. A fresh read of all 39 keys found nothing else:
+- **Form and agreement.** você throughout, with Brazilian forms only (tela, dispositivo, Configurações, Cole, pagos, and the gerunds Iniciando and Verificando). Every word agrees with its implied noun (serviço, nível, modelo), and «uma GPU» is feminine.
+- **Terms.** The file's own: Reconhecimento de texto, Chave de cliente after «Chave de API», captura de tela, and Cortar beside AOSP's «Recortar» (cut). «em execução», «Verificando» and «indisponível» are AOSP pt-BR wording, and the three status values match their pill twins.
+- **Widths, in Roboto.** Everything fits: hub summaries (158 dp at most, of 216), status values, the key hint (DroidSansMono, 226 of about 280 dp), the level segments, Load more, and the crop pill (up to 1.12× text size in the workspace).
+
+Left open: the optional 💬, and the code finding round 1 recorded (the cloud page's cooldown line takes an English description from `PtCloudErrors`), which no string can fix.

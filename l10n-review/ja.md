@@ -1,0 +1,1039 @@
+# Japanese (values-ja) localization review
+
+Mechanical pass: clean. All placeholders present, `<xliff:g>` inner content untouched, `<b>`/`\n`/`\{ \}`/`&lt;img&gt;` preserved, no unescaped apostrophes (the file uses 「」 throughout), plurals are `other`-only, brand names intact. No あなた anywhere; 使用する言語 is used for "Your Language" in both `lang_translate_to` and `pack_upgrade_label_target`. The intentionally-unlocalized "Example:" samples (聞く, ★★★, noun) were correctly left alone. No 🛑 findings.
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| offline_backend_row_a11y_fmt / offline_backend_row_a11y_no_speed_fmt | ❌ | 品質：\<xliff quality\> | drop the literal 品質： prefix, e.g. 「\<title\>。\<quality\>。速度：…」 | The quality bucket strings already carry the prefix (品質：低 etc., needed because they double as visible prose labels), so TalkBack composes 「品質：品質：良。」. A11y-only, but genuinely garbled. |
+| a11y_out_of_5_stars | ⚠ | 5つ星中 | （5つ星中） | Code composes rating-then-clause: 「品質 4 5つ星中」 — number before 中-clause is backwards in Japanese. Parenthesizing makes the fixed order parse: 「品質 4（5つ星中）」. A11y-only. |
+| backend_cooldown_status_fmt + backend_cooldown_retry_at/_on | ⚠ | %1$s · 再試行 15:42 | fmt → 「\<description\> · \<retry_time\>\<retry_word\>」 with retry word に再試行 | 「再試行 15:42」 reads as a dangling label. Reordering the whole xliff blocks is allowed and yields the natural 「15:42に再試行」. |
+| accessibility_dialog_message | ⚠ | 上の画面のゲーム画面のスクリーンショット | 下の画面に開いたまま、上の画面のゲームのスクリーンショットを撮影するために | Double 画面 (「画面のゲーム画面の」) is clunky in the single most policy-sensitive string. Rest of the string is excellent. |
+| anki_long_press_footer | ⚠ | 通常ankiカード作成画面に進むボタン | 通常は\<anki\>カード作成画面に進むボタン | Missing は after 通常 makes 通常 glue onto the brand: 「通常anki…」. One particle fixes it. |
+| enhanced_auto_translate_subtitle_off | ⚠ | より見やすく、反応がよく、安定します。 | 表示が見やすくなり、反応と安定性が向上します。 | The く-form chain adverbially modifies 安定します — grammatically off ("readably, responsively, it stabilizes"). |
+| llm_hardware_unsupported_arm64 / llm_hardware_unsupported_ram | 💬 | この端末では対応していません | この端末には対応していません | では+対応していません mismatches; the sibling `lang_setup_requires_64bit_msg` already uses the correct この端末は対応していません. |
+| crash_dialog_message | 💬 | 最近OCRまたは検索したテキスト | 最近OCRで読み取った、または検索したテキスト | OCR isn't a する-verb as written; currently reads "text that was OCR or searched". |
+| llm_status_low_memory_badge | 💬 | 代替で翻訳しています | 代替エンジンで翻訳しています | 代替で alone is elliptical to the point of oddness. |
+| llm_low_memory_message | 💬 | この端末に合わない場合は | このモデルが端末に合わない場合は | Subject dropped one clause too far — what doesn't fit is ambiguous. |
+| dialog_hotkey_setup_countdown | 💬 | 押し続けてください 1.4 | 押し続けてください（あと\<%1$s\>秒） | Bare trailing decimal; adding あと…秒 around the placeholder is free and much more natural. |
+| status_hold_hint | 💬 | 長押しでクイック選択メニュー | 長押しでクイック選択メニューを表示 | Hint line ends on a bare noun; one word completes it. Quoted 「範囲」「自動」 correctly match the actual button labels. |
+| mp_overlay_permission_message / overlay_hide_controls_title | 💬 | ゲーム画面コントロール | ゲーム画面のコントロール | `game_screen_controls_title` and `onboarding_a11y_body` use のコントロール; these two drop the の. Unify. |
+| restricted_settings_message | 💬 | 3点メニュー（⋮）のボタンを選び | 3点メニュー（⋮）をタップし | 「メニューのボタンを選び」 is doubly indirect; タップ matches the rest of the file. |
+| settings_header_ocr | 💬 | 画像からテキスト（OCR） | テキスト認識（OCR） | Literal calque of "Image-to-text"; テキスト認識 matches `status_ocr` (テキストを認識中…) and standard Android/Google wording. |
+| tts_language_unsupported_dialog_title | 💬 | 言語が非対応です | この言語には対応していません | Slightly translationese as a dialog title; bodies below it already use 〜に対応していません. |
+
+Sections checked and clean (not padded above): onboarding, word-detail sheet, language picker, pack-upgrade flow, region picker, capture lifecycle, all four MNN model families (consistently mirrored), Bergamot, Anki review sheet + content-source/flag labels, TTS, Quick Settings tile, Support, Debug, toasts.
+
+## Verdicts
+
+- **Register consistency:** Clean — です/ます prose, noun-form buttons, no plain-form leaks, no あなた anywhere.
+- **Terminology consistency:** Strong — 設定/翻訳/ダウンロード/削除 vs 無効 vs オフ distinctions held throughout; only the ゲーム画面（の）コントロール wobble flagged.
+- **Android-settings wording:** Correct — ユーザー補助, 他のアプリの上に重ねて表示, 従量制, クイック設定, テキスト読み上げ all match Android's own Japanese.
+- **Punctuation:** Consistent — full-width 、。？！： in Japanese prose, half-width for file sizes and Latin runs.
+- **Grammar around placeholders:** Good overall (を/で/に particles survive substitution; counters 台/個/件/字 appropriate); the cooldown line and the a11y star clause are the two composition misfires.
+- **Truncation risk:** None — bottom bar is 設定/範囲/自動/停止 (2 chars each), キャプチャ\n範囲 fits the two-line button.
+- **Legal text:** Faithful — §5(b) reference, EU／英国／韓国 enumeration, and 表明し保証します ("affirm and warrant") all preserved; no softening.
+- **Overall:** fix-then-ship — one wrong (a11y-only) composition plus small polish items; quality is otherwise native-grade.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR set collapsed to Japanese's single `other`; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+
+No findings. All 29 keys are native-grade and pass every quality axis. Adversarially checked and clean:
+
+- **Naturalness / no calques** — `yomitan_importing_progress` (`%2$d件中%1$d件をインポート中…`) and `yomitan_import_summary_count` (`%2$d件中%1$d件の辞書をインポートしました。`) both correctly reorder to **total-first**, which is the only natural way to use the 件中 ("of N") construction; the positional placeholders are swapped accordingly (mechanically safe). `yomitan_import_summary_more` renders "+N more" as the idiomatic `他%1$d件` rather than a literal `＋N`. `llm_backend_base_url_invalid` splits the English em-dash into two sentences with 。 (`https://を使用してください。http://は…`), the correct JA convention. No literal/MT phrasing anywhere.
+- **Terminology consistency** — 高低アクセント (`anki_content_pitch_position`) matches `yomitan_category_pitch_accent` and `yomitan_page_description`; 頻度 reused throughout the four frequency strings; the 8th sibling joins the established `強調表示した単語…` formula verbatim; ★評価 echoes the 星 of `anki_content_frequency_desc`; 形式 matches `anki_content_definition_desc`/`_stylized`. テキスト読み上げ (`audio_source_tts_name`) matches the canonical TTS term (`settings_header_text_to_speech` et al.). 音声 (`audio_source_picker_title`) matches `anki_group_audio`/`tts_voice_picker_title`. 結果がありません (`audio_no_results`) is identical to `lang_search_no_results` and `dictionary_status_no_results`. 読み込み中…/読み込めませんでした (`audio_loading`/`audio_error_loading`) mirror the `word_detail_more_examples_*` pair. カスタムURL aligns with the existing カスタム… / カスタム範囲 usage. 詳細設定 (`llm_backend_advanced_header`) is Android's standard "Advanced".
+- **Register** — labels/titles are clean noun-form (高低アクセントの位置, 頻度リスト, 詳細設定, インポート完了, 自動更新, 音声); bodies use polite ます (…に使用します, …インストールします, …使用できます). No plain-form leak, no over-formality.
+- **Full-width punctuation with half-width placeholders** — all four summary-line prefixes use full-width ： before the half-width `%1$s` (`インポート済み：`, `読み込めませんでした：`, `空き容量が足りません：`, `失敗：`), matching the house pattern (`status_error`, `anki_deck_label_format`, the MNN `_download_failed` rows). Counters/numbers stay half-width inside the 件中…件 frame.
+- **No あなた** — confirmed absent across the whole file.
+- **Plurals** — both `<plurals>` collapsed to a single `other` with the natural counter 件 (dictionaries → …件の辞書, elided names → 他…件). Correct for Japanese.
+- **Short-label truncation** — 音声 (2 ch, "Audio" toolbar title), 詳細設定 (4 ch, "Advanced"), 自動更新 (4 ch), 不明なファイル (picker fallback) all comfortably fit; no risk.
+- **The `Example:` rule** — `anki_content_pitch_position_desc` correctly keeps the source's literal `Example: 0,2` verbatim (the whole token is the unlocalized output sample); not flagged.
+- **Brand handling** — `audio_source_commons_name` left as `Wikimedia Commons` (verbatim, doubles as the TTS-settings switch-row label per the EN comment); Lapis/JPMN and the quoted field names (PitchPosition, FreqSort, FrequenciesStylized…) untouched.
+
+---
+
+# Delta review — 2026-07-14 sync (174 keys)
+
+Scope: the 170 newly translated + 4 changed-English keys (History screen, Advanced LLM prompt editor, in-app updater, game-audio trim editor, translation-service status lines, single-app capture, and the 38 `misc_*` dictionary tags).
+
+**Mechanical layer re-verified programmatically — no 🛑.** All 174 keys present; `%1$s`/`%2$s`/`%d` parity exact; every `<xliff:g>` `id`/`example`/inner content byte-identical to EN; the bare Latin keyword literals (`{text}` `{source}` `{source_code}` `{target}` `{target_code}` `{N}` `{strings}`) reproduced byte-for-byte with half-width braces in all 6 prose strings; `floating_menu_capture_screen` keeps its single `\n`; no unescaped `'`; `<plurals>` correctly collapsed to `other` only; **no あなた / 貴方 / お客様 anywhere in the file**; no half-width `?` or `!`.
+
+## Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| misc_onomatopoeia | ❌ | 擬音語・擬態語 | オノマトペ | `MiscLabels.renderMiscText` joins the tags of a sense with **`" · "`**, and JMdict senses routinely carry several. The chip's internal `・` is the same mark as the join separator at 12sp grey italic, so a word tagged on-mim + col renders 「擬音語・擬態語 · 口語」 — **three** tags where there are two. No other chip contains `・`. オノマトペ is the standard umbrella term (covers 擬音語 *and* 擬態語), separator-safe, and 2 chars shorter. (擬音語 alone would also work but drops the mimetics.) |
+| misc_formal + misc_informal | ❌ | 正式 / 略式 | 改まった語 / くだけた語 | 正式↔略式 is the Japanese **full-form vs abbreviated-form** axis (正式名称／略式手続き), not the formal↔informal **register** axis. On a dictionary sense 略式 reads "this is the shortened form" — and `pos_abbreviation` = **略語** already renders two lines above it on the same sense (POS eyebrow → gloss → misc line), so ケータイ would show 略語 then 略式 and conflate the two axes exactly where it matters. 正式 likewise reads "the official/correct form" and bleeds into the correctness axis owned by 非標準. 改まった語／くだけた語 is the standard descriptive register pair in Japanese lexicography and collides with nothing. |
+| error_capture_blocked_secure | ❌ | **この**アプリは画面キャプチャを許可していないため、何も読み取れません。 | **キャプチャ対象の**アプリが画面キャプチャを許可していないため、何も読み取れません。 | Shown in PlayTranslate's *own* in-app panel, so 「このアプリ」 reads as PlayTranslate — it tells the user our app is at fault. The referent is the *captured* app (FLAG_SECURE, per the EN comment), and the sibling two lines away in the file (`error_single_app_not_fullscreen`) already establishes the correct term 「キャプチャ対象のアプリ」. Mis-attributes the blame. |
+| misc_offensive | ⚠️ | 侮辱語 | 不快語 | Offensiveness cluster must stay distinguishable, and `derog` + offensive co-occur on the same sense constantly. 軽蔑語 ("contempt word") and 侮辱語 ("insult word") are near-indistinguishable side by side. **差別語・不快語** is the canonical Japanese doublet (publishing/broadcasting style guides); `misc_slur` is already 差別語, so 不快語 completes the pair and separates cleanly from 軽蔑語. Cluster then reads 軽蔑語／不快語／卑語／差別語 — four distinct, all canonical, all 3 chars. |
+| misc_familiar + misc_endearing | ⚠️ | 親密 / 親愛 | 親しい間柄 / 親愛 | Two 2-char 親-initial abstract nouns; on one word a reader cannot tell 親密 ("intimacy") from 親愛 ("affection"), and neither is a lexicographic label. Keep 親愛 for endearing (it is the closer fit) and move familiar to a usage description. Alternative for familiar: 「なれなれしい語」. |
+| misc_humorous | ⚠️ | ユーモア | おどけた語 | ユーモア is the noun "humour", so the line reads 「口語 · ユーモア」 = "colloquial · humour" — it labels the word as *being* humour, not as *used humorously*. Every sibling is an 〜語 noun or a usage noun (皮肉, 婉曲, 比喩). 「ユーモラス」 is the minimal-change alternative if a katakana form is wanted. |
+| update_error_incomplete, update_error_verification | ⚠️ | もう一度お試し**いただくか**、… | もう一度**試すか**、… | 〜いただく is humble/elevated and is the **only** 〜いただくか in the file. The committed formula is 「もう一度お試しください」 (7 occurrences: `anki_send_failed_message`, `anki_models_unavailable`, `llm_backend_invalid_key_alert_message_fmt`, `settings_ocr_download_failed`, `yomitan_no_space_message`, `yomitan_io_error_message`, `yomitan_download_error_message`). House register bans stiff over-formality. Plain 試すか in the subordinate clause with the final ください keeps it polite and consistent. |
+| update_unknown_sources_message | ⚠️ | …<PlayTranslate>に**アプリの更新のインストール**を許可してください。 | …<PlayTranslate>の**「この提供元のアプリを許可」をオンに**してください。 | Two problems: the の-chain (アプリ**の**更新**の**インストール) is clunky, and the string does not name what Android actually shows. `ACTION_MANAGE_UNKNOWN_APP_SOURCES` opens 「不明なアプリのインストール」 whose toggle is **「この提供元のアプリを許可」** — naming it is exactly what makes the toggle findable. `restricted_settings_message` already sets the precedent of quoting an Android control in 「」 (「制限付き設定を許可」). Rest of the string is fine. |
+| stream_kind_prompt_message | ⚠️ | **1つ**のアプリを共有した場合と… | **1個**のアプリを共有した場合と… | The dialog body uses the つ counter while its own button one tap below (`stream_kind_share_one_app`, AOSP-verbatim 「1 個のアプリを共有」) uses 個. Body and button must agree on the counter. Not flagging the button itself — it is deliberately AOSP SystemUI wording, and its half-width numeral space matches Android-ja's own 「2 件の通知」 convention. |
+| llm_prompt_advisory_missing_count | ⚠️ | {N}がありません。**いくつのフレーズを想定すべきかが**モデルに伝わりません。 | {N}がありません。**フレーズの数が**モデルに伝わりません。 | Its two siblings are clean and parallel (「翻訳元の言語がモデルに伝わりません。」／「翻訳先の言語がモデルに伝わりません。」). This one breaks the pattern with a nominalized embedded question + 〜かが — stiff, and reads like MT. The fix restores the [X が モデルに伝わりません] frame across all three. |
+| llm_prompt_row_system_subtitle | ⚠️ | クラウドと端末内の**LLM翻訳**に送られるペルソナと指示。 | クラウドと端末内の**LLM翻訳サービス**に送られるペルソナと指示。 | "LLM translators" are the *backends*; 「LLM翻訳」 names the *activity*, so the sentence reads "sent to LLM translation". The sibling in the same feature area (`settings_llm_context_subtitle`) already says 「オンラインのLLM翻訳サービス」, and the page's own noun is 翻訳サービス (`settings_cell_translation_services`). |
+| llm_prompt_warning_title | ⚠️ | プロンプトを確認**してください** | プロンプトを確認 | The only 〜てください **dialog title** in the file. Committed titles are 体言止め or declarative: 「ホットキーを設定」, 「空きメモリが不足しています」, 「カードを追加できませんでした」, 「インポート済み」, 「…しますか？」. House register: noun/plain form for titles, です・ます in bodies. Declarative alternative that parallels its sibling `llm_prompt_invalid_title` (「このプロンプトは保存できません」): 「このプロンプトに問題があります」. |
+| settings_llm_context_subtitle | 💬 | オンラインのみ。オンラインのLLM翻訳サービスに**記録済みテキスト**の直近数行を渡し、… | オンラインのみ。オンラインのLLM翻訳サービスに**テキスト履歴**の直近数行を渡し、… | 記録済みテキスト is a third noun for a feature the file already names twice (`history_toggle_title` 「テキスト履歴」, and 「キャプチャした文」). Tying it to the feature name tells the user *which* toggle feeds this one. |
+| tr_service_key_tail_fmt | 💬 | キー ••••<key_tail> | キー：••••<key_tail> | Half-width word-space; the JA params ban spaces between words, and every other label prefix in the file uses a full-width ：(本日：, ダウンロードサイズ：, インポート済み：, 失敗：). |
+| tr_service_remove_message | 💬 | サービスをリストから**削除**し、保存済みのAPIキーも**削除**します。 | 保存済みのAPIキーとともに、サービスをリストから削除します。 | 削除 twice in one short sentence. |
+| update_error_no_space | 💬 | **更新をダウンロードする**空き容量が足りません（…） | **更新のダウンロードに必要な**空き容量が足りません（…） | Gapless 連体修飾 on 容量 reads oddly ("free space that downloads the update"). Compare the committed `yomitan_no_space_message`: 「この辞書のインポートには約…の空き容量が必要です」. |
+| game_audio_trim_duration | 💬 | <seconds>秒を選択 · 録音済み<total>秒 | 選択<seconds>秒 · 録音済み<total>秒 | The two halves have opposite structure ([N秒を選択] vs [録音済みN秒]). This string also doubles as the sentence-audio **row title** in the card editor, where 「2.4秒を選択」 can read as a command rather than a readout; a prefix-labelled pair reads as a readout in both places. |
+| tr_service_status_no_usage_today | 💬 | 本日の使用はありません | 本日：使用なし | Correct as-is, but its fmt sibling is 「本日：<12,345>トークン」 — the parallel form makes the two status lines read as one family and is shorter for a one-line status. |
+| misc_idiomatic | 💬 | 慣用表現 | 慣用句 | 慣用句 is the label Japanese dictionaries actually print, and is 1 char shorter. |
+| misc_rare | 💬 | まれ | まれな語 | A bare adverb among 〜語 / usage nouns; the 〜語 form reads as a label rather than a stray word. |
+| misc_manga_slang | 💬 | 漫画スラング | マンガスラング | Mixed kanji+katakana compound; its sibling `misc_internet_slang` is all-katakana ネットスラング. |
+
+## Clean areas (checked, no findings)
+
+- **`misc_*` — the 27 that are right.** 口語 / 俗語 / 卑語 / 差別語 / 雅語 / 文語 / 古語 / 廃語 / 古風 / 方言 / 幼児語 / 女性語 / 男性語 / **尊敬語・謙譲語・丁寧語** / 婉曲 / 皮肉 / 比喩 / 新語 / 非標準 / 要注意 / **四字熟語** / かな表記 / 漢字表記 / 歴史用語 / ネットスラング / 軽蔑語 are all dictionary-standard Japanese lexicographic labels, not glosses of the English. The honorifics cluster (尊敬語／謙譲語／丁寧語) is exactly the canonical三分法 and is flawless. The obsolescence cluster (古語／廃語／古風／歴史用語) is four genuinely distinct terms. `misc_yojijukugo` correctly uses 四字熟語 per the glossary, and kana/kanji stay native. Register and brevity match the committed `pos_*` family (名詞, 助数詞, ことわざ, 略語 — 2–4 chars); after the three chip fixes above, the longest chip is 5 chars.
+- **The keyword tokens.** All 6 prose strings carrying bare `{…}` literals keep them Latin and half-width-braced, un-spaced, un-cased. `llm_prompt_kw_source_desc` / `_target_desc` correctly keep 「（例：Japanese）」/「（例：English）」 in Latin — these are the literal runtime expansions, per the brief.
+- **Glossary terms, all matched against the committed file.** プロンプト (never リクエスト for the template itself — リクエスト is used only where EN says "request"); キーワード; **プロバイダー** (matches `tr_service_order_footer`); 翻訳サービス (matches `settings_cell_translation_services`); **キャプチャ**した文 (the app's established capture verb, reused in all three History strings); 履歴 as one noun across `settings_cell_history` / `history_screen_title`; 従量制 (metered); テキスト読み上げ (TTS); ゲーム音声 works as both pill and section header; LLM kept as the Latin initialism; 詳細設定 (Advanced) reused from the previous sync; オーバーレイ matches `settings_cell_capture_overlay`; 文カード matches `anki_content_words_table` / `anki_content_flag_sentence`.
+- **Remove vs Delete vs Clear.** Japanese has no natural Remove/Delete split, so 削除 is used for both (`tr_service_*` and `history_action_delete` / `settings_ocr_disable_delete`) — which is exactly what the glossary permits. **Clear** is correctly held apart as 消去 (`history_clear_menu`, `history_clear_confirm_title`): the committed クリア is reserved for clearing *input fields* (`btn_clear`, `dictionary_clear_query`, `lang_search_clear_cd`), and would be far too weak for a destructive disk wipe. Deliberate and right.
+- **`ocr_source_label`** = 「<PaddleOCR>による読み取り」 mirrors the committed `translation_source_label` 「<DeepL>による翻訳」 *structurally*, exactly as the glossary mandates — not a fresh translation of "Scanned by".
+- **`floating_menu_capture_screen`** = 「キャプチャ\n全画面」 is the exact parallel of the committed `floating_menu_btn_capture_region` 「キャプチャ\n範囲」 — same two-line shape, same 4+3 char split, fits the square button.
+- **Truncation.** `service_llm_badge` = LLM (3); `probe_initializing` = 初期化中… (5); the two-line capture button fits; the `misc_*` line wraps (MATCH_PARENT/WRAP_CONTENT, no ellipsize) so length is a soft concern — but see `misc_onomatopoeia` above, whose problem is the separator, not the width.
+- **Plurals.** `settings_yomitan_count_summary` is `other`-only with the natural counter 件 — correct for Japanese, and consistent with the two plurals shipped in the 2026-06-23 sync.
+- **Punctuation.** Full-width 。、？（）「」 and ：throughout; half-width digits, placeholders, sizes, Latin runs and the ` · ` separator (the established house separator — `word_detail_tatoeba_attribution`, `anki_group_words_count`, `settings_anki_digest`, `backend_cooldown_status_fmt` all use it). No half-width ? or !.
+- **Register.** Buttons and titles are 体言止め or plain (破棄, リセット, このまま保存, 音声なし, 選択範囲を使用, モデルを残す, 設定を開く, 再試行, 更新のインストールを許可); dialog bodies are short です・ます. Confirm dialogs consistently use 〜しますか？. The only two register misfires are `llm_prompt_warning_title` and the 〜いただく pair, both flagged above.
+- **No あなた, and no covert "you".** `update_dialog_metered_note` ("You're on a metered connection") → 「現在の接続は従量制です。」; `llm_prompt_discard_message` ("Your edits") → 「このプロンプトの編集内容」; `audio_source_game_ready` ("From your recent gameplay") → 「直近のゲームプレイから」; `llm_backend_base_url_custom_hint` ("your backend's URL") → 「バックエンドのURLを入力」; `llm_prompt_row_translation_subtitle` ("each phrase you look up") → 「調べるフレーズごとに」; `stream_kind_prompt_title` ("did you pick") → 「…選択しましたか？」. Every English second person is dissolved correctly — none of these read as a literal rendering.
+- **`llm_status_low_memory_badge`** left alone per the brief (English-only em-dash→comma swap); the JA already carries the 代替エンジン fix from the previous review round.
+- **Grammar around placeholders**, read with real values substituted: 「128 MB」「230 MB」「68 MB」「12,345 トークン」「OpenAI を削除しますか？」「PaddleOCR による読み取り」「2.4 秒 / 147 秒」「4f2a」— particles (に/を/で/から) and counters (秒/件/個) all survive substitution. `update_error_no_space` 「あと230 MB必要です」 and `settings_ocr_disable_manga_msg` 「（68 MB）を残しますか、それとも削除して空き容量を増やしますか？」 both read naturally.
+
+## Verdicts
+
+- **The 38 `misc_*` chips:** strong overall — the translator reached for the Japanese lexicographic tradition rather than glossing the English, and the honorifics, obsolescence, kana/kanji and 四字熟語 tags are exactly right. Three defects: the `・` inside 擬音語・擬態語 collides with the tag-list separator; 正式／略式 is the wrong axis (and collides with the committed 略語); 侮辱語/軽蔑語 and 親密/親愛 are too close to tell apart on one word.
+- **Overall:** fix-then-ship. Three ❌ (one rendering break, one wrong-axis pair, one mis-attributed error message), nine ⚠️ (mostly register/consistency drift against the committed file), nine 💬. No 🛑. Quality is otherwise native-grade.
+
+---
+
+## Delta review round 2 — 2026-07-14
+
+Fresh independent pass over the corrected file (174 delta keys). Primary target: regressions introduced by the round-1 fixes.
+
+**Mechanical layer re-verified — no 🛑.** XML well-formed; **0 raw `&`**; every `%n$s`/`%d` and every `<xliff:g>` `id`/`example`/inner byte-identical to EN; `\n` intact in `floating_menu_capture_screen`; the 7 bare `{token}` literals half-width and un-cased; all `<plurals>` `other`-only; no unescaped `'`; **no half-width `? ! ( ) : ,` anywhere in JA prose**; **zero あなた / 貴方 / お客様 in the whole file**. `update_dialog_download` correctly drops EN's `&amp;` for the て-form (「ダウンロードしてインストール」) — not a missing escape.
+
+### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| game_audio_trim_use_tts | ❌ | 代わりにテキスト読み上げを使用 | 読み上げを使用 | **Round-1 miss, not a regression — and it breaks the screen.** `activity_game_audio_trim.xml` L80–116 is a rigid horizontal `LinearLayout`: three `wrap_content` MaterialButtons (this one, 音声なし, 選択範囲を使用) + one `weight=1` Space. **No `ellipsize`, no `maxLines`, no button weights, no scroll container, and no `screenOrientation` on `GameAudioTrimActivity`** — so it renders in portrait on a phone. All three buttons are always visible (`GameAudioTrimActivity.kt` only attaches click listeners). Row text: EN **18.0 em** → JA **26.0 em** = **364 dp of text alone**, which exceeds a 360 dp phone's *entire width* before ~120 dp of button padding and 24 dp of container padding. LinearLayout measures the last `wrap_content` child against whatever is left, so **the primary 「選択範囲を使用」 Save button — the one button the screen exists for — is squeezed to near-zero and its label destroyed.** The brief's own note that **pt-BR shortened this exact string to "Usar TTS" as a deliberate width exception ("the button row was measured")** is direct evidence the row is width-critical; pt-BR is now the shortest of all 12 (14.5 em). 「読み上げを使用」 returns JA to exactly the 18.0 em EN budget. If the canonical テキスト読み上げ must survive, 「TTSを使用」 also fits and mirrors the accepted pt-BR precedent. **See the cross-locale note below — this is a layout defect, not a JA defect.** |
+| misc_familiar | ⚠️ | 親しい間柄 | 親しい間柄の語 | **Regression in form introduced by the round-1 fix.** Round 1 changed `misc_humorous` ユーモア → おどけた語 on an explicit rule: *"ユーモア is the noun 'humour', so the line reads 「口語 · ユーモア」 — it labels the word as being humour, not as used humorously. Every sibling is an 〜語 noun or a usage noun."* 親しい間柄 fails that identical test — it is a **relationship** noun, so the chip line reads 「口語 · 親しい間柄」 = "colloquial · a close relationship". Round 1 applied its own rule to one sibling and not the other: the three *other* register chips it rewrote in the same pass (くだけた語 / 改まった語 / おどけた語) are all V-た+語 label forms, leaving 親しい間柄 the **only** chip in the informality cluster that isn't a word-label. The distinctness gain over 親愛 (`misc_endearing`) is real and must be kept — adding 〜の語 keeps it and restores the label form. Collides with nothing. *(Companion nit: `misc_endearing` = 親愛 is also a bare abstract noun; 「親愛の語」 would make the pair parallel. Lower priority — 親愛 is short and reads acceptably alone.)* |
+| stream_kind_prompt_message | ⚠️ | …**ライブ翻訳**の動作は異なります。 | …**ライブモード**の動作は異なります。 | **Round-1 miss.** ライブ翻訳 appears **nowhere else in the file**. The committed JA term for this feature is **ライブモード** — used by `error_live_mode_unsupported_backend` and `error_screen_capture_denied`, **the two strings immediately above this one in the same file section** (L299/L301 vs L311), plus `accessibility_dialog_message` and `settings_debug_log_pinhole`. The brief's own settled note for **ru** says this exact key "deliberately keeps «в реальном времени» **to match the committed 'Live mode' term**" — the established policy for this key is to align it with the locale's committed Live-mode wording, and JA didn't. The file now carries three names for one feature (自動翻訳 / ライブモード / ライブ翻訳). One-word swap; the 1個 counter fix from round 1 is correct and stays. |
+| game_audio_trim_duration | 💬 | 選択\<seconds\>秒 · 録音済み\<total\>秒 | 選択：\<seconds\>秒 · 録音済み：\<total\>秒 | The round-1 fix restored parallelism but stopped one step short of the house pattern: **every other label:value string in the file uses a full-width ：** (本日：, ダウンロードサイズ：, キー：, インポート済み：, 失敗：). Here the label abuts the numeral bare — 「選択2.4秒」. It also coins a third word for the selection: its own sibling buttons say **選択範囲** (`_save` 選択範囲を使用, `_play` 選択範囲を再生), and `l10n-language-parameters.md` states the trim editor's selection "is a **selection**". It renders in two places (the trim readout *and* the Anki sentence-audio **row title**, `SentenceAnkiContentFragment.refreshSentenceAudioTitle`), so it must read as a readout in both. |
+| misc_idiomatic | 💬 | 慣用表現 | 慣用句 | New argument for round 1's already-declined suggestion. JMdict tags idioms `exp` + `id` together constantly (油を売る, 手を焼く…), so `WordResultCell` renders the POS header **表現** (`pos_expression`) and, two lines below it, the misc chip **慣用表現** — the tag literally contains the POS printed above it. 慣用句 is the label Japanese dictionaries actually print, is a char shorter, and breaks the echo. Optional. |
+
+### The `misc_*` set — the specific questions, answered
+
+- **All 38 labels are pairwise distinct** (verified programmatically). `renderMisc`'s `.distinct()` collapses nothing.
+- **No label contains `·` / `・` / `/` / `,` / a space** — the separator rule (`l10n-language-parameters.md` L142) holds across all 38. **オノマトペ is not merely separator-safe, it is *more accurate* than the string it replaced**: JMdict's `on-mim` is "onomatopoeic **or mimetic**", and オノマトペ is the standard umbrella covering 擬音語 *and* 擬態語 — 擬音語 alone would have dropped the mimetics. Correct fix, no regression.
+- **No label collides with any `pos_*` or `inflection_*` label** (exact-match check, all three families). The nearest pair is `misc_polite` 丁寧語 / `inflection_polite` 丁寧, which **can** co-render on one `WordResultCell` (the conjugation line above, the register line below the gloss) — but 丁寧語 (a keigo class) vs 丁寧 (a polite conjugation) is a real, standard Japanese distinction, and the two sit on different lines in different type. Not a defect. The round-1 略式 ↔ 略語 (`pos_abbreviation`) collision is **gone**.
+- **All four clusters remain separable:**
+  - **offensiveness** — 軽蔑語 / 不快語 / 卑語 / 差別語: four canonical 3-char terms. **不快語 is round 1's best call**: it completes the standard 差別語・不快語 doublet while separating cleanly from 軽蔑語, which the old 侮辱語 did not.
+  - **obsolescence** — 古語 / 廃語 / 古風 / 歴史用語 ✔ (まれな語 sits cleanly alongside).
+  - **informality** — 口語 / くだけた語 / 親しい間柄 / 俗語: distinct ✔ (form issue flagged above).
+  - **honorifics** — 尊敬語 / 謙譲語 / 丁寧語: the canonical 三分法, untouched, flawless.
+- **改まった語 / くだけた語 is the right axis, and it buys more than it was asked to.** It leaves the file with two *orthogonal* canonical pairs — 口語↔文語 (spoken vs written) and 改まった語↔くだけた語 (formal vs informal) — where 正式/略式 had conflated formality with abbreviation. Endorsed.
+- **`misc_female_speech` / `misc_male_speech`** = 女性語 / 男性語 — reads as "women's / men's speech", **not** grammatical gender (the trap the parameters doc calls out). ✔
+
+### Round-1 fixes re-derived from scratch — all confirmed correct
+
+- **`error_capture_blocked_secure`** — verified against the render site. It fires **only** from `ReconcilerLiveMode` (the single-app *task-stream* reconciler — its own comment: *"a task stream contains no system UI"*), on a sustained all-black frame. There genuinely **is** one captured app, so 「キャプチャ対象のアプリ」 is factually right and matches its sibling `error_single_app_not_fullscreen`. The old 「このアプリ」 did blame PlayTranslate. Fix confirmed.
+- **`update_error_no_space`** — the EN `<!-- comment -->` says `%1$s` = "human-readable byte count **still needed**", so 「あと230 MB必要です」 is correct, and *more* precise than the EN. The applied wording (「更新のダウンロードには空き容量が足りません」) is more idiomatic than round 1's own suggestion.
+- **Register fixes both landed.** `llm_prompt_warning_title` is now declarative (「このプロンプトに問題があります」), parallel to `llm_prompt_invalid_title` (「このプロンプトは保存できません」), and distinguishes the advisory dialog (which offers このまま保存) from the fatal one. **No 〜てください dialog titles remain.** The 〜いただくか humble form is gone from both update errors: 「もう一度試すか、…ください」 is the correct Japanese pattern (plain subordinate clause, politeness carried by the final predicate only).
+- `tr_service_key_tail_fmt` (キー：), `tr_service_remove_message` (double-削除 gone, meaning intact), `tr_service_status_no_usage_today` (本日：使用なし, now one family with its fmt sibling), `llm_prompt_advisory_missing_count` (the [X が モデルに伝わりません] frame restored across all three advisories), `llm_prompt_row_system_subtitle` (LLM翻訳サービス), `settings_llm_context_subtitle` (テキスト履歴 — ties the toggle to the feature that feeds it), `update_unknown_sources_message` (「この提供元のアプリを許可」 is Android-ja's actual toggle label; the 「」 quoting matches the `restricted_settings_message` precedent) — **all correct, no regressions.**
+
+### Clean areas (checked, no findings)
+
+- **Hotkey section (new).** 自動翻訳 matches the committed `live_mode_auto_translate_label` / `settings_header_auto_translate`; 「長押しで…を表示」 matches `translate_button_subtitle_hold_to_show_translations`; and `hotkey_section_translations` = 翻訳 is byte-identical to `overlay_mode_option_translation`, which `HotkeysSettingsActivity` uses to title the *sibling* group (ふりがな / ピンイン) — the two group headers read as one family. Substituted: 「タップで自動ふりがなを開始・停止」 / 「自動ピンイン」 ✔.
+- **Plurals at each band.** `settings_yomitan_count_summary` `other`-only: at 1 → 「1件の辞書をインポート済み」, at 3 → 「3件の辞書をインポート済み」 ✔.
+- **Grammar around placeholders**, read with real values: 「PaddleOCRによる読み取り」「OpenAIを削除しますか？」「キー：••••4f2a」「本日：12,345トークン」「ダウンロードサイズ：128 MB」「あと230 MB必要です」「（68 MB）を残しますか、それとも削除して…」「PlayTranslateを更新中」「PlayTranslateを開く」 — particles and counters all survive substitution.
+- **Terminology.** 履歴 / テキスト履歴 (one noun, and 消去 correctly reserved for the destructive Clear vs. 削除 for a single entry); キャプチャした文; プロンプト never リクエスト for the template; プロバイダー; 翻訳サービス; 従量制; テキスト読み上げ; 端末内 (on-device, both occurrences); 注意 (the house WARNING word — 警告 appears nowhere); オーバーレイ; 範囲.
+- **Register.** Buttons/titles 体言止め or plain (破棄, リセット, このまま保存, 再試行, 設定を開く, モデルを残す, 音声なし, 選択範囲を使用); dialog bodies です・ます; confirmations consistently 〜しますか？.
+- `floating_menu_capture_screen` 「キャプチャ\n全画面」 mirrors the committed 「キャプチャ\n範囲」 (same line-1, one char wider on line 2; `fitLabel` auto-shrinks). No risk.
+
+### Cross-locale note — this is a layout defect, not a Japanese defect
+
+The trim-editor action row is a rigid `LinearLayout` budgeted for EN's **18.0 em**. Measured text width of the three labels, per locale:
+
+`fr 33.0 · tr 32.0 · de 31.0 · ru 27.0 · es 27.0 · ar 26.0 · **ja 26.0** · vi 25.5 · ko 19.0 · th 18.5 · en 18.0 · zh 18.0 · pt-BR 14.5`
+
+**Eight locales are over the EN budget**, most of them far worse than Japanese. Shortening eight strings is whack-a-mole; the durable fix is the row itself (`flexWrap`, button weights + `ellipsize`, or a vertical stack). The ❌ above is the lever available inside a `values-ja` file, but the generator should be fixed in the layout.
+
+### Verdict
+
+- **Round-1 fixes:** 20/20 re-derived; **19 confirmed correct**, 1 (`misc_familiar`) fixed the distinctness problem but introduced a form regression against round 1's own stated rule. The three ❌ corrections (オノマトペ, 改まった語/くだけた語, キャプチャ対象のアプリ) are all **verified right against the code**, and two are *better* than the English.
+- **The 38 `misc_*` chips:** distinct, separator-clean, collision-free, all four clusters separable. Native-grade.
+- **Overall: FIX FIRST** — one ❌ (`game_audio_trim_use_tts` clips the Save button off the trim editor on a portrait phone), two ⚠️, two 💬. No 🛑. Everything else in the delta is ship-ready.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "文字が多い画面でも高速" | "文字が多い画面でも軽快" | The English comment forbids reusing the literal Fast tier label; the first pass reused 高速, the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+| `history_capture_camera_cd` · `history_capture_screen_cd` | ⚠️ | "カメラのキャプチャ" / "画面のキャプチャ" | "カメラキャプチャ" / "画面キャプチャ" | The file's established compound is 画面キャプチャ (`capture_lifecycle_on_subtitle`, `settings_hide_overlays_during_auto_mode` neighbourhood); the の form introduced a second spelling of the same term. The pair now reads parallel as origin badges. |
+| `camera_no_text_hint` | ⚠️ | "…近づけるか、タップして…" | "…カメラを近づけるか、タップして…" | 近づける is transitive; with no object the hint reads as "bring [something] closer" and leaves the reader to guess what moves. Naming カメラ resolves it. |
+
+### Clean areas (delta) — checked, no findings
+
+Full-width punctuation throughout the new strings — （）for the PaddleOCR tier labels (the EN comment's own 高精度 / 高速 examples), ：in `settings_support_check_updates_subtitle` and the slow-OCR settings path, 、。in every body. No あなた anywhere in the delta. 端末 for "device", matching `settings_ocr_delete_msg`. ユーザー補助 for accessibility across all three `a11y_stuck_*` strings. ライブモード / 自動モード / 自動翻訳 reused verbatim from `error_live_mode_unsupported_backend`, `settings_hide_overlays_during_auto_mode` and `settings_header_auto_translate` rather than reinvented. エンジン for the OCR engine stays distinct from ツール (tool) and モデル (the downloadable model) — all three collide in `settings_ocr_delete_camera_import_note` and stay separable. 静止画 for the camera freeze-frame, deliberately not スクリーンショット (which `anki_group_screenshot` already owns). Plurals carry `other` only. Ctrl left untranslated in `dialog_hotkey_setup_typing_key` per its EN comment.
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** Three ⚠️ found and fixed, no ❌. The remaining delta re-derives as correct.
+
+---
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Scope: the 8 keys added by `84d28c88` (one-tap success toasts, card-mode memory),
+`51536300` (Anki first-field guard), the History hide-translations sub-toggle, and the
+in-card trim-waveform caption. Reviewed independently against
+`app/src/main/res/values/strings.xml` and its translator comments; **report only — no
+edits were made to `values-ja/strings.xml`.**
+
+Mechanical layer verified programmatically over the 8 keys: all present, no extras; every
+`<xliff:g>` span byte-identical to EN including `id`/`example` attributes and inner
+`%1$s`; placeholder multisets identical (`anki_first_field_unmapped` and
+`anki_first_field_empty` each carry exactly one `%1$s`, both wrapped); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'` or `"`; `name=` untouched; brand
+`Anki` untranslated inside every span. The EN curly quotes `“ ”` around the field-name
+placeholder are rendered as 「 」 in both first-field strings — the ja quote convention
+per `l10n-language-parameters.md`, outside the `<xliff:g>` span, and therefore correct
+rather than a mechanical deviation. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — reported, not applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | 💬 | 「ピンチ操作で表示する音声の範囲を調整」 | 「ピンチ操作で音声の表示範囲を調整」 | ピンチ操作 is the right Android JA gesture noun (Google's own JA uses ピンチ操作で拡大/縮小) — no issue there. But 表示する音声の範囲 is a relative clause where Japanese has a ready compound: 音声の表示範囲. It also momentarily mis-parses as "the audio to display", and costs 2 characters on a caption that is small, centred and wraps. Meaning is unchanged; this is polish. |
+| `anki_first_field_empty` | 💬 | 「…最初のフィールドでノートを識別するため、すべてのカードに値が必要です。」 | 「…最初のフィールドでノートを識別するため、どのカードでもこのフィールドに値が必要です。」 | EN's "it needs a value on every card" — "it" is the *first field*. The JA drops the referent one clause too far, so the tail reads literally as "every card needs a value" (a value of what?). Recoverable from 最初のフィールド in the preceding clause, so 💬 not ⚠️; naming the field closes it. Length is free here — this string's primary surface is a full alert. |
+| `anki_first_field_empty` | 💬 | (no JA change) | (source-side) | **Not a Japanese defect — flagging for the parent.** The EN comment says "Shown in a full alert, so length is fine", but `AnkiOneTapDispatch.oneTapResultToast` surfaces `AnkiSendResult.Failed.message` as a `Toast.LENGTH_LONG`, so the one-tap path shows this string as a toast under the Android 12+ two-line clamp. At ~53 full-width-equivalents the JA clips there; EN (~118 Latin chars) clips too. Affects all 12 locales equally; the fix belongs in EN/code, not in ja. |
+
+No 🛑, ❌ or ⚠️ in this delta.
+
+### Clean areas (delta) — checked, no findings
+
+**The two one-tap toasts do exactly what their comments demand.**
+`anki_added_sentence_success` (文カードをAnkiに追加しました) and `anki_added_word_success`
+(単語カードをAnkiに追加しました) name the card shape with the *same* words as the mode
+chips — `anki_mode_sentence` 文 / `anki_mode_word` 単語 — so the silently-applied default
+becomes visible in the words the user last saw on the toggle. Both pattern-match
+`anki_added_no_audio`'s 「Ankiに追加しました」 verbatim, and 文カード is not a new coinage:
+the file already carries it in `anki_game_audio_row_subtitle`, `anki_content_words_table`,
+`anki_content_flag_sentence` and `anki_content_flag_targeted_sentence`. 単語カード is first
+use here; it is also the everyday JA word for a ring-bound vocabulary flashcard, but the
+mode-label contrast (and the fact that the file spells generic "flashcards" as
+フラッシュカード in `anki_permission_rationale_message`) keeps the reading unambiguous.
+Considered and accepted — changing it would break the mandated tie to 単語.
+
+**ノート is the right call, and is used consistently.** Anki's own Japanese localization
+distinguishes ノート (note) from カード (card), and the note/card split is exactly what
+these two strings are about — the duplicate checksum lives on the *note*, not the card.
+Both `anki_first_field_unmapped` and `anki_first_field_empty` use ノート for "note" and
+カード for "card", with no leakage in either direction. This mirrors EN's own deliberate
+split, where the user-facing model picker says "card type" (ja カードタイプ, per
+`anki_card_type_row_label`) but the first-field strings say "note". Collapsing ノート into
+カード would have made both strings factually wrong. The only other ノート in the file,
+`update_dialog_view_release`'s リリースノート, is an unrelated compound.
+
+**Mapping terminology matches the dialog that opens next.** `anki_first_field_unmapped`'s
+「値を割り当ててください」 reuses 割り当て — the verb `anki_content_source_pick_title`
+(「%1$s」を割り当て, EN "Map \"%1$s\"") already uses for the same action in the very dialog
+this toast precedes. It stays distinct from `anki_card_type_edit_mapping_row_label`'s
+マッピング and `anki_field_mapping_unconfigured`'s 設定, mirroring EN's own
+Map/mapping/Configure split.
+
+**Toast-length clamp checked, not guessed.** `anki_first_field_unmapped` is
+`Toast.LENGTH_LONG` in `AnkiSendDispatch` (Android 12+ two-line clamp). The JA measures
+~27 full-width + 7 half-width characters ≈ 30 full-width-equivalents; a 14sp toast on a
+360dp-wide screen fits roughly 22 per line, i.e. ~44 over two lines. It fits with room for
+a user-defined field name considerably longer than the `Key` example. No shortening
+needed — and the string keeps the brand span rather than trading it for brevity.
+
+**Sentence-final punctuation follows the file's own surface rule.**
+`anki_first_field_unmapped` (toast) ends with no 。, matching `anki_field_mapping_unconfigured`
+and `anki_permission_denied`; `anki_first_field_empty` (alert body) keeps its 。, matching
+`anki_models_unavailable` and `anki_send_failed_message`. EN's trailing period on the toast
+was correctly dropped rather than transliterated.
+
+**History strings reuse the established capture vocabulary.**
+`history_hide_translations_toggle_subtitle`'s キャプチャした文 is byte-identical to the
+phrase already in `settings_cell_history_summary_on`/`_off`, `history_toggle_subtitle` and
+`history_empty_off` — no second capture verb was introduced, which is the specific trap
+`l10n-language-parameters.md` calls out for this family. 翻訳 for "translation" matches
+`anki_group_translation`. "Row" is rendered 項目, matching `history_delete_confirm_title`'s
+この項目 — and notably *not* 行, which would have collided with the `history_line_count`
+plural's %d行 ("lines") on the same screen. The subtitle's second sentence
+(項目をタップすると翻訳が表示されます) delivers the "one tap away" promise the EN comment
+asks for, without overstating it. `history_hide_translations_toggle_title` (翻訳を非表示)
+is parallel in form to its neighbour `history_capture_image_toggle_title`
+(キャプチャ画像を保存), and its です/ます subtitle matches
+`history_capture_image_toggle_subtitle`'s 保存します.
+
+**`card_words_in_sentence`.** 文中の単語 reads as a natural section header and sits
+parallel with `anki_group_words_count`'s カード内の単語 ("Words on card") — same 〜の単語
+frame, different container, which is exactly the EN pair's relationship. The card CSS's
+ALL CAPS transform is inert on kana/kanji, so unlike Turkish there is no casing hazard,
+and no accuracy was traded for a shorter header.
+
+**Register and mechanics across the delta.** No あなた anywhere. Full-width 、。「」 throughout,
+half-width Latin/placeholders. Loanword katakana (ピンチ操作, キャプチャ, カード, フィールド,
+ノート). Polite です/ます in the two body-text strings, clipped noun/〜する form in the
+headers, labels and captions — the split the ja register calls for. Every brand span
+untranslated. No per-string English comments leaked into the locale file, and the section
+banners and key ordering still match English.
+
+### Verdict
+
+**PASS.** No 🛑/❌/⚠️. Three 💬, one of which is a source-side/all-locale observation rather
+than a Japanese issue. The ノート decision is correct and consistent; the two one-tap
+toasts satisfy the mode-naming contract; the History strings sit inside the file's existing
+capture vocabulary.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+None. No 🛑/❌/⚠️; two 💬 recorded below as decisions rather than defects.
+
+| name | severity | current | note |
+|---|---|---|---|
+| yomitan_update_available_message, _repair_message, _none_message, _done_message | 💬 | 「%1$s」 | The dictionary title is bracketed with 「」 in all four strings, following `yomitan_delete_title` (「%1$s」を削除しますか？) rather than `yomitan_duplicate_message` (bare %1$s). Deliberate and worth recording: the fill is a Latin-script name (Jitendex.org, JMnedict [2026-08-13]) sitting inside Japanese with no inter-word spacing, so the brackets are what mark where the name ends. The file is currently split on this; the delta lands on the bracketed side consistently. |
+| yomitan_update_none_title | 💬 | 「最新の状態です」 | です-final rather than the noun form ja titles usually take. Kept because the file's own equivalent does the same — `update_none_title` is 「更新はありません」 — so the alert titles in the two update flows read alike. |
+
+### Clean areas (delta) — checked, no findings
+
+**Update vocabulary reused from the app updater.** 「更新があります」 and
+「更新を確認できませんでした」 are byte-identical to `update_dialog_title` /
+`update_check_failed_title`; `yomitan_update_check_failed_message` follows
+`yomitan_download_error_message`'s 「接続を確認して、もう一度お試しください」;
+`yomitan_update_scan_active_message` closes with `anki_models_unavailable`'s
+「しばらくしてからもう一度お試しください」; 「更新を確認中」 matches
+`update_progress_verifying` 「検証中…」; 「バックグラウンド」 matches
+`onboarding_notif_row_silent_sub`.
+
+**「翻訳元の言語」 is the file's own term**, from `llm_prompt_kw_source_desc`
+(「翻訳元の言語の英語名」, 3 occurrences) — not the ソース言語 loan a fresh translation
+reaches for, and deliberately not 「ゲームの言語」 (`pack_upgrade_label_source`,
+`cd_change_source_language`), which names the capture language rather than the dictionary's
+declared one.
+
+**Punctuation and spacing.** Full-width 。、（）「」 throughout; the degree sign and digits
+in `settings_debug_angle_gate` stay half-width inside full-width parentheses
+(「従来の角度しきい値（10°）」), matching `yomitan_accent_default_cd`'s
+「デフォルト（サブタイトルのテキスト色）」. No space is introduced around placeholders
+(「バージョン%2$sに更新できます」), per the file's convention.
+
+**Register.** です/ます in every alert body, clipped noun or 〜する form in every row title
+and button (更新, 再ダウンロード, 更新を確認, 辞書のスタイル). No あなた. Loanwords in
+katakana (レイアウト, スタイル, プレーンテキスト, バックグラウンド, セッション).
+
+**「最新の状態になりました」 carries EN's "now"** — the になりました change-of-state form is
+what keeps `yomitan_update_done_message` distinct from `yomitan_update_none_message`
+(「最新バージョンです」). Two other locales lost that contrast this round.
+
+**「すべての言語」 works in both of its slots** — the pinned first row of the language picker
+and the muted value of the Source Language row — and states *all*, not *unset*, which is the
+distinction the EN rename from "None" to "Any" was making.
+
+### Verdict
+
+**PASS.** No 🛑/❌/⚠️. Two 💬, both recorded as decisions. Japanese has no gender, case or
+particle contact with the dictionary-title placeholder, so the delta's cross-locale hazard
+does not arise here; the only judgement calls were bracketing and title register, and both
+were resolved against the file's own precedent.
+
+### Delta review round 2 — 2026-08-19 (`lang_pick_any` read against the render code)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| lang_pick_any | ⚠️ | 「すべての言語」 | 「任意の言語」 | The pinned wildcard row repeated `lang_section_all`'s own word: 「すべての言語」 sat two rows above a section header reading 「すべて」, so it read as a shortcut into the full list rather than "no language restriction". 「任意の言語」 is the standard Japanese wildcard idiom (cf. 任意の値/任意のファイル), lexically distinct from すべて, and works in both slots — the picker row and the muted Source Language value. |
+
+**Why round 1 missed it.** The string was reviewed against its English source and its two
+slots in isolation. It only fails when read against its *neighbours on screen*:
+`LanguageSetupActivity` passes the Any row as `leadingRows` (:282) and heads the list
+below it with `lang_section_suggested` then `lang_section_all` (:544, :550), so the pinned
+row and the "All" header are two rows apart. This is the doc's own lesson — read the render
+code, not the string — arriving from the other direction: not a truncation constraint, but
+an adjacency one.
+
+**Cross-locale shape.** Twelve independent renderings split into two camps: five chose an
+*any*-flavoured word (zh-rCN 任意语言, ru «Любой язык», ar «أي لغة», es «Cualquier idioma»,
+pt-BR «Qualquer idioma») and seven an *all*-flavoured one. Only the *all* camp can collide,
+and only where the pinned row repeats the header's own word — ja, tr, de and fr, now fixed.
+ko (모든 언어 / 전체), th (ทุกภาษา / ทั้งหมด) and vi (Mọi ngôn ngữ / Tất cả) use lexically
+distinct words in the two slots and were left alone. The fix also moves these four closer
+to the English, which deliberately says "Any" rather than "All" (and was itself renamed
+from "None" — the row means *no restriction*, not *unset*, and not *the whole list*).
+
+### Verdict (revised after round 2)
+
+**PASS after fix.** One ⚠️ from round 2, two 💬 from round 1. The ⚠️ was invisible to a
+string-by-string reading and only surfaced when the picker's rows were laid out in render
+order.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+One ⚠️, applied.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| anki_card_too_large_failed | ⚠️ | 「定義を簡易版にしても」 | 「定義を簡略化しても」 | 簡易版 is a noun for the *card* ("the simplified version"), so 「定義を簡易版にする」 — making definitions into a version — is not something Japanese says. The operation on definitions is 簡略化, which is also what the toast already used, so the fix removes an awkward phrase and aligns the two strings that talk about simplifying *definitions*. The split now reads deliberately: 簡易版 = the card (prompt, button), 簡略化 = what is done to the definitions (failure, toast). |
+
+### Clean areas (delta) — checked, no findings
+
+**辞書定義 is the file's own compound**, not a fresh rendering: `anki_content_definition_desc`
+already writes 「強調表示した単語の辞書定義（HTML形式）」. プレーンテキスト likewise comes from
+`yomitan_styling_subtitle` 「常にプレーンテキストで表示します」.
+
+**The failure body reuses the sibling's verb.** 「AnkiDroidが受け付けられません」 is the potential
+form of `anki_send_failed_message`'s 「AnkiDroidがカードを受け付けませんでした」, and it closes with
+「お試しください」 exactly as that string does — so the two failures read as one voice whether
+the user meets them in the dialog or as a bare Toast.
+
+**単語 / 文** in the advice match `anki_mode_word` 「単語」 and `anki_mode_sentence` 「文」, so the
+suggestion names the same two units the card editor's own mode chips do.
+
+**Punctuation and register.** Full-width 。、（）？ throughout; digits and the Latin literals
+mmap / LLM stay half-width inside full-width parentheses, matching
+`settings_debug_angle_gate` 「従来の角度しきい値（10°）」. です/ます in both alert bodies, noun-form
+button 「簡易版を保存」, no あなた. 端末内 for on-device is taken from
+`llm_prompt_advisory_too_long` 「端末内のモデルでは」.
+
+**Debug rows.** 「…を強制」 matches `settings_debug_force_single_screen` 「シングル画面を強制」 and
+`settings_debug_force_crash_title` 「クラッシュを強制」. 振り分け was chosen for "routing" over a
+ルーティング loan because the surrounding rows are all native-vocabulary phrases.
+
+### Verdict
+
+**PASS after fix.** One ⚠️, corrected. No あなた, no calqued word order, no half-width
+punctuation inside Japanese runs.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** 「インラインピンインの切り替え」 is `cd_toggle_inline_furigana`
+「インラインふりがなの切り替え」 with ピンイン, `overlay_mode_option_pinyin`'s own word.
+
+**The ⋯ names what the parked sheet's hint names.** 「その他の操作」 is the phrase
+`capture_sliver_expand_hint` already uses (「タップしてその他の操作を表示」).
+
+**Row names.** 「ふりがな」「ピンイン」 are `overlay_mode_option_*` verbatim. 「読み上げ」 is the
+noun form (体言止め) of `cd_read_original_aloud` 「原文を読み上げる」; 「テキストを編集」 keeps the
+を-form of `cd_edit_original` 「原文を編集」. Longest row: 「テキストを編集」, 7 characters. No あなた.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Established wording reused, not re-coined.** クイックメニュー is the removed tap hint's
+term (`overlay_icon_gesture_tap` 「タップでクイックメニューを開く」); ドラッグ / 長押し / タップ are
+that hint set's gesture words. `icon_action_change_game_language` is
+`cd_change_source_language` verbatim, `icon_action_capture_screen` is
+`hotkey_capture_screen_dialog_title`, `icon_action_toggle_auto_translate` is the hotkey's
+「自動翻訳を開始・停止」, `hold_translation_failed` is `anki_translation_error`. The pills take
+APIキーが無効です from `tr_service_status_invalid_key` and 利用枠 from
+`note_mlkit_quota_exhausted`; the warning opens with 試験運用版。 like
+`settings_ocr_use_manga_subtitle`; the confirm title uses 破棄 like `llm_prompt_discard_title`.
+
+**Cross-references.** The alert's 「クイックメニューを開く」 byte-matches the action title, and
+長押し / タップ are the section headers' own words. The discard body's 「設定を開くと」 and the
+button 「設定を開く」 name the same action.
+
+**Form.** No あなた. Full-width ： and （） in the pills with the HTTP code half-width;
+noun-final picker rows; です/ます in the alert and dialog bodies. Both one-line pills are
+short (「日本語から翻訳します」, 「翻訳できませんでした」).
+
+### Verdict (round 1)
+
+**PASS.** No changes.
+
+### Round 2 (2026-09-29), after applying round 1
+
+No round-1 changes in this locale. Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 tools/mech_check.py keys.txt ja` reports `checked 1
+locales x 41 keys; problems: 0` (all 41 names present; every `<xliff:g>` span byte-identical
+to EN; `%1$s` parity; `\n`, `<b>`, `\{ \}`, `&amp;/&lt;/&gt;` counts match; no unescaped
+`'`/`"`, no stray tag, no leading/trailing or double space), and `python3 scripts/l10n_diff.py
+--locale app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0
+modified=0`, "in sync." Also checked: both orphans (`settings_debug_export_logs_title`,
+`_subtitle`) are gone and their neighbour `settings_debug_export_logs_subject` stays; no
+duplicate `name=`; the file parses (`xmllint --noout`). No `<plurals>` in this delta.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- Kill notice (`MainActivity.maybeShowKillNotice`): the body is `getString(body)` and, only when
+  an icon is on screen, `append(' ')` plus `kill_notice_restored`; title and bodies take no
+  format args, so the `app_name` span renders as its literal text. In ja the code's ASCII space
+  leaves a slightly wider gap after 「。」; the translation cannot remove it.
+- Support row summary (`settings_row_hub.xml`): `singleLine` + `ellipsize="end"`. Toast
+  (`LogExporter.emailFiles`): shown when `resolveActivity` finds no handler for the
+  `message/rfc822` intent, with `SUPPORT_EMAIL`, `LENGTH_LONG`, then the share sheet titled
+  `share_chooser_share_logs` (「ログを共有」). Keep-running page (`KeepRunningActivity`,
+  `activity_keep_running.xml`): the intro is static and stays above the empty label; the Report
+  a bug row takes the two Settings keys; the stuck accessibility card swaps in `a11y_stuck_title`
+  and the restart line. The empty label is 16 sp, centered, 296 dp wide at 360 dp (18 full-width
+  characters a line), so ja wraps it by character and line 1 ends 「…ありません。ま」. That is
+  layout, not wording (`android:lineBreakWordStyle="phrase"`, API 33+, would break at phrases).
+- **Measurement caveat (the packet's ja numbers):** the AWT tool draws 「ー」 (U+30FC, script
+  Common) with Roboto at about 6 dp instead of one em. Counted by full-width characters instead:
+  `settings_support_report_bug_subtitle` is 19 × 13 = **247 dp** (packet: 233; still inside
+  249 dp and under English's 256), its first sentence 12 × 13 = 156 dp (fits 216 dp); the
+  toast's first line is 21 × 14 = **294 dp** of 296 (packet: 286), and line 2 keeps about 65 dp
+  spare, so the toast still wraps to 2 lines with the address whole. `keep_running_title`
+  (220 dp of ~272) and `settings_support_keep_running_subtitle` (183 dp, fits even 216 dp) have
+  no 「ー」 and stand.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_huawei_close_after_lock_line | ⚠️ | `「バッテリー」→「その他のバッテリー設定」にあります。オフにしないと、画面がロックされるたびに<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>が終了します。` | `「電池」→「その他のバッテリー設定」にあります。オフにしないと、画面がロックされるたびに<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>が終了します。` | Huawei Japan's own page (consumer.huawei.com/jp/support/content/ja-jp00428704/, fetched 2026-10-07) prints 「設定 > 電池 > その他のバッテリー設定」: Huawei's ja Settings names Battery 「電池」 (the same page has 「電池の最適化」), so the mixed 電池/バッテリー path is Huawei's own. The page also confirms 「その他のバッテリー設定」, a guess in oem-labels.md. No Honor Japan page found. Known issue 1 (the option itself is gone) is unaffected. |
+| email_no_app_fallback | 💬 | `メールアプリがありません。ファイルは別の方法で<xliff:g id="email" example="support@playtranslate.com">%1$s</xliff:g>へ。` | `メールアプリが見つかりません。ファイルは別の方法で<xliff:g id="email" example="support@playtranslate.com">%1$s</xliff:g>へ。` | Six of the file's seven "No … found" keys say 〜が見つかりません (`anki_deck_picker_empty`, `settings_no_displays_found`, `image_import_empty`, …; the exception `update_none_title` 「更新はありません」 means "up to date"), as does Android's `app_not_found` 「この操作を行うアプリが見つかりません」. It is also more accurate: the code found no app for the intent, and the user may have one. Still 2 lines at 296 dp: 「メールアプリが見つかりません。ファイルは別」 (294 dp) / 「の方法でsupport@playtranslate.comへ。」 (about 256 dp). |
+| keep_running_empty | 💬 | `ほかにおすすめの設定はありません。まだ問題が起きる場合は、問題を再現してからバグを報告してください。` | `ほかにおすすめの設定はありません。まだ問題が起きる場合は、再現してからバグを報告してください。` | 「問題が…、問題を…」 repeats the noun across one comma; what to reproduce is plain from the clause before. Optional polish; still 3 lines. |
+
+### Clean areas (delta) — checked, no findings
+
+**The toast's 「…へ。」 reads naturally.** 「ファイルは別の方法でsupport@…へ。」 is the elided-predicate
+notice form (「お問い合わせはこちらへ。」); the reader supplies 送ってください, and the share sheet that
+opens next is the "other way". 「まで。」 would be just as idiomatic for an address, so there is no
+reason to change it. Writing the verb out (「…へ送ってください。」) needs a third line (line 2
+would be about 326 dp), which the toast clips mid-word.
+
+**スマートフォン reads naturally in every sentence that has it** (the three bodies, the intro, the
+battery line, the OPPO/vivo line, the Samsung line); never スマホ, and 端末 appears only in
+「端末情報」, which renders the English "Device info" as `crash_email_body` does. In
+`kill_notice_body_other` the comma in 「スマートフォンが、オンにしていた…」 keeps
+「スマートフォンがオンにしていた」 from parsing as a relative clause.
+
+**Kill notice as a set.** Title 「AndroidがPlayTranslateを終了しました」. Every body names
+「オンにしていたPlayTranslate」, so the appended 「現在は再びオンになっています。」 echoes 「オン」 and its
+omitted subject resolves to the app after all three bodies, not to the phone or the icon.
+「ご自身で停止していない場合は」 leaves the attribution to the user without あなた. 「対処法を見る」 says
+what the page offers (「オプションを見る」 would be a calque); 「後で」 is `btn_not_now`. "close" is
+終了 and "stop" is 停止 throughout the delta, keeping the English distinction.
+
+**Support card in order:** 更新を確認 / Discordに参加 / アイコンが消える場合 / バグを報告 /
+PlayTranslateを支援する. 「アイコンが消える場合」 is the usual Japanese help-topic heading
+(「〜が起動しない場合」), leads with the symptom as the English comment asks, and is byte-identical
+in `keep_running_title`. 「PlayTranslateの自動終了を防ぐ」 is a common way to say the system closes an
+app. The bug subtitle puts the tap action first; 「長押しで共有」 is the hold pattern of
+`translate_button_subtitle_hold_to_hide_translations`, and 共有 matches 「ログを共有」.
+
+**Email flow.** 「バグ報告を送信」 and 「PlayTranslateのバグ報告 – v3.3.0」 mirror
+`crash_email_chooser_title` / `crash_email_subject`; 「バグ報告」 is the noun of the row's
+「バグを報告」 (Android's developer options say バグレポート; both are standard, and the two choosers
+never show together). The body has full-width ？ and （）, 「ご記入ください」 and 端末情報 as in
+`crash_email_body`, 最近のログ as in `crash_dialog_message`.
+
+**Platform labels.** 「制限なし」 byte-matches AOSP; 「バッテリー使用量」 is the head of AOSP
+「アプリのバッテリー使用量」, shortened as the English shortens it. Samsung: デバイスケア, バッテリー,
+バックグラウンドでの使用を制限, 自動的にスリープ状態にしないアプリ and スリープ中のアプリ all match Samsung
+Japan. Huawei: アプリ起動, 自動起動, 他のアプリによる起動 and バックグラウンドで実行 match Huawei Japan;
+「手動で管理」 is unverified (Huawei has no ja copy of its Honor page; ja-jp15848660 returns an empty
+search page) but is the natural counterpart of the official 「自動的に管理」. OPPO: 「自動起動」 and
+「バックグラウンドアクティビティ」 followed by 「を許可」 rebuild OPPO Japan's two switch labels, with
+the guide's バックグランド typo corrected. Xiaomi: 「自動起動」, バッテリーセーバー and 「制限なし」 stay
+unverified (no ja source found today either) and reuse `a11y_stuck_message_xiaomi` verbatim,
+bracket pattern included; 「最近使ったアプリ」 is AOSP's own Recents label
+(`accessibility_system_action_recents_label`), the safer pick for an unverified OEM screen.
+vivo's title carries no brackets because there is no ja label to quote (vivo does not sell in
+Japan), a sound distinction from the bracketed, sourced labels.
+
+**Same words for the same thing.** Page title = row title; 「バグを報告してください」 = row title;
+the battery line's 「設定しないと、」 fits both 「…に設定」 titles it sits under; the OPPO and vivo
+lines are byte-identical, and they and the Xiaomi autostart line open 「許可しないと、」 to match
+their 「…を許可」 titles; 「メモリのクリーンアップ」 is one term in both keys; ログ, フローティングアイコン,
+長押し, オン, ユーザー補助設定, ユーザー補助サービス and クイック設定タイル match precedent, and the restart
+line is `a11y_stuck_message`'s own wording.
+
+**Form.** No あなた; full-width 、。？「」（）; half-width placeholders; no spaces between Japanese and
+Latin, as in the rest of the file. Card titles end in a noun stem (許可, 設定, 追加, 使用, ロック, 管理)
+except 「…をオフにする」, a plain form the register rules allow. The paths 「A」→「B」 differ from
+`overlay_icon_a11y_required_message`'s spaced 「設定 → …」, but the brackets let a path run
+straight into 「にあります」, and both new path lines share the style. 「これらを設定すると」 points at the
+cards on screen and still works in the empty state, where the intro stays above the label
+(「以下の」 would point at nothing there). In the OPPO/vivo line, 「〜から離れて」 is the usual app
+idiom (「アプリから離れている間」), and the に-passive 「スマートフォンに終了されます」 is natural for a
+system agent.
+
+### Verdict (round 1)
+
+**1 ⚠️, 2 💬, 0 ❌.** Apply `keep_running_huawei_close_after_lock_line` (「バッテリー」 → 「電池」,
+Huawei Japan's own label). The two 💬 are optional. Everything else in the delta passes as is.
+
+### Round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 tools/mech_check.py keys.txt ja` reports `checked 1 locales
+x 41 keys; problems: 0` (all 41 names present; every `<xliff:g>` span byte-identical to EN;
+`%1$s` parity; `\n`, `<b>`, `\{ \}`, `&amp;/&lt;/&gt;` counts match; no unescaped `'`/`"`, no
+stray tag, no leading/trailing or double space), and `python3 scripts/l10n_diff.py --locale
+app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0 modified=0`, "in
+sync." Also re-checked: `xmllint --noout` passes; both orphans (`settings_debug_export_logs_title`,
+`_subtitle`) are still gone and `settings_debug_export_logs_subject` stays; no duplicate `name=`.
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `keep_running_huawei_close_after_lock_line` (⚠️, 「バッテリー」 → 「電池」): applied, byte-identical to the
+  suggestion. Huawei Japan's ja-jp00428704, fetched again today, prints 「設定 > 電池 > その他のバッテリー設定」,
+  so both labels in the path are Huawei's own. The card opens the system Battery screen, which Huawei names
+  「電池」, so the path starts where the tap lands, and 「オフにしないと、」 still answers the title's 「…をオフにする」.
+- `email_no_app_fallback` (💬, 〜がありません → 〜が見つかりません): applied, byte-identical; it now matches the
+  file's other 「…が見つかりません」 strings. Still 2 lines at 296 dp (「メールアプリが見つかりません。ファイルは別」
+  294 dp, then 「の方法でsupport@playtranslate.comへ。」 256 dp) and at 320 dp, with the address whole on line 2.
+  If line 1 held one character fewer, line 2 would be about 270 dp, so it stays at 2 lines.
+- `keep_running_empty` (💬, drop the second 「問題を」): applied, byte-identical. 「再現して」 takes its object from
+  「問題が起きる」 just before it, and 「バグを報告してください」 still byte-matches the row title under it. Still 3 lines
+  at 296 dp; at 360 dp, line 2 now ends 「…再現してからバ」, which is the character wrap round 1 described, not wording.
+- Invariants unchanged: 「アイコンが消える場合」 is byte-identical in both title keys, and the OPPO and vivo lines are
+  byte-identical. Widths: hub summaries 183 dp and 247 dp (the tap sentence alone is 156 dp), toolbar 220 dp. The
+  packet's corrected numbers now agree with round 1's hand count.
+
+#### Findings (round 2)
+
+No new findings.
+
+Fresh read of all 41 strings, by surface. Kill notice: the title, each body with the ASCII space and
+「現在は再びオンになっています。」 appended, then 「対処法を見る」 and 「後で」. After all three bodies, the restored
+sentence's omitted subject resolves to the app through 「オンにしていた」. Support card in screen order (更新を確認,
+Discordに参加, アイコンが消える場合, バグを報告, PlayTranslateを支援する): the bug row's tap sentence is whole at
+216 dp, and the full line fits 249 dp. Fix disappearing icon page, one ROM set at a time: Xiaomi's three cards;
+Huawei's two; the single OPPO, vivo or Samsung card; then the battery card (not on Xiaomi), accessibility (and its
+stuck form under 「ユーザー補助の再起動が必要です」) and the tile; also the empty label and the Report a bug row. Every
+line fits the title it sits under, including the shared battery line under Xiaomi's 「バッテリーセーバーを「制限なし」に設定」.
+Email flow: both chooser titles, 「PlayTranslateのバグ報告 – v3.3.0」, the body and the toast. The register holds
+throughout, with no あなた, full-width punctuation and 「」. So do the terms: 終了 for close, 停止 for stop, ログ,
+フローティングアイコン, ユーザー補助設定, クイック設定タイル, メモリのクリーンアップ and スマートフォン.
+
+Platform labels, re-checked today with the brief's 6 web calls:
+- AOSP: 「制限なし」, 「アプリのバッテリー使用量」 and 「最近使ったアプリ」 confirmed on disk (Settings
+  android16-qpr2, framework android-36).
+- Huawei: ja-jp00428704 also prints 「アプリ起動」, 「自動的に管理」 and 「バックグラウンドで実行」. 「手動で管理」 is still
+  not printed (the page says only that a dialog opens once 自動的に管理 is off), so it remains the natural
+  counterpart that round 1 accepted.
+- OPPO: a search summary of CASIO Japan's OPPO setup page (May 2024; the page itself returned 403) uses
+  「バックグラウンドアクティビティを許可」 and 「自動起動」. That is weak but consistent support for the title.
+- Xiaomi: still unverified. SoftBank's Xiaomi 14T Pro manual (fetched) uses 「バッテリーセーバー」 only for the
+  phone-wide mode, mentions 「アプリの自動起動の許可」 in passing and has no 「制限なし」.
+- Samsung: no newer Japanese page that drops 「自動的に」 was found, so Samsung Japan's
+  「自動的にスリープ状態にしないアプリ」 stands.
+
+#### Verdict (round 2)
+**PASS.** 0 ❌, 0 ⚠️, 0 💬. All three round-1 fixes landed byte-exact and broke nothing around them. Nothing is open
+in the ja translation. Two known items lie outside it: Huawei's close-after-lock option (packet known issue 1), and
+the unverified Xiaomi ja labels, which reuse `a11y_stuck_message_xiaomi`.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite)
+
+Mechanical layer: `python3 tools/mech_check.py f2/keys2.txt ja` reports `checked 1 locales x 15
+keys; problems: 0` (all 15 names present; every `<xliff:g>` span byte-identical to EN, both
+`app_name` and `app_name2` in the three two-span lines; placeholder parity; `\n` count 2 in
+`a11y_stuck_message` as in EN; no `<b>`, `\{ \}` or entity drift; no unescaped `'`/`"`, no stray
+tag, no leading/trailing or double space), and `python3 scripts/l10n_diff.py --locale
+app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0 modified=0`, "in
+sync." Also checked: `xmllint --noout` passes; no duplicate `name=`; the four keys removed from
+English (`restricted_settings_title`, `restricted_settings_message`,
+`keep_running_huawei_close_after_lock_title`, `_line`) are gone from the file.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` returns `message + "\n\n" + addendum` on Android 13+
+  only. Callers: `MainActivity.showAccessibilityDialog` and `SettingsRenderer.showOverlayIconA11yAlert`
+  (system AlertDialogs whose messages end in the 「設定 → … → オンにする の順に進んでください。」 path),
+  `showAccessibilityRequiredAlert` for the three `a11y_required_*` messages (OverlayAlert: message at
+  13 sp in a ScrollView, at most 280 dp wide, so the longer text scrolls and never clips), and
+  `KeepRunningActivity.lineOf` for the accessibility card while the service still has to be enabled.
+  `showA11yStuckAlert` takes no addendum; it appends `a11y_stuck_message_xiaomi` after `"\n\n"` only
+  when `Build.MANUFACTURER` is Xiaomi.
+- `KeepRunningActivity.openFirst`: when no candidate screen launches, a `LENGTH_LONG` toast with
+  `keep_running_screen_unavailable`, then App info (`ACTION_APPLICATION_DETAILS_SETTINGS`), so the toast
+  is read over App info after the card is gone. The Xiaomi battery card targets MIUI's per-app power
+  page (`com.miui.powerkeeper`); the generic battery card opens Android's "Let app always run in
+  background?" request (`ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`).
+- `KeepRunningItems.ids`: Xiaomi gets autostart, battery and lock and never the generic battery card;
+  Huawei, OPPO, vivo and Samsung get one card each; then the battery card (hidden once exempt),
+  accessibility (API 30+) and the tile (API 33+). Titles and lines wrap freely.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_vivo_autostart_line | 💬 | `設定アプリで「自動起動」を検索して<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>に許可してから、バッテリー設定で、バックグラウンドでの高い電力使用を許可してください。許可しないと、スマートフォンが<xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g>をバックグラウンドで停止したり、再起動させなかったりすることがあります。` | `設定アプリで「自動起動」を検索して<xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>に許可してから、バッテリー設定で、バックグラウンドで電力を多く使用することを許可してください。許可しないと、スマートフォンが<xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g>をバックグラウンドで停止したり、再起動させなかったりすることがあります。` | 「高い電力使用」 calques "high … power use": 高い does not sit naturally on the verbal noun 使用, and AOSP Settings ja never pairs 高い with 使用 or 電力 (its 13 uses are 機密性の高い and 優先度の高い). For high background usage it says 「バックグラウンドでバッテリー使用量が多い」 (`battery_app_item_hint_in_bg`) and 「電力消費量の多いバックグラウンド アクティビティ」 (`battery_tip_dialog_message_footer`). 「電力を多く使用すること」 is the plain native phrasing and keeps the title's 電力 and 使用, so 「自動起動とバックグラウンドでの電力使用を許可」 still heads the line. No vivo label is quoted (vivo does not sell in Japan), so nothing on a phone has to match. Only this clause changes; the second sentence stays byte-identical to OPPO's. |
+
+### Clean areas — checked, no findings
+
+**Android labels, re-read on disk** (Settings android16-qpr2 and main, ja). 「アプリ情報」
+(`application_info_label`), 「制限付き設定を許可」 (`app_restricted_settings_lockscreen_title`) and the dialog
+title 「アプリにバックグラウンドでの常時実行を許可しますか？」 (`high_power_prompt_title`) all byte-match. The
+addendum replaces the old reviewed 「Android設定ページ」 with AOSP's 「アプリ情報」, as the packet asks, keeps that
+message's 「3点メニュー（⋮）」, and drops its 「右上の」 as the English dropped the position. The battery title is
+the dialog's own wording, with アプリ → PlayTranslate and the question turned into the page's noun-stem title
+form (〜を許可), so the card says what the dialog it opens will ask.
+
+**OEM labels.** Huawei (search word 「アプリ起動」, 「自動的に管理」, 「自動起動」「他のアプリによる起動」「バックグラウンドで実行」)
+and Samsung (「バックグラウンドでの使用を制限」, 「自動的にスリープ状態にしないアプリ」) match Huawei Japan and Samsung
+Japan as verified in the first pass. OPPO: 「自動起動」 and 「バックグラウンドアクティビティ」 + を許可 rebuild OPPO
+Japan's two switch labels, as the reviewed title does. Xiaomi, checked again today (5 of the 6 web calls):
+SoftBank's Xiaomi 13T Pro manual (detail/86634, fetched) has the per-app list 「アプリバッテリーセーバー」 on the
+バッテリー tab of 「バッテリーとパフォーマンス」. That supports the translator's 「バッテリーセーバー」 as the MIUI key
+word, with one nuance: the page names the list, not the App info entry, and prints no option names. A December
+2025 Japanese HyperOS/MIUI guide (gadgetzamurai.jp, fetched) shows 「自動起動」 and 「バッテリー」 on the app's page
+(設定 → アプリ → アプリ管理 → 対象アプリ): secondary support for the autostart search word and for the HyperOS 2
+entry. It hedges the option itself (「「制限なし」「最適化しない」みたいな選択肢」), so 「制限なし」 stays unverified;
+it is AOSP's own word for Unrestricted and the likeliest rendering. 「電力」 for HyperOS 3's "Power" is still a
+guess; no Japanese source was found. Neither gap strands the user: the line says to open the battery entry and
+gives the three names only as by-version examples. vivo: no ja label exists (vivo does not sell in Japan), so
+its search word 「自動起動」 is unverified, and its title rightly quotes nothing.
+
+**Search words and 設定アプリ.** Each line puts the word to type in 「」: 「アプリ起動」 (Huawei, official) and
+「自動起動」 (Xiaomi, OPPO, vivo). Every sourced Xiaomi and OPPO label contains 自動起動 (「自動起動を許可」,
+「アプリの自動起動の許可」, the app page's 「自動起動」), so a Settings search on it matches whichever variant the
+version shows. 「設定アプリ」 for the phone's Settings is right and needed. In this file a bare 「設定で」 means
+PlayTranslate's own settings (`note_mlkit_account_issue`, `overlay_hide_controls_message`), and the system's
+are 「システム設定」 or 「Androidの設定」. 設定アプリ is the usual Japanese help wording, used in all five lines and
+the toast.
+
+**CHANGED keys against the previous reviewed wording** (HEAD for the two stuck keys, the first-pass packet for
+the page). `a11y_stuck_message` lost exactly 「これは通常、システムがバッテリー節約のためにアプリを強制停止した後に起こります。」
+and is otherwise byte-identical. `a11y_stuck_message_xiaomi` changed in exactly three places, each following
+the English: 有効にし → 許可し (enable → allow), バッテリーセーバー → バッテリーの使用 (Battery saver → its battery use),
+停止し続けます → 停止し続けることがあります (will → may). `keep_running_tile_line` lost only 「スワイプしてタップするだけで、」.
+The lock line keeps its first sentence byte-identical. The Xiaomi battery title changed only バッテリーセーバー →
+バッテリーの使用. The rewritten Xiaomi autostart, OPPO and vivo lines keep the reviewed opener 「許可しないと、」 under
+their 「…を許可」 titles.
+
+**Surfaces as sets.** The addendum reads as a closing paragraph after all six bodies. After the two path
+messages, 「スイッチ」 is the switch their 「オンにする」 step turns on. After the three `a11y_required_*` messages
+and the card line it has no antecedent, exactly as in English, and the 「ユーザー補助設定を開く」 button or the
+card's tap supplies one. The stuck alert reads title, body, 「解決するには…」, then the Xiaomi paragraph, which
+repeats both Xiaomi card titles verbatim (「「自動起動」を許可」, 「バッテリーの使用を「制限なし」に設定」), as the
+English comment intends; keeping 「自動起動」 bracketed there matches the unchanged title and the search word.
+Its "also" is not rendered, as in the 2026-07-25 wording that passed. The paragraph order and
+「これらを設定しないと、…停止し続けることがあります」 still frame it as an addition to the re-toggle, not a
+replacement. Every card reads as title + line: the battery line states the effect of the title's permission
+(「…再起動できるようになります」); the Xiaomi battery line ends 「「制限なし」を選択」 under 「…「制限なし」に設定」; the
+Huawei line turns 「自動的に管理」 off under 「…を手動で管理」; Samsung's second sentence explains sleeping with its
+list's own 「スリープ状態」. In 「設定アプリでPlayTranslateのバッテリーの項目」 the step away from "PlayTranslate's app
+settings" is right: 「PlayTranslateのアプリ設定」 would read as the app's own Settings screen.
+
+**Toast.** `Wrap` gives 2 lines at 296 dp (「その画面はこのスマートフォンにありません。」 294 dp, 「設定アプリでこの設定を検索してください。」
+280 dp) and 2 at 320 dp. The tool now draws 「ー」 at one em (14 dp at 14 sp), so it agrees with a hand count
+of 21 + 20 full-width characters, and round 1's measurement caveat no longer applies. 「ありません」 rather than
+AOSP's 「利用できません」 is what reaches the 296 dp target: 「…このスマートフォンでは利用できません。」 fits 320 dp
+(308 + 308) but needs 3 lines at 296 dp. Dropping "instead" costs nothing in Japanese. 「その画面」 points at the
+screen the card promised; 「この設定」 at the card's setting, the one the user just tapped.
+
+**Two-span lines.** Both spans stand in the Xiaomi, OPPO and vivo lines, one per sentence, and each sentence
+reads naturally with the app named again (「XiaomiはPlayTranslateを終了した後」, 「スマートフォンがPlayTranslateをバックグラウンドで停止したり」).
+The OPPO and vivo second sentences are byte-identical, as their English is.
+
+**Terms and form.** close = 終了 (battery and Xiaomi lines) and stop = 停止 (OPPO, vivo, stuck), as in the first
+pass. start again = 再起動 in all four lines; its object is always the app, so it cannot read as rebooting the
+phone. The service's restart stays 再開. phone = スマートフォン, device = 端末, following the English. No あなた;
+full-width 、。「」（）; the only half-width space is in 「Android 13以降」, as in `requires_android_11_message`.
+Titles end in noun stems (許可, 設定). The lock line's new sentence keeps the reviewed first sentence's 〜します
+form, and 「下にスワイプ」 is AOSP's own phrasing for a downward swipe (「画面上部から下にスワイプ」).
+「グレー表示されている」 is the natural Japanese for a greyed-out control.
+
+### Verdict (round 1)
+
+**1 💬, 0 ⚠️, 0 ❌: PASS.** The one 💬 (`keep_running_vivo_autostart_line`, 「高い電力使用」 → 「電力を多く使用すること」)
+is optional. Outside the wording, Xiaomi's 「制限なし」 and HyperOS 3's 「電力」 are still unverified: no Japanese
+source turned up today (packet known issue 2).
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 tools/mech_check.py f2/keys2.txt ja` reports `checked 1 locales x 15
+keys; problems: 0` (all 15 names present; every `<xliff:g>` span byte-identical to EN, both `app_name` and
+`app_name2` in the three two-span lines; placeholder parity; `\n` count 2 in `a11y_stuck_message` as in EN;
+no `<b>`, `\{ \}` or entity drift; no unescaped `'`/`"`, no stray tag, no leading/trailing or double space),
+and `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ja/strings.xml` reports `values-ja
+missing=0 orphan=0 modified=0`, "in sync." Also re-checked: `xmllint --noout` passes; no duplicate `name=`;
+the four keys removed from English (`restricted_settings_title`, `restricted_settings_message`,
+`keep_running_huawei_close_after_lock_title`, `_line`) are still gone.
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `keep_running_vivo_autostart_line` (💬, 「バックグラウンドでの高い電力使用を許可」 → 「バックグラウンドで電力を多く使用することを許可」):
+  applied, byte-identical to the suggestion. Both spans are intact (mechanical check above), the second sentence is
+  still byte-identical to the OPPO line's, and the clause keeps the title's 電力 and 使用 under
+  「自動起動とバックグラウンドでの電力使用を許可」. The comma after 「バッテリー設定で」 keeps the two 〜で phrases apart, and
+  the line still wraps freely (13 sp, no line cap).
+- Nothing else moved: all 15 values are byte-identical to the translator's current fragment (`f2/frag/ja.tsv`), whose
+  fix tool (`tools/fix_key.py`) edits inside one key only, and every Japanese fragment round 1 quoted from these strings
+  still occurs verbatim in the file (its other quotes are AOSP or OEM wording, removed text or rejected alternatives).
+  The toast is untouched: `Wrap` still gives 2 lines at 296 dp (「その画面はこのスマートフォンにありません。」 /
+  「設定アプリでこの設定を検索してください。」) and at 320 dp.
+
+#### Findings (round 2)
+
+No new findings.
+
+Fresh read of the 15 keys as sets, from the file. The addendum reads as its own closing paragraph after each body it is
+appended to (`AccessibilityHelp` and its four call sites): the two Settings-path dialogs, where its 「スイッチ」 is the
+switch their 「オンにする」 step names; the three `a11y_required_*` OverlayAlert messages and the accessibility card's
+line, where it has no antecedent, as in English, and the button or the card's tap supplies one. 「アプリ情報」 and
+「制限付き設定を許可」 byte-match AOSP android16-qpr2 ja on disk, as does the battery title's source dialog, and the ⋮ is
+U+22EE, as in English. The stuck alert reads title, body (only the cause sentence gone), 「解決するには…」, then the
+Xiaomi paragraph, whose 「バッテリーの使用を「制限なし」に設定」 is the Xiaomi battery card's title verbatim; the unrendered
+"also" stays carried by the paragraph order, as round 1 found. Every card reads as title + line within its ROM's set
+(Xiaomi's three; Huawei, OPPO, vivo or Samsung; then the battery card off Xiaomi, accessibility and the tile). The
+search words sit in 「」 after 「設定アプリで」: 「アプリ起動」 (Huawei, official) and 「自動起動」 (Xiaomi, OPPO, vivo). Each
+PlayTranslate span takes its particle naturally (の, に, を, は). Terms hold: close 終了, stop 停止, start again 再起動
+(always the app's), the service's restart 再開, phone スマートフォン. No あなた; full-width 、。「」（）; the only half-width
+space is in 「Android 13以降」, as in `requires_android_11_message`'s 「Android 11以降」.
+
+Labels, with the brief's 4 web calls, all on Xiaomi, the only open labels with a Japanese ROM to check. SoftBank's Japanese manual page for the
+Redmi Note 9T (detail/30673, fetched) names the per-app list 「アプリバッテリーセーバー」 under 「バッテリーとパフォーマンス」, as
+round 1 found for the 13T Pro, and gives the choice only as 「項目をタップ」, with no option names. A SoftBank-only search
+returned the same page for the 12T Pro, 13T Pro, 14T Pro, Redmi 12 5G and Redmi Note 10T, and none of its results
+showed 「制限なし」. The one other Japanese hit (assist-all.co.jp, 2025-09-26) is a generic Android guide. So 「制限なし」
+and HyperOS 3's 「電力」 remain unverified (packet known issue 2). Nothing contradicts them, and the line gives the entry
+names only as by-version examples.
+
+#### Verdict (round 2)
+**PASS.** 0 ❌, 0 ⚠️, 0 💬. The one round-1 fix landed byte-exact and broke nothing around it; nothing is open in the ja
+translation. Outside it, three words stay unverified (packet known issue 2): Xiaomi's 「制限なし」, HyperOS 3's 「電力」,
+and vivo's search word 「自動起動」 (vivo does not sell in Japan, so there is no Japanese ROM to check).
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0 modified=0`, "in sync". The three new names are each present once and are the file's only change (`git diff`). The delta has no `<xliff:g>`, placeholders or markup, no unescaped `'`/`"`, no dashes, no odd or double spaces, and is NFC. **No 🛑 build-breaking issues.**
+
+No findings.
+
+Clean areas: Render code read first. The note is `tvProviderNote` (13 sp `Text.PT.RowSubtitle`, no line cap), shown on the service page where the key section would be. The model picker shows `_keyless` when `account.requiresKey` is false. `removeConfirmationMessage` makes the same choice for Lingva and Index-Translate. **`llm_backend_index_translate_note`** has all four English facts: 無料; APIキーは不要 (the `llm_backend_api_key_label` word); 運営 by Bilibili; and 「利用上限は公開されていません」, which keeps "publishes no usage limits" and does not turn it into "has no limits". The privacy sentence follows. 「キャプチャしたテキスト…送信されます」 is `tr_service_order_footer`'s own wording, and 上限 is the error pill's word (`translation_error_daily_quota` 「1日の上限」). Bilibili stays Latin with no spaces around it. です/ます, no あなた, full-width 、。. **`llm_model_picker_fetch_failed_keyless`** matches its sibling except for the middle clause, and 「カスタム…」 is `llm_backend_model_custom_entry` verbatim in the same 「」. 「時間をおいて再度試すか」 is the stock Japanese "try again later" (時間をおいて再度お試しください) in the plain form that 〜か、〜してください needs, as `update_error_incomplete` has 「もう一度試すか、」. 再度 is already in the file. **`tr_service_remove_message_keyless`** is its sibling without the key clause. Read with the title 「Lingvaを削除しますか？」 / 「Bilibili Index-Translateを削除しますか？」 and the 削除 button, the alert uses one verb throughout, as the existing title, sibling and button do (values-ja uses 削除 for both remove and delete).
+
+### Disposition (2026-10-14)
+
+No findings; nothing to apply.
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, so no `ja:` line (every name present; `<xliff:g>` spans byte-identical to EN; placeholder, `<b>`/`\n`/`\{ \}`/entity counts match; no raw `'`/`"`, no stray or double space; the file parses); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| anki_screenshot_crop_instruction | ⚠️ | `端をドラッグして、スクリーンショットをトリミングします` | `端をドラッグして、トリミングします` | Clipping confirmed in code. The pill is one line (`RegionEditorControls.pill`: 14 sp, `isSingleLine`, `ellipsize=END`, 16 dp padding, plus 16 dp margins in `RegionEditor.show`), and the editor also opens in portrait: as a full-screen dialog from the in-app review sheets (`showScreenshotCropDialog`), or as a page in the workspace card over a portrait game. No activity locks orientation. 27 full-width characters come to 378 dp, against 296 dp of text width on a 360 dp phone (347 dp at 411 dp, 272 dp in the workspace card). Portrait therefore shows about 「端をドラッグして、スクリーンショットをト…」, with the verb cut. English is 215 dp. The suggestion is 238 dp. It keeps `region_overlay_drag_instruction`'s 「端をドラッグして、〜します」 shape and drops only the object, which is the image the editor is showing. (The region pill, outside the delta, is just as long but is drawn over the game, which is usually landscape.) |
+| llm_backend_reasoning_subtitle | ⚠️ | `回答の前にモデルがどれだけ推論するかです。高いほど遅くなり、推論の分も出力トークンとして課金されます。` | `回答の前にモデルがどれだけ推論するかを設定します。高いほど遅くなり、推論の分も出力トークンとして課金されます。` | 「…どれだけ推論するかです。」 copies the English fragment ("How much the model reasons…") and has no topic. It is the only 〜かです sentence in the file. The file's row subtitles either end in a noun or say what the row does with 〜します (`settings_vertical_grow_subtitle`, `settings_edge_indicator_subtitle`). 「〜を設定します」 says what the segments under it do, and 「高いほど」 then refers to the level just set. The second sentence stays byte-identical to `llm_backend_thinking_subtitle`'s. |
+| pt_cloud_translate_toggle_subtitle | 💬 | `有料の翻訳モデルが付属し、翻訳ごとに最適なモデルが選ばれます。` | `有料の翻訳モデルを搭載し、翻訳ごとに最適なモデルが選ばれます。` | 付属 is a packaging word (付属品, 付属ソフト: something that comes in the box with a product). Japanese copy for a product or service that runs translation models uses 搭載 (「最新の翻訳エンジンを搭載」, 「GPT搭載」). The current line is understood, so this is polish. If applied, change it together with the next row so the two pitches use the same verb. |
+| pt_cloud_translate_row_subtitle_no_key | 💬 | `最高の有料翻訳モデルが付属` | `最高の有料翻訳モデルを搭載` | Same change as the row above. This line sits where store rows read 「アカウントが必要」, and the noun ending keeps it just as terse. |
+| word_detail_group_forms | 💬 | `語形` | `変化形` | The group lists a word's inflected forms (spoke, spoken; bigger, biggest) under English row labels. 変化形 is the word learners know for exactly this (「動詞の変化形」, 「不規則変化」). 語形 is correct but reads as the linguist's "word form". 変化形 is still one noun, distinct from 活用 and 格変化. |
+
+### Clean areas (checked, no findings)
+
+**Render code read first.** The error pill (`TranslationErrorPills`) is 14 sp, `maxLines=2`, ellipsized, and `TranslationErrorMessages` maps NOT_RUNNING to the new key. On the PlayTranslate Cloud page, both switches are `settings_row_switch` rows (15 sp title, 13 sp subtitle, no line cap), dimmed until a key is saved. The key label is a RowTitle over a 13 sp monospace single-line EditText, about 280 dp wide on a 360 dp phone, whose hint is `pt_cloud_key_hint`. The status row puts the title (weight 1) beside a wrap-content value; the value reads 未確認 from the layout and switches to 確認中 as soon as `onResume` starts the check. The Settings hub cloud cell's summary is `singleLine` + `ellipsize=end` at 13 sp, about 216 dp of text on a 360 dp phone (14 dp section padding, 16 dp cell padding, 36 dp chip, 14 dp text margins, 18 dp chevron). The Capture & overlay cloud row is a `settings_row_switch` titled with the brand, and its subtitle wraps. On the Translation services page, the cloud row's status line is `tvRowSubtitle2`, which wraps, in the slot where store rows show `service_account_required`. The floating menu strip shows the brand name as visible text; the two delta keys are only its contentDescription. On the Fix disappearing icon page, the toast is a `LENGTH_LONG` text toast, and App info opens beneath it. Part B: `addGroupHeader` uppercases with `Locale.ROOT`, which does nothing to kana or kanji. `anki_screenshot_crop` is the crop button's contentDescription; the crop page also sets it as its title, but on a header the page hides (`hidesHeader`), so it is never seen. The thinking switch row and the levels row never show together. The load-more row is 13 sp, `maxLines=1`, ellipsized, and shows `lens_loading` 「検索中…」 while loading.
+
+**Error pill.** 「PlayTranslate Cloud：停止中」 uses the family's full-width colon after the name. 停止中 ends in a noun, like 「サーバーエラー」, and is the status row's own word, so the pill and the page its gear opens say the same thing. The same holds for 接続できません and 予期しない応答 below.
+
+**Status row: 「サービス」 with each of its seven values.** The values are 稼働中 / 起動中 / 停止中 / 接続できません / 予期しない応答（500） / 確認中 / 未確認. 稼働中 is the usual word for a server being up; the file's 実行中 is the app's own notification, a different subject. Next to 稼働中, 起動中 reads as "starting". 接続できません byte-matches `translation_error_unreachable`. 予期しない応答 is `translation_error_bad_response`'s noun, and the code is half-width in full-width parentheses, as in `translation_error_rejected_code`. 確認中 is the framework's word (`lockscreen_glogin_checking_password`) and the file's (`tr_service_status_loading` 使用量を確認中…). Every value fits beside the title.
+
+**The two switches as a pair.** 「画面の読み取り」 / 「テキストの翻訳」 are parallel noun forms. 読み取り is the file's OCR word (`ocr_source_label` 「…による読み取り」; 「画面の読み取り」 in `slow_ocr_prompt_message`), and it cannot be mistaken for a screen reader (読み上げ). Both subtitles use です/ます, and 端末 means "device" here as everywhere in the file. 「端末の処理能力をすべてゲームに回せます」 and 「翻訳ごとに最適なモデルが選ばれます」 read naturally.
+
+**Key.** クライアントキー uses the file's キー (`llm_backend_api_key_label` APIキー, `tr_service_key_tail_fmt` キー：). The hint shares 貼り付けてください with `hint_deepl_key` (the framework says 貼り付け), and 発行された is the usual verb for an issued key. It is 16 characters, about 208 dp in the field.
+
+**Hub digests.** オフ matches `settings_cell_history_summary_off`'s オフ; then 翻訳のみ. 「高性能サーバーのOCRと翻訳」 (173 dp) and 「高性能サーバーのOCRのみ」 (160 dp) each stay on one line at 216 dp. 高性能サーバー translates "Server-grade" in all three places, and it carries both "on the server" and "powerful".
+
+**Marketing lines.** Apart from 付属 (see findings), they read as Japanese copy rather than translation. 「高性能サーバーでOCR、端末の負荷ゼロ」 has the 「A、B」 shape of the engine notes under it (「ゲームに最適、単語検索が最も正確」, 「小さな文字も認識、速度は遅め」), and 負荷ゼロ is a stock phrase. In the hub digest, の is the natural possessive for a terse summary; による would also work, but nothing calls for it.
+
+**Floating strip.** 利用可能 / 利用不可 pair with `backend_status_unavailable_default` 利用不可, after the same full-width colon as the pill.
+
+**Toast.** 「その画面を開けませんでした。代わりに設定アプリでこの設定を検索してください。」 now says "couldn't open", as the reworded English does. 「設定アプリで…を検索」 is the cards' own phrase, and 「この設定」 points at the card just tapped, as in the reviewed wording. At 38 characters it takes 2 lines at 296 dp (294 dp, then 238 dp) and at 320 dp. Line 1 ends inside 設定アプリ; that is Japanese character wrapping, not a wording problem.
+
+**Rest of Part B.** 活用 and 格変化 are the standard grammar terms (スペイン語の動詞の活用, ドイツ語の名詞の格変化), one noun each. 「スクリーンショットをトリミング」 is a noun-stem title and a clear TalkBack label. トリミング is also the file's word for audio trimming (`anki_game_audio_cell_untrimmed` 保存時にトリミング); Japanese uses it for both, and the two sit on different cells. 思考モード and 思考レベル share 思考, as both comments require, and it is the usual Japanese word for model thinking. The subtitles say 推論 where the English says "reasons", and 「推論の分も出力トークンとして課金されます」 is natural. The segments オフ / 最小 / 低 / 中 / 高 are one or two characters each, the game-settings convention for levels, and オフ is the file's word for Off. 「さらに読み込む（2）」 has full-width parentheses and a half-width count, and is about 130 dp in its single-line row.
+
+### Japanese register and punctuation appendix
+
+- No あなた in any of the 39 values. Every sentence value uses です/ます: both cloud subtitles, the key hint, the toast, both LLM subtitles and the crop pill. Titles, labels, digests and statuses end in nouns (体言止め).
+- Only full-width 、。（）： are used. Numbers and placeholders are half-width, and there is no space between Japanese and Latin runs (サーバーのGPUで, 高性能サーバーのOCRと翻訳), as in the rest of the file. No em dash, NBSP or zero-width character; all values are NFC. Each key sits between its English neighbours.
+- Katakana is spelled as the file spells it: サーバー (as in サーバーエラー), キー, モデル, テキスト, トークン, スクリーンショット, トリミング, ドラッグ, オフ, モード. The two new words, クライアント and レベル, use the standard spellings.
+- Out of scope (code, not this file): the cooldown line under the status row takes its description from an English constant (`PtCloudErrors` "Not running", through `cooldownLine`), so it can read "Not running · 15:42に再試行" right under 停止中. Every service's cooldown line works the same way.
+
+### Disposition (2026-10-27)
+
+All five findings applied: `anki_screenshot_crop_instruction` 「端をドラッグして、トリミングします」 (fits the one-line pill in portrait), `llm_backend_reasoning_subtitle` 「…どれだけ推論するかを設定します。…」, 搭載 in both `pt_cloud_translate_toggle_subtitle` and `pt_cloud_translate_row_subtitle_no_key` so the two pitches share one verb, and `word_detail_group_forms` 「変化形」. The cooldown line's English description is a code finding outside the delta, verified in code (`PtCloudErrors` constants); reported to the developer, not fixed in this sync.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, so no `ja:` line; `python3 scripts/l10n_diff.py --locale app/src/main/res/values-ja/strings.xml` reports `values-ja missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+Round-1 changes checked (`git diff` shows exactly these five plus the 24 Part A keys; the other 22 Part A values are byte-identical to the drafted values round 1 reviewed, and the other 12 Part B values to HEAD):
+- `anki_screenshot_crop_instruction` 「端をドラッグして、トリミングします」: confirmed, byte-identical to the suggestion. With Android's own fonts (Noto Sans CJK JP, the ttc face `fonts.xml` gives ja, and Roboto, both from Robolectric's runtime jar) it is 238 dp at 14 sp. That keeps it on one line in the dialog pill (296 dp) and in the workspace card on a 360 dp portrait phone (272 dp: card inset 12 dp, then 16 dp pill margin and 16 dp padding per side, re-read in `OverlayWorkspace`, `RegionEditor` and `RegionEditorControls.pill`). The old value measures 378 dp. It keeps `region_overlay_drag_instruction`'s 「端をドラッグして、〜します」 shape, and the image on screen supplies the dropped object.
+- `llm_backend_reasoning_subtitle` 「回答の前にモデルがどれだけ推論するかを設定します。…」: confirmed. The first sentence now says what the row does, and 「高いほど」 then reads as the level named by the 思考レベル title just above. The second sentence is unchanged and still ends as `llm_backend_thinking_subtitle` does. The subtitle wraps.
+- `pt_cloud_translate_toggle_subtitle` 「有料の翻訳モデルを搭載し、翻訳ごとに最適なモデルが選ばれます。」: confirmed. 搭載 is the usual verb for models built into a product or service. The change gives the first clause an implied agent (the service) beside the passive second clause; that mix is ordinary in Japanese product copy (「…を搭載し、…が自動で選ばれます」), so it is not a finding.
+- `pt_cloud_translate_row_subtitle_no_key` 「最高の有料翻訳モデルを搭載」: confirmed. It shares 搭載 with the switch subtitle, and the 〜を搭載 ending is as terse as 「アカウントが必要」 in the same slot.
+- `word_detail_group_forms` 「変化形」: confirmed. One noun, distinct from 活用 and 格変化; the `Locale.ROOT` uppercasing leaves it as is.
+
+#### Findings (round 2)
+
+No findings.
+
+Fresh read of all 39 by surface, against the file:
+- Error pill: 「PlayTranslate Cloud：停止中」 keeps the family's full-width colon and uses the status row's word.
+- Cloud page: 「画面の読み取り」 / 「テキストの翻訳」 pair as nouns, and both subtitles are です/ます. クライアントキー and 「発行されたキーを貼り付けてください」 use the file's キー and 貼り付け. The hint is 17 characters, 221 dp at 13 sp (round 1 said 16 and 208), still one line in the 280 dp field. 「サービス」 takes 稼働中 / 起動中 / 停止中 / 接続できません / 予期しない応答（500） / 確認中 / 未確認, sharing wording with the pill siblings.
+- Hub: オフ, 翻訳のみ, 高性能サーバーのOCRと翻訳 (168 dp) and 高性能サーバーのOCRのみ (155 dp), each on one line in the summary (about 216 dp on a 360 dp phone: 14 dp section padding, 16 dp cell padding, 36 dp chip, 14 dp text margins, 18 dp chevron).
+- Capture & overlay: 「高性能サーバーでOCR、端末の負荷ゼロ」 has the engine notes' 「A、B」 shape. Floating strip: 利用可能 / 利用不可 after the same ：.
+- Toast: 532 dp, two lines at 296 dp whether Japanese breaks by character (294 | 238 dp) or at phrase boundaries (252 | 280 dp), and at 320 dp.
+- Part B: 活用 / 格変化 / 変化形. 思考モード / 思考レベル share 思考, with 推論 for "reasons" in both subtitles, as the English keeps Thinking and reasoning apart. The segments オフ / 最小 / 低 / 中 / 高 are at most 26 dp at 13 sp, far inside a segment. 「さらに読み込む（2）」 is 124 dp on a lens card about 306 dp wide, with the file's full-width parentheses (all 6 parenthesized placeholders in the file use them).
+- Register and form: no あなた; only full-width 、。（）：; katakana as the file spells it (サーバー, キー, トークン as in `tr_service_status_usage_today_fmt`). The marketing lines read as Japanese copy. Each key sits between its English neighbours, with no duplicate names.
+- Not re-raised: the cooldown line's English description (`PtCloudErrors`), a code finding the Disposition recorded.
+
+#### Verdict (round 2)
+
+**PASS.** 0 ❌, 0 ⚠️, 0 💬. All five round-1 changes landed byte-exact, match the Disposition, and broke nothing around them; measured with Android's own fonts, the crop pill now fits in portrait. Nothing is open in the ja translation. Outside it, the cooldown line's English description stays with the developer.

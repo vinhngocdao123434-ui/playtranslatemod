@@ -1,0 +1,412 @@
+import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.variant.BuiltArtifactsLoader
+import java.io.InputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.Properties
+import java.util.zip.ZipFile
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) localPropsFile.inputStream().use { localProps.load(it) }
+
+android {
+    namespace = "com.playtranslate"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.playtranslate"
+        minSdk = 29
+        targetSdk = 36
+        versionCode = 23
+        versionName = "3.4.1"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // arm64-v8a + armeabi-v7a. arm64 is the real target — every
+        // post-2019 Play-Store-eligible device is arm64. armeabi-v7a is the
+        // compatibility tier (ML Kit translation works on 32-bit devices),
+        // but :mnn intentionally ships arm64 only, so on a 32-bit slice
+        // there are NO MNN libs at all and the Settings UI hides the MNN
+        // backend rows via OnDeviceLlmBackend.supportsRequiredAbi(). x86_64
+        // dropped — re-add for emulator testing if needed.
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
+
+        buildConfigField("String", "DEEPL_API_KEY",
+            "\"${localProps.getProperty("deepl.api.key", "")}\"")
+
+    }
+
+    signingConfigs {
+        getByName("debug") {
+            // Uses default debug keystore at ~/.android/debug.keystore
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+        compilerOptions {
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
+    sourceSets {
+        getByName("androidTest") {
+            // OCR grouping corpus — a separate private repo checked out at
+            // ocr-grouping/ (gitignored; the docs/ pattern). Mounting its
+            // assets/ bundles the seeds into the test APK; an absent checkout
+            // just yields an empty corpus (OcrGroupingHarnessTest skips loudly).
+            assets.srcDir(rootProject.file("ocr-grouping/assets"))
+        }
+    }
+
+    androidResources {
+        // Generate res/xml/localeConfig from the values-* folders and wire
+        // android:localeConfig into the merged manifest, so the app appears
+        // under Settings -> System -> Languages -> App Languages on Android 13+.
+        // The unqualified values/ resources are English; declared in
+        // res/resources.properties (unqualifiedResLocale).
+        generateLocaleConfig = true
+    }
+
+    packaging {
+        // MNN ships standard .so libs that work fine with modern (mmap-loaded)
+        // packaging. The legacy-packaging flag that lived here for `:llama`'s
+        // GGML_BACKEND_DL=ON dlopen pattern is no longer needed after the
+        // :llama strip.
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "/META-INF/NOTICE.md"
+            excludes += "/META-INF/CONTRIBUTORS.md"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/NOTICE"
+            // KOMORAN model. Now shipped inside the KO source pack (see
+            // scripts/build_latin_dict.py --komoran-jar); KoreanEngine
+            // constructs Komoran(String modelPath) pointed at the
+            // installed pack dir. Strip both LIGHT (~1.75 MB, what we
+            // ship in the pack) and FULL (~4.2 MB, unused) models.
+            excludes += "models_light/**"
+            excludes += "models_full/**"
+            // HanLP portable data/. Now shipped inside the ZH source
+            // pack (see scripts/build_zh_dict.py --hanlp-jar);
+            // ChineseEngine installs a PackAwareHanlpAdapter that
+            // redirects HanLP's file reads to the pack's tokenizer/
+            // dir. Strips ~22 MB of HanLP classpath resources.
+            //
+            // CAUTION: opencc4j ALSO ships dictionaries under data/dictionary/
+            // (~1.1 MB of OpenCC STPhrases/TWVariants/HKVariants/… flat *.txt
+            // files it loads via getResourceAsStream at runtime). A blanket
+            // `data/dictionary/**` exclude strips those too and crashes the
+            // Traditional-Chinese converter (ExceptionInInitializerError → null
+            // resource stream in STPhraseData.<clinit>). So strip HanLP's entries
+            // by name and let opencc4j's OpenCC tables survive. Both deps are
+            // version-pinned, so this file list is stable; revisit on upgrade.
+            excludes += "data/dictionary/CoreNatureDictionary*"
+            excludes += "data/dictionary/stopwords.txt.bin"
+            excludes += "data/dictionary/custom/**"
+            excludes += "data/dictionary/organization/**"
+            excludes += "data/dictionary/other/**"
+            excludes += "data/dictionary/person/**"
+            excludes += "data/dictionary/pinyin/**"
+            excludes += "data/dictionary/place/**"
+            excludes += "data/dictionary/synonym/**"
+            excludes += "data/dictionary/tc/**"
+            excludes += "data/model/**"
+        }
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.isReturnDefaultValues = true
+    }
+}
+
+// Provisions the JDK via Gradle's toolchain API so the build doesn't depend on
+// whichever JDK the user has on PATH. Combined with the foojay-resolver plugin
+// in settings.gradle.kts and `auto-download=true` in gradle.properties, Gradle
+// fetches and caches a JDK 17 under ~/.gradle/jdks if one is not installed.
+kotlin {
+    jvmToolchain(17)
+}
+
+// Every release artifact first holds the live pack redirect layer to the
+// catalog: scripts/verify_catalog_urls.py asks packs.playtranslate.com for
+// every langpack_catalog.json URL and expects the 302 scripts/pack_urls.py
+// predicts, then a 206 of the catalog's size from the upstream. The catalog
+// ships inside the APK, so a misrouted rule or a deleted upstream asset has
+// to stop the build here rather than a user's install. A live check, so it
+// is never up to date; debug builds never run it.
+val verifyCatalogUrls = tasks.register<Exec>("verifyCatalogUrls") {
+    group = "verification"
+    description = "Checks the live pack redirect layer against every langpack_catalog.json URL."
+    workingDir = rootDir
+    commandLine("python3", rootProject.file("scripts/verify_catalog_urls.py").path)
+    inputs.file(layout.projectDirectory.file("src/main/assets/langpack_catalog.json"))
+    inputs.files(rootProject.file("scripts/verify_catalog_urls.py"), rootProject.file("scripts/pack_urls.py"))
+    outputs.upToDateWhen { false }
+}
+
+// Every APK this module builds is checked for ARM libraries that define ELF
+// thread-locals (see VerifyNoArmElfTlsTask) before assemble or install
+// completes, whether the library is ours or came in with an AAR.
+androidComponents {
+    onVariants { variant ->
+        val variantName = variant.name.replaceFirstChar { it.uppercase() }
+        val verify = tasks.register<VerifyNoArmElfTlsTask>("verify${variantName}NoArmElfTls") {
+            apkFolder.set(variant.artifacts.get(SingleArtifact.APK))
+            builtArtifactsLoader.set(variant.artifacts.getBuiltArtifactsLoader())
+            report.set(layout.buildDirectory.file("intermediates/no_arm_elf_tls/${variant.name}/checked.txt"))
+        }
+        tasks.matching { it.name == "assemble$variantName" || it.name == "install$variantName" }
+            .configureEach { dependsOn(verify) }
+
+        // Every release build leaves its R8 mapping under releases/ (see
+        // ArchiveMappingTask), so a crash log from the field can be retraced.
+        // The archive finalizes the R8 task itself, so each path that makes
+        // the obfuscated build, assemble, install, bundle or the bare minify
+        // task, leaves the mapping behind, up to date or not.
+        if (variant.buildType == "release") {
+            tasks.matching { it.name == "assemble$variantName" || it.name == "bundle$variantName" }
+                .configureEach { dependsOn(verifyCatalogUrls) }
+
+            val output = variant.outputs.first()
+            val archive = tasks.register<ArchiveMappingTask>("archive${variantName}Mapping") {
+                mappingFile.set(variant.artifacts.get(SingleArtifact.OBFUSCATION_MAPPING_FILE))
+                versionName.set(output.versionName.map { it ?: "unversioned" })
+                versionCode.set(output.versionCode.map { it ?: 0 })
+                releasesDir.set(rootProject.layout.projectDirectory.dir("releases"))
+            }
+            tasks.matching { it.name == "minify${variantName}WithR8" }
+                .configureEach { finalizedBy(archive) }
+        }
+    }
+}
+
+dependencies {
+    implementation(project(":mnn"))
+    implementation(project(":bergamot"))
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // ML Kit
+    implementation(libs.mlkit.text.recognition.japanese)
+    implementation(libs.mlkit.text.recognition)          // Latin base SDK (Phase 3)
+    implementation(libs.mlkit.text.recognition.chinese)   // Chinese OCR (Phase 4)
+    implementation(libs.mlkit.text.recognition.korean)    // Korean OCR
+    implementation(libs.mlkit.text.recognition.devanagari) // Devanagari/Hindi OCR
+    implementation(libs.mlkit.translate)
+    implementation(libs.mlkit.language.id)
+
+    // Networking
+    implementation(libs.okhttp)
+    implementation(libs.gson)                       // streaming Yomitan bank parsers only
+    implementation(libs.kotlinx.serialization.json) // reflective DTO (de)serialization
+
+    // Japanese morphological analysis: Sudachi/UniDic (see docs/sudachi-spike-report.md);
+    // replaced the abandoned kuromoji-ipadic (2007 IPADIC).
+    implementation(libs.sudachi)
+
+    // Lucene Snowball stemmer (Phase 3: Latin/English stemming)
+    implementation(libs.lucene.analyzers.common)
+
+    // KOMORAN (Korean morphological analyzer — TRIE + statistical OOV).
+    // Used instead of Lucene Nori because Nori's AttributeFactory touches
+    // java.lang.ClassValue, which Android ART does not ship. KOMORAN is
+    // pure Java and Android-compatible.
+    implementation(libs.komoran)
+
+    // HanLP CRF segmenter (Phase 4: Chinese word segmentation)
+    implementation(libs.hanlp)
+
+    // OpenCC (opencc4j): render-time Simplified->Traditional Chinese conversion
+    // for Traditional target output (s2t / s2tw phrase-level / s2hk glyph-level).
+    // Pure-JVM, Apache-2.0; no NDK, so it runs on every ABI.
+    implementation(libs.opencc4j)
+
+    // Unit tests
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+
+    // On-device instrumented tests (OCR golden-set evaluation)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    // PaddleOCR: OpenCV for DBNet postprocessing + crop rectification.
+    // Promoted from androidTest to a main dependency for the debug-only
+    // in-app PaddleOCR toggle (DebugUsePaddleOcr) — ships OpenCV native .so
+    // into the app APK. Experimental / debug-gated; not a shipped feature.
+    // See docs/paddleocr-spike-report.md (verdict: NO-GO for production).
+    implementation(libs.opencv)
+
+    // CameraX for the camera tool (Settings → Tools → Camera).
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+}
+
+/**
+ * Fails the build if a native library packaged for an ARM ABI defines ELF
+ * thread-locals, i.e. carries a PT_TLS segment.
+ *
+ * x86 hosts (BlueStacks, MuMu, Chromebooks, Play Games on PC) run our ARM
+ * libraries through a binary translator, and translators resolve the TLS
+ * descriptors of a dlopen'ed library to a null address: the process SIGSEGVs
+ * on the library's first thread_local access, past every try/catch. It took
+ * down MNN_Express and Bergamot on BlueStacks, and Bergamot on MuMu's
+ * Android 12 image.
+ * `:mnn` and `:bergamot` build with -femulated-tls, which leaves no PT_TLS
+ * segment; this keeps that true for them after an upgrade and for every
+ * prebuilt library an AAR brings in, by reading the APK that actually ships.
+ * x86 slices are exempt: they run natively, never under a translator.
+ */
+abstract class VerifyNoArmElfTlsTask : DefaultTask() {
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val apkFolder: DirectoryProperty
+
+    @get:Internal
+    abstract val builtArtifactsLoader: Property<BuiltArtifactsLoader>
+
+    /** The libraries checked, one per line; also what makes the task incremental. */
+    @get:OutputFile
+    abstract val report: RegularFileProperty
+
+    @TaskAction
+    fun verify() {
+        val apks = builtArtifactsLoader.get().load(apkFolder.get())?.elements?.map { File(it.outputFile) }
+            ?: throw GradleException("No APK metadata in ${apkFolder.get().asFile}")
+        val checked = mutableListOf<String>()
+        val offenders = mutableListOf<String>()
+        for (apk in apks) {
+            ZipFile(apk).use { zip ->
+                for (entry in zip.entries()) {
+                    val abi = entry.name.removePrefix("lib/").substringBefore('/', missingDelimiterValue = "")
+                    if (!entry.name.startsWith("lib/") || !entry.name.endsWith(".so") || !abi.startsWith("arm")) continue
+                    val path = "${apk.name}!/${entry.name}"
+                    checked += path
+                    if (zip.getInputStream(entry).use(::definesElfTls)) offenders += path
+                }
+            }
+        }
+        if (offenders.isNotEmpty()) {
+            throw GradleException(
+                "ARM native libraries define ELF thread-locals (PT_TLS), which x86 hosts' ARM " +
+                    "translators resolve to a null address:\n" +
+                    offenders.joinToString("\n") { "  $it" } +
+                    "\nBuild the library with -femulated-tls (see mnn/src/main/cpp/CMakeLists.txt)."
+            )
+        }
+        report.get().asFile.writeText(checked.sorted().joinToString("\n", postfix = "\n"))
+    }
+
+    /** True iff the ELF file read from [elf] has a PT_TLS program header. Reads
+     *  only the ELF header and the program header table that follows it. */
+    private fun definesElfTls(elf: InputStream): Boolean {
+        val ident = elf.readNBytes(16)
+        if (ident.size < 16 || ident[0] != 0x7F.toByte() || ident[1] != 'E'.code.toByte() ||
+            ident[2] != 'L'.code.toByte() || ident[3] != 'F'.code.toByte()
+        ) throw GradleException("Not an ELF file")
+        val is64 = ident[4] == 2.toByte()
+        val order = if (ident[5] == 1.toByte()) ByteOrder.LITTLE_ENDIAN else ByteOrder.BIG_ENDIAN
+        val headerSize = if (is64) 64 else 52
+        val header = ByteBuffer.wrap(ident + elf.readNBytes(headerSize - 16)).order(order)
+        val tableOffset = if (is64) header.getLong(0x20) else header.getInt(0x1C).toLong() and 0xFFFFFFFFL
+        val entrySize = header.getShort(if (is64) 0x36 else 0x2A).toInt() and 0xFFFF
+        val entryCount = header.getShort(if (is64) 0x38 else 0x2C).toInt() and 0xFFFF
+        if (tableOffset < headerSize) throw GradleException("Malformed ELF program header offset")
+        elf.skipNBytes(tableOffset - headerSize)
+        val table = ByteBuffer.wrap(elf.readNBytes(entrySize * entryCount)).order(order)
+        // p_type is the first word of a program header in both ELF32 and ELF64.
+        return (0 until entryCount).any { table.getInt(it * entrySize) == PT_TLS }
+    }
+
+    private companion object {
+        const val PT_TLS = 7
+    }
+}
+
+/**
+ * Copies a release build's R8 mapping to releases/ as
+ * mapping-<versionName>-<versionCode>-<first 8 of the map id>.txt.
+ *
+ * R8 renames every class and method it ships, so a crash log from a release
+ * build says `i92.onTouchEvent`, and the mapping file is the only way back to
+ * `RegionDragView.onTouchEvent`. Each obfuscated frame carries the build's
+ * map id ("r8-map-id-<hex>"), which is what scripts/retrace.sh matches a log
+ * to its mapping by, and what keeps two release builds of one version from
+ * overwriting each other. The build directory's copy is gone with the next
+ * build, and the 3.3.0 region-editor crash (2026-10-07) had to be retraced
+ * from a rebuild of the tag. The archive is not a task output: it keeps every
+ * build's file and is never cleaned.
+ */
+abstract class ArchiveMappingTask : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val mappingFile: RegularFileProperty
+
+    @get:Input
+    abstract val versionName: Property<String>
+
+    @get:Input
+    abstract val versionCode: Property<Int>
+
+    @get:Internal
+    abstract val releasesDir: DirectoryProperty
+
+    @TaskAction
+    fun archive() {
+        val mapping = mappingFile.get().asFile
+        val id = mapping.useLines { lines ->
+            lines.take(64).map { it.trim() }.firstOrNull { it.startsWith("# pg_map_id:") }
+        }?.substringAfter(':')?.trim()?.takeIf { it.isNotEmpty() }
+            ?: throw GradleException("No pg_map_id header in $mapping")
+        val dir = releasesDir.get().asFile
+        dir.mkdirs()
+        val target = File(dir, "mapping-${versionName.get()}-${versionCode.get()}-${id.take(8)}.txt")
+        mapping.copyTo(target, overwrite = true)
+        logger.lifecycle("R8 mapping archived: $target")
+    }
+}

@@ -1,0 +1,1045 @@
+# Simplified Chinese (values-zh-rCN) localization review
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| hymt_legal_message | ❌ | 你目前并未在欧盟、英国或韩国境内**居住或所在**。 | 你目前并未**居住于或身处**欧盟、英国或韩国境内。 | "所在" cannot serve as a coordinate predicate with 居住 — clause (1) of the attestation is ungrammatical. Everything else in the legal block is faithful: §5(b) kept, 欧盟/英国/韩国 enumeration kept, "affirm and warrant" rendered with proper force as 声明并保证. Only this grammar slip needs fixing. |
+| onboarding_a11y_title | ⚠ | 在其他应用上层显示 | 显示在其他应用的上层 | Stock Android zh-CN names this permission page "显示在其他应用的上层". Match it so users can find the toggle. Same phrase in `mp_overlay_permission_title`, `mp_overlay_permission_message`（"在其他应用上层显示"权限）and `onboarding_a11y_body`（需要在其他应用上层显示）. |
+| quick_tile_add_row_title | ⚠ | 添加快捷设置**磁贴** | 添加快捷设置**图块** | AOSP zh-CN calls QS tiles 图块 (e.g. "按住并拖动即可添加图块"); 磁贴 is Windows/OEM vocabulary. Also `settings_hotkeys_tile_add`（添加磁贴 → 添加图块）. 快捷设置 itself is correct. |
+| legacy_engines_removed_message | ⚠ | **你旧版的**离线翻译器 | **你的旧版**离线翻译器 / 旧版离线翻译器 | Possessive misplaced; 你旧版的 is not natural Chinese. |
+| overlay_mode_option_furigana | ⚠ | 假名 | 振假名 | Terminology split: furigana = 假名 here, in `hint_label_furigana_lower`, `settings_hotkeys_furigana`, `cd_toggle_inline_furigana`（内嵌假名）and `onboarding_welcome_body`（读音指南（假名…）), but = 振假名 in `anki_content_expression_furigana` / `anki_content_sentence_furigana`. 假名 alone means the kana syllabary, and `anki_content_reading`（单词读音（假名））uses it in *that* correct sense — so the same word names two different things. Standardize the ruby-annotation feature on 振假名. |
+| status_no_text | ⚠ | 检测到 %1$s 文字 | 检测到%1$s文字 | Systematic: placeholders that expand to *localized Chinese* language names are wrapped in spaces, producing 汉␠汉 spacing at runtime（"检测到 日语 文字"）. Same pattern: `lang_setup_requires_64bit_msg`（%1$s 的文字识别）, `pack_upgrade_progress_format`(_with_bytes)（正在下载 日语…）, `lang_section_offline_models_subtitle`（…英语 的离线翻译）, `anki_section_description`（创建 英语 抽认卡）, `target_pack_migration_title`/`_message`, `custom_region_edit_title`, `tr_service_status_quota_with_reset_fmt`（6月1日 重置）. Inconsistent with the TTS strings, which correctly omit the space（`tts_language_unsupported_with_engine_message` 不支持%2$s, `tts_voices_section_header` %1$s语音）. Keep spaces only where the value is Latin (model names, engine names, byte sizes — those are all correct). |
+| accessibility_dialog_message | 💬 | 设置 → 无障碍 → **已安装的应用** | 已下载的应用 | Stock Android's Accessibility screen section is "已下载的应用" (Downloaded apps). The English source also says "Installed apps", so this is faithful — but the nav path is the one place exact system wording pays off. Also `overlay_icon_a11y_required_message`. |
+| onboarding_welcome_body | 💬 | 将屏幕上的文字转换为翻译 | 即时翻译屏幕上的文字 | "转换为翻译" is literal MT-flavored phrasing. |
+| onboarding_welcome_tagline | 💬 | 畅玩其他语言游戏 | 畅玩外语游戏 | 外语 is the natural word here. |
+| lang_setup_preloading_message | 💬 | 请稍候片刻 | 请稍候 / 请稍等片刻 | 稍候 already contains "a moment"; 稍候片刻 is redundant. |
+| update_dialog_view_release | 💬 | 查看版本 | 查看新版本 | "查看版本" reads as "view version number"; the button opens the release page. |
+| tts_no_engine_dialog_title | 💬 | 无文字转语音 | 无文字转语音引擎 | As a bare dialog title it reads clipped; adding 引擎 matches the body. |
+| anki_sort_field_empty | 💬 | 空值会在发送时导致重复拒绝错误 | 空值会在发送时被视为重复而遭拒 | "重复拒绝错误" is an opaque calque of "duplicate-rejection errors". |
+
+Mechanical rules: no violations found — all `<xliff:g>` inner content intact, placeholders present, `<b>`/`\n`/`\{ \}`/`&lt;img&gt;` preserved, full-width quotes used throughout (no unescaped `'`/`"`), plurals are `other`-only, brand names untouched. The Anki "Example:" samples (聞く, ★★★, noun) are correctly left unlocalized. No Traditional characters found.
+
+## Verdicts
+
+- **Register consistency**: clean — casual 你 throughout, zero 您, concise friendly tone (好的 for OK is consistent and fits the register).
+- **Terminology consistency**: strong — 设置/翻译/下载/删除/无障碍/牌组/卡片类型/抽认卡/语言包/快捷键/文字转语音/屏幕截取/叠加层/按流量计费的网络 are uniform; one real split (furigana: 假名 vs 振假名).
+- **Android-settings wording**: 无障碍, 按流量计费, 快捷设置, 允许受限设置 all match the OS; misses on "显示在其他应用的上层" and QS "图块", plus the 已安装的应用 nav-path nit.
+- **Han/Latin spacing**: Latin/number spacing is uniformly correct, including around placeholders and before full-width punctuation; the only defect is extra spaces around placeholders that expand to Chinese language names (inconsistent with the TTS strings, which get it right).
+- **Grammar around placeholders**: good — measure words correct (台显示屏, 个牌组, 颗星), byte/RAM compositions read naturally; one grammar error in the legal clause.
+- **Truncation risk**: none — bottom bar items are all two characters (自动/暂停/设置/区域), 截取\n区域 fits the two-line button.
+- **Legal text**: faithful and conservative — §5(b), the EU/UK/South Korea list, and 声明并保证 all preserved; fix the (1)-clause grammar before shipping.
+- **Overall**: **fix-then-ship** — one legal-text grammar error and two Android-wording alignments; everything else is polish.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR set; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_importing_progress | 💬 | 正在导入第 %1$d / %2$d 个… | 正在导入 %1$d / %2$d… | `第 X / Y 个` mixes the ordinal classifier 第…个 ("the Nth") with a current/total slash, which don't pair cleanly; 第 implies a single ordinal, not "current of total". A bare `%1$d / %2$d` (or `第 %1$d 个，共 %2$d 个`) reads more naturally as progress. Placeholders stay positional/byte-identical; the EN noun-omission intent is preserved either way. Minor — current form is still understandable. |
+
+## Clean areas (delta)
+- **Pangu spacing — all 29 keys clean.** Every Han↔Latin/number boundary carries exactly one space (`词频列表（JPMN 风格）`, `自定义 URL`, `高亮单词的 ★ 评级`, `本地或局域网地址`); no space before any full-width punctuation (programmatic scan for ` [，。、？！：；）”]` over the new lines: zero hits); no space between Han runs; numeric/`%n$d` placeholders correctly spaced as Latin runs (`第 %1$d / %2$d 个`, `%2$d 部词典中的 %1$d 部`). Brand names against full-width quotes (`Lapis 的“PitchPosition”`) and the em-dash `https://——http://` (no surrounding space, matching the file's `——` convention at lines 277/279) are both correct. The only spacing "hits" in the double-space scan were XML indentation, not content.
+- **Terminology reuse — uniform.** 音高重音 (pitch accent) matches `yomitan_category_pitch_accent`/`yomitan_page_description`; 词频 (frequency) matches `yomitan_category_frequency`/`anki_content_frequency`; 词典 (dictionary) and 导入 (import) match the surrounding Yomitan block; 文字转语音 (TTS) and 音频 (audio) match `settings_cell_tts`/`anki_group_audio`; `无结果` is byte-identical to the established `lang_search_no_results`/`dictionary_status_no_results`; `正在加载…` / `无法加载` follow the file-wide loading pattern (`anki_deck_picker_loading`, `word_detail_more_examples_error`); 自定义 URL matches the 自定义 family; 局域网 (LAN) is the correct Simplified term. The 风格 (label) vs 样式格式 (desc) pairing tracks EN's own "JPMN style" vs "styled format" distinction, not a split.
+- **Register — casual 你 throughout, zero 您;** concise friendly tone consistent (请使用…, 请仅在…卡片上使用). No formal/informal mixing introduced.
+- **Plurals / measure words — both collapsed to a single `other` with the right classifier:** 部 for 词典 in `yomitan_import_summary_count` (`%2$d 部词典中的 %1$d 部`, positionally-reordered placeholders, byte-identical spans), 项 for elided names in `yomitan_import_summary_more` (`+%1$d 项`). Generic 个 in the progress string is acceptable (noun deliberately omitted in EN).
+- **Short-label truncation — none.** Anki audio cells (`无结果`, `正在加载…`, `无法加载`), picker title (`音频`), source names (`文字转语音`, `Wikimedia Commons`), and the Advanced header (`高级`) are all short; no overflow risk.
+- **The `Example:` / quoted-field-name rule — honored.** `anki_content_pitch_position_desc` renders `示例：0,2` with the `0,2` sample left verbatim (matching the file's `示例：聞く`/`示例：★★★` precedent), and the Anki field names (`“PitchPosition”`, `“PAOverride”`, `“Frequency”`, `“FrequenciesStylized”`, `“FreqSort”`, `“FrequencySort”`) are kept as-is in straight English inside full-width quotes — correctly not flagged.
+- **`<xliff:g>` integrity:** all brand spans (Lapis/JPMN) and `%1$d`/`%2$d`/`%1$s` placeholders byte-identical to EN; reordering in `yomitan_import_summary_count` is a legal positional move only.
+
+Net: no 🛑/❌/⚠️ in the delta — one 💬 nit (`yomitan_importing_progress` classifier phrasing). The +29 keys are ship-ready as-is.
+
+---
+
+# Delta review — 2026-07-14 sync (174 keys)
+
+Scope: the 170 newly translated + 4 English-changed keys (History screen, Advanced LLM
+configuration + prompt editor, in-app updater, game-audio trim, translation-service
+management, single-app capture, 38 `misc_*` dictionary chips).
+
+**Mechanical layer verified programmatically — no 🛑.** All 174 keys present; every
+`%n$s`/`%d` placeholder matches EN; all `<xliff:g>` spans byte-identical to EN (inner
+content + `id` + `example`); `\n` preserved in `floating_menu_capture_screen`; the bare
+Latin keyword tokens `{text} {strings} {N} {source} {source_code} {target} {target_code}`
+are byte-identical in all six strings that carry them in running prose; zero raw `'`/`"`;
+`settings_yomitan_count_summary` is correctly `other`-only (zh CLDR); `name=` untouched.
+The three hits in the automated diff are all expected: the zh plural collapses EN's
+`one`+`other` to `other`, `Download &amp; install` correctly becomes 下载并安装 (no
+ampersand), and the `\n` escape trips the Han/Latin adjacency scan.
+
+## Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `llm_prompt_row_system_subtitle`, `llm_prompt_advisory_too_long` | ⚠️ | 发送给云端和**本地** LLM 翻译器…；**本地模型**可能会变慢… | 发送给云端和**设备端** LLM 翻译器…；**设备端模型**可能会变慢… | **本地 is already taken on this exact page.** The committed `llm_backend_base_url_invalid` (line 701) reads “http:// 仅允许用于**本地**或局域网地址” — there 本地 means *localhost/LAN*. A Custom provider legitimately **is** a self-hosted LLM at a local URL (LM Studio), so “本地 LLM 翻译器” is genuinely ambiguous between *on-device (in-app MNN)* and *the server on my PC* — a distinction the sentence exists to draw. 设备端 is unambiguous and gives a clean parallel 云端 ↔ 设备端 (端侧 also works). EN’s own on-device/offline split is fine to mirror; it is 本地 specifically that collides. |
+| `misc_honorific`, `misc_humble` | ⚠️ | 尊敬语 / 谦让语 | **敬辞** / **谦辞** | These are Chinese renderings of the *Japanese* grammar terms 尊敬語/謙譲語, not Chinese lexicographic labels. 现代汉语词典 marks these senses 〈敬〉/〈谦〉 → 敬辞/谦辞. The chips also render on **Chinese** source words (zh is a supported source language), where 敬辞/谦辞 is what a dictionary actually says; and both are 1 char shorter, which the width-constrained chip wants. `misc_polite` 礼貌语 can stay — the cluster remains three-way distinct. Counter-argument for the record: for a JA learner reading a Chinese UI, 尊敬语/谦让语 are the textbook terms, and the EN comments do cite sonkeigo/kenjougo. Not wrong, but not the canonical label. |
+| `misc_obsolete` | ⚠️ | 废弃 | **废语** (or 已废) | 废弃 is a verb — “to discard / abandon” (废弃的工厂). As a bare chip it reads like *deprecated equipment*, not a dictionary register label. 废语 is the lexicographic term, is 2 chars, and lands parallel to `misc_archaic` 古语 — making the obsolescence cluster read as one family: 古语 / 废语 / 过时 / 历史词. |
+| `audio_source_game_enable_hint` | ⚠️ | **未在录制**——开启后即可录制游戏音频，供以后的卡片使用 | **当前未录制**——开启后即可录制游戏音频，供以后的卡片使用 | 未在 + verb is a formal-written construction (未在规定期限内…) and reads stiff/MT-ish as a negative progressive in a casual switch subtitle; natural Chinese negates 正在录制 as 当前未录制 / 尚未录制. Rest of the string is good — 供以后的卡片使用 correctly preserves EN’s “future cards, not the one being edited” nuance. |
+| `update_error_signature` | ⚠️ | 此更新**无法覆盖当前版本安装**。请从 GitHub 手动安装。 | **无法在当前版本上覆盖安装此更新。**请从 GitHub 手动安装。 | 覆盖安装 is a fixed compound (“install over”); splitting it as 覆盖…安装 leaves the sentence garden-pathing between “cannot overwrite the current version, [then] install” and “cannot overwrite the current version’s install”. Keeping 覆盖安装 intact fixes it. |
+| `misc_offensive`, `misc_nonstandard` | 💬 | 冒犯 / 非标准 | 冒犯语 / 不规范 | 冒犯 is a transitive verb (“to offend”); as a standalone chip 冒犯语 reads as a label. 不规范 is the lexicographic term for a nonstandard form (非标准 is the spec/technical sense). Both are legible as-is — and 非标准 does buy a nice parallel with 非正式 — so this is optional polish, not a defect. |
+| `stream_kind_prompt_message` | 💬 | 共享**单个**应用与共享整个屏幕时… | 共享**一个**应用与共享整个屏幕时… | The dialog’s own buttons are 共享一个应用 / 共享整个屏幕 (AOSP wording, correctly used). The body matches the whole-screen button verbatim but says 单个 for the other — so one half cross-references the button and the other doesn’t. Aligning to 一个 lets the user map prose → button on both. |
+| `update_unknown_sources_message` | 💬 | …请在即将打开的设置页面中允许 PlayTranslate 安装应用更新。 | …请在即将打开的设置页面中开启“**允许来自此来源的应用**”。 | Android zh-CN calls the screen 安装未知应用 and the per-app switch **允许来自此来源的应用**. Naming the switch is the one place exact system wording pays off. **Note this is an EN-source question, not a zh defect** — the English also declines to name the toggle, so this should be decided for all 12 locales at once (or not at all). |
+| `probe_initializing` | 💬 | 正在初始化… | 初始化… | Consistent with the file’s 正在X… family (正在验证…/正在查询…/正在加载…), so keeping it is defensible. Flagged only because the brief calls it a truncation risk: the chip sits beside a checker swatch, and 5 Han glyphs + ellipsis is the widest thing on it. 初始化… drops 2 glyphs with no loss. |
+| `settings_debug_log_trace` | 💬 | 记录翻译日志**追踪** | 记录翻译日志**轨迹** | 追踪 is the verb “to trace”; as the object of 记录 it noun-piles. 轨迹 (or 跟踪记录) reads as a thing that gets recorded. Debug-only string, lowest priority; the 记录X pattern matches the committed `settings_debug_log_pinhole`. |
+| `misc_manga_slang`, `misc_euphemistic` | 💬 | 漫画用语 / 委婉语 | 漫画俚语 / 婉辞 | Optional. `misc_slang` is 俚语, so “manga **slang**” → 漫画用语 quietly drops the slang nuance (though 网络用语 for internet slang is genuinely the natural Chinese term, so the family is not uniform in EN either). 婉辞 is the 2-char lexicographic label vs 3-char 委婉语. Both current forms are correct and clear — listed for completeness only. |
+
+## The 38 `misc_*` chips — cluster audit
+
+All 38 labels are **distinct** (no two chips share a string), and every one is a real
+Chinese term rather than a gloss of the English. Lengths: 20 × 2 chars, 10 × 3, 8 × 4
+(the 4s are 仅用假名 / 仅用汉字 / 四字成语 / 女性用语 / 男性用语 / 网络用语 / 漫画用语 /
+诗歌用语 — all inherently multi-concept, and shorter than their English source). The
+sibling `pos_*` family tops out at 3 (形容词/助动词/缩略形), so the misc set runs one glyph
+wider at the extreme; acceptable, and no candidate for shortening is both shorter *and*
+as clear.
+
+The four must-stay-distinguishable clusters:
+
+| cluster | rendered | verdict |
+|---|---|---|
+| offensiveness | 贬义 · 冒犯 · 粗俗 · 蔑称 | **distinct.** 贬义 (derogatory *sense*) vs 蔑称 (a contemptuous *appellation*) vs 粗俗 (crude) vs 冒犯 (offensive) all separate cleanly. Only 冒犯’s verb form is a nit (above). |
+| obsolescence | 古语 · 废弃 · 过时 · 历史词 | **distinct**, but 废弃 is off-register (above). 古语 / 过时 / 历史词 are all canonical. |
+| informality | 口语 · 非正式 · 亲昵 · 俚语 | **clean — no findings.** All four are canonical lexicographic labels and mutually unmistakable. Note the translator correctly used 俚语 for slang and did **not** reach for 俗语 (which means *proverb/common saying*, not slang) — a trap this set walks straight past. |
+| honorifics | 尊敬语 · 谦让语 · 礼貌语 | **distinct**, but the first two are JA-grammar calques (above). |
+
+Correct per the glossary’s explicit hard constraints: `misc_yojijukugo` = **四字成语**
+(exactly the prescribed zh term, not romanized); `misc_kana_only` / `misc_kanji_only` =
+仅用假名 / 仅用汉字 (kana and kanji kept as the established terms). Also canonical and
+worth naming: 拟声词, 贬义, 方言, 口语, 书面语, 惯用语, 比喻, 罕用, 儿语, 爱称, 新词,
+诙谐, 敏感, 讽刺 (讽刺 is clearer here than the rhetorical 反语), 蔑称, 历史词.
+
+## Clean areas (delta) — checked, no findings
+
+- **移除 / 删除 / 清空 stay perfectly distinct**, which is the glossary’s headline risk.
+  Services are **移除**d (`tr_service_delete_cd` 移除服务, `tr_service_remove_confirm`,
+  `tr_service_remove_title_fmt`), history entries and models are **删除**d
+  (`history_action_delete`, `history_delete_confirm_title`, `settings_ocr_disable_delete`),
+  and clear-all is **清空** (`history_clear_menu`, `history_clear_confirm_title`).
+  `tr_service_remove_message` even carries **both** in one sentence exactly as EN does:
+  “将该服务从列表中**移除**，并**删除**已保存的 API 密钥”. Note the translator was not
+  tricked by the key *name* `tr_service_delete_cd` (EN: “Remove service”) into writing 删除.
+- **Homograph trap avoided.** `update_error_downgrade` = 下载的版本**不比**已安装的版本**新**。
+  The 不比…新 negative comparative is exactly right, and the 更新 = *update* / *newer*
+  ambiguity that would invert this sentence never arises.
+- **The Chinese-expanding-placeholder spacing rule is now RIGHT** — and this delta is the
+  first batch to get it right. `hotkey_show_hint_title` (长按以显示%1$s),
+  `hotkey_auto_hint_title`, `hotkey_auto_hint_dialog_title` all omit the space, because
+  `%1$s` fills with 假名/拼音. That is precisely the systematic defect the full review
+  filed against the committed file (`status_no_text` et al.). Every Latin/digit-filling
+  placeholder in the delta correctly *keeps* its spaces (`由 %1$s 识别`, `下载大小：%1$s`,
+  `已选 %1$s 秒`, `还需 %1$s`, `已导入 %d 部词典`). Zero regressions.
+- **Pangu / punctuation: programmatically clean.** Zero half-width `,.?!:;` after Han;
+  zero spaces before full-width punctuation; zero missing Han↔Latin spaces (`选择 OCR 工具`,
+  `LLM 高级配置`, `输入你的后端 URL`, `从 GitHub 获取更新`); full-width （）：？ throughout;
+  no double spaces. 破折号 —— used natively in 5 delta strings, correct.
+- **`ocr_source_label` mirrors `translation_source_label` structurally**, per the hard
+  constraint: committed 由 %1$s **翻译** → delta 由 %1$s **识别**. It also reuses the app’s
+  own OCR verb (识别, cf. `lang_setup_requires_64bit_msg` 文字识别) rather than calquing
+  “scanned” as 扫描. This is the single best-executed string in the delta.
+- **“Captured” = 截取, one verb, no second one introduced.** `history_toggle_subtitle`,
+  `settings_cell_history_summary_on/off`, `history_empty_off`, `error_capture_blocked_secure`,
+  `error_single_app_not_fullscreen` all use 截取, matching the committed 屏幕截取 /
+  截取游戏画面. And `floating_menu_capture_screen` = 截取\n屏幕 is a byte-parallel of the
+  committed `floating_menu_btn_capture_region` = 截取\n区域 — same two-line shape, fits.
+- **Terminology reuses the committed file rather than inventing.** 提供商
+  (`llm_backend_provider_label`) matches `tr_service_order_footer`; 翻译服务 matches
+  `settings_cell_translation_services`; 密钥 matches the whole API-key family; 查询用量
+  matches the committed `tr_service_status_loading` (正在查询用量…); 查询 for lookup matches
+  查询单词/词典查询; 开/关 in `settings_cell_history_summary_*` matches
+  `capture_lifecycle_state_on/off`; the ` · ` separator has six committed precedents;
+  按流量计费的网络 in `update_dialog_metered_note` is the exact params-doc metered term;
+  文字转语音 in `game_audio_trim_use_tts` matches `settings_cell_tts`; 后备方案 in
+  `llm_status_low_memory_badge` matches `tr_service_offline_footer`. `settings_ocr_disable_manga_msg`
+  reuses the committed `bergamot_disable_message` phrasing almost verbatim (保留已下载的模型，
+  …还是删除它以释放空间), and `settings_ocr_disable_delete` is byte-identical to the committed
+  `bergamot_disable_delete` (删除模型).
+- **One noun for “prompt”: 提示词**, across all 20 `llm_prompt_*` keys, never 请求/查询.
+  “keyword” = 关键词, kept distinct. Sibling dialog buttons are uniformly verb-form
+  (放弃 / 仍然保存 / 重置 / 保留模型 / 删除模型).
+- **Measure words / plurals.** `settings_yomitan_count_summary` is `other`-only with 部
+  (已导入 %d 部词典) — matching the committed `yomitan_import_summary_count` (%2$d 部词典中的
+  %1$d 部). `tr_service_status_usage_today_fmt` = 今日：%1$s **个** token — 个 is the correct
+  and standard classifier for tokens in Chinese LLM copy. `update_error_no_space` needs no
+  classifier for a byte size and uses none (还需 230 MB). All three read correctly with a real
+  value dropped in.
+- **Register: casual 你 throughout, zero 您** (programmatically confirmed across all 174).
+  Simplified only; no Traditional characters.
+- **The deliberate decisions were respected.** `stream_kind_share_one_app` / `_entire_screen`
+  = 共享一个应用 / 共享整个屏幕, which is AOSP SystemUI’s own zh-CN wording (not a fresh
+  translation). `llm_prompt_kw_source_desc` / `_target_desc` keep **Japanese** / **English**
+  in Latin, correctly, because those are the literal runtime expansions.
+  `llm_status_low_memory_badge` left untouched with its native ——.
+- **The EN `<!-- comment -->` was actually read**: `settings_ocr_use_manga_subtitle` renders
+  “Not recommended for auto” as 不建议用于**自动翻译** — the comment’s clarification, not the
+  literal “auto”. `game_audio_trim_save`/`_play` keep EN’s *selection* noun as one term
+  (使用/播放**所选片段**). `game_audio_trim_no_audio` = 不使用音频 correctly reads as the
+  *action* (send the card with no audio), not a status.
+- **`update_dialog_view_release`** — the prior full review’s 💬 (查看版本 “view version
+  number”) is resolved by this sync: EN changed to “View release notes” and zh now reads
+  查看更新说明. Closed.
+
+**Net: 0 🛑, 0 ❌, 5 ⚠️, 6 💬.** No mistranslation, no inverted logic, no broken
+cross-reference, no mechanical defect anywhere in the 174. The ⚠️s are one real
+terminology collision (本地), two lexicographic-label register calls in the chip set, and
+two prose-naturalness slips. This is the strongest of the deltas reviewed against this
+file so far — notably, it *fixes* the placeholder-spacing class of bug rather than
+extending it. **Ship after the five ⚠️s.**
+
+---
+
+# Delta review round 2 — 2026-07-14
+
+Fresh independent re-derivation of all 174 delta keys after round 1's twelve corrections
+were applied. Primary target: **regressions introduced by the fixes.** Round-1 findings
+were read only to know *what changed*; every string below was re-derived from the English
+source + its `<!-- comment -->`.
+
+**Mechanical layer re-verified programmatically — no 🛑.** All 174 keys present; every
+`%n$s`/`%d` matches EN; all `<xliff:g>` spans byte-identical (inner + `id` + `example`);
+`{text} {strings} {N} {source} {source_code} {target} {target_code}` byte-identical in all
+six prose strings that carry them; `\n` preserved in `floating_menu_capture_screen`; zero
+raw `'`/`"`; zero half-width `()`; zero half-width `,.?!:;` after Han; zero spaces before
+full-width punctuation; no double spaces; `settings_yomitan_count_summary` correctly
+`other`-only; file parses as valid XML; **zero 您** and **zero Traditional characters**
+across all 174. The three automated-diff hits are the expected artifacts (zh plural
+collapse, `Download &amp; install` → 下载并安装, the `\n` escape).
+
+## Findings (delta, round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `llm_prompt_advisory_too_long` | 💬 | 此提示词很长。设备端模型可能会变慢或**耗尽上下文**。 | …可能会变慢或**耗尽上下文窗口**。（或 **超出上下文长度**） | Round 1 fixed the *first* half of this sentence (本地→设备端) and left the second. 上下文 on its own is not obviously a consumable, so bare 耗尽上下文 ("exhaust the context") reads a beat oddly; Chinese LLM copy consumes the 窗口 or exceeds the 长度. Not a regression — a round-1 miss. Clear as-is, so 💬 only. |
+| `settings_llm_context_subtitle` | 💬 | …让代词和**名称**的翻译更加一致。 | …让代词和**专有名词**的翻译更加一致。 | 名称 connotes the designation *of a thing* (产品名称/公司名称). What this feature actually stabilises across lines is character names, place names, item names — 专有名词 is the translation-industry term and covers all three. EN's bare "names" is the ambiguous one; zh can be precise for free. |
+| `history_clear_confirm_message` | 💬 | 所有已保存的**文本**都将从此设备上删除。 | 所有已保存的**记录**都将从此设备上删除。 | The screen's unit of content is a 记录 (`history_delete_confirm_title` 删除这条**记录**？), but the clear-all body switches to the mass noun 文本, weakening EN's countable "Every saved **line**". Optional: 文本 does tie back to 文本历史记录 (`history_toggle_title`), so the current form is defensible. |
+
+## Regression audit — the twelve strings round 1 changed
+
+Each re-derived from scratch, then checked for a new collision and for an orphaned sibling.
+
+| changed string | verdict |
+|---|---|
+| `llm_prompt_row_system_subtitle`, `llm_prompt_advisory_too_long` (本地 → 设备端) | **Correct, and complete.** 本地 now appears in **zero** delta strings; its only occurrence file-wide is the committed `llm_backend_base_url_invalid`, where it means *localhost/LAN* — the collision is fully resolved. No orphan: those two were the only delta strings carrying EN "on-device". |
+| `misc_honorific` / `misc_humble` (→ 敬辞 / 谦辞) | **Correct.** These are the 现代汉语词典 labels 〈敬〉/〈谦〉, and they are what a *Chinese*-source dictionary entry actually says — which matters, since zh is a supported source language and these chips render on Chinese words. Still three-way distinct against `misc_polite` 礼貌语. |
+| `misc_obsolete` (→ 废语) | **Correct.** 废弃 was a verb ("to discard"); 废语 is a register label and lands parallel to `misc_archaic` 古语, so the obsolescence cluster now reads as one family. |
+| `misc_offensive` (→ 冒犯语) | **Correct.** 冒犯 alone was a transitive verb. The chips do not truncate, so the extra glyph costs nothing. |
+| `misc_nonstandard` (→ 不规范) | **Correct.** 非标准 is the spec/technical sense; 不规范 is the lexicographic one. The lost 非正式/非标准 rhyme is not worth the wrong sense. |
+| `audio_source_game_enable_hint` (→ 当前未录制) | **Correct.** Reads as a natural negative progressive; 供以后的卡片使用 still carries EN's "future cards, not this one" nuance. Consistent with the block's 录制 (`anki_game_audio_row_title`, `_permission_denied`). |
+| `update_error_signature` (→ 无法在当前版本上覆盖安装此更新。) | **Correct.** 覆盖安装 is intact as one compound, and the garden-path is gone. |
+| `stream_kind_prompt_message` (单个 → 一个) | **Correct.** Both halves of the body now byte-match their buttons (共享一个应用 / 共享整个屏幕). The translator's 与 (rather than 和) is load-bearing: "A**与**B…并不相同" forces the contrastive reading, so 一个 does not garden-path into "share one app **and** the whole screen". 单个 survives only in two committed, unrelated strings (`anki_content_frequency_harmonic_desc`, `yomitan_single_dict_title`) where it is correct. |
+| `error_capture_blocked_secure` (→ 被截取的应用) | **Correct, and better than EN.** EN's "this app" is genuinely ambiguous with PlayTranslate itself; the `<!-- comment -->` says "the captured app", which is what zh now renders. It also matches its sibling `error_single_app_not_fullscreen` (被截取的应用未占满屏幕). |
+| `settings_debug_log_trace` (→ 记录翻译日志跟踪信息) | **Correct — and it improved on round 1's own suggestion.** 跟踪 (not 轨迹) is the file's established noun for *trace*, anchored by the committed `crash_dialog_message` 堆栈跟踪 ("stack trace"); 信息 nominalises it so 记录…跟踪 can't be misread as two verbs. Length matches the sibling debug rows (记录实时模式针孔指标). |
+
+## The 38 `misc_*` chips — post-fix cluster re-audit
+
+**All 38 labels are distinct** (verified programmatically against the string set). Since
+`renderMisc` ends in `.distinct()`, this is the load-bearing property, and none of round
+1's five label edits collapsed a pair. Lengths are now 21 × 2 chars, 9 × 3, 8 × 4 — the
+edits shifted two labels shorter (敬辞/谦辞) and one longer (冒犯语), net-neutral. No label
+contains ` · ` or `/`, so neither the misc join (`" · "`) nor the inflection join (`", "`)
+can be spoofed.
+
+| cluster | rendered | verdict |
+|---|---|---|
+| offensiveness | 贬义 · 冒犯语 · 粗俗 · 蔑称 (+ 敏感) | **distinct and separable.** 贬义 (derogatory *sense*) / 冒犯语 (offensive *language*) / 粗俗 (crude) / 蔑称 (contemptuous *appellation*) / 敏感 (sensitive) — five labels, five concepts, no overlap. |
+| obsolescence | 古语 · 废语 · 过时 · 历史词 | **distinct and separable.** Now one coherent family; 罕用 (rare) sits adjacent without colliding. |
+| informality | 口语 · 非正式 · 亲昵 · 俚语 | **clean.** Unchanged by round 1 and still the best-executed cluster (俚语 for slang, correctly *not* 俗语). 不规范 joins the neighbourhood without colliding with 非正式. |
+| honorifics | 敬辞 · 谦辞 · 礼貌语 | **distinct and separable.** 敬辞 elevates the addressee, 谦辞 lowers the speaker, 礼貌语 is the polite register — exactly the 尊敬語/謙譲語/丁寧語 three-way. The suffix set is now mixed (辞/语), but Chinese dictionary labels are natively heterogeneous (〈书〉〈口〉〈敬〉〈谦〉), so this is not a defect. |
+
+## Clean areas (delta, round 2) — checked, no findings
+
+- **云端 ↔ 设备端 reads unambiguously.** The delta now carries a five-way term system with
+  **zero overlap**, mirroring EN's own five: cloud = **云端** (`llm_prompt_row_system_subtitle`,
+  `llm_prompt_row_batch_subtitle`), on-device = **设备端** (the two fixed strings), online =
+  **在线** (`settings_llm_context_subtitle`, `tr_service_add_online`), offline = **离线**
+  (committed only — zero delta hits), localhost/LAN = **本地** (committed only — zero delta
+  hits). The 端…端 suffix parallel in 发送给**云端**和**设备端** LLM 翻译器 makes the contrast
+  crisp in a way 本地 never could. The mapping is one-EN-term-to-one-zh-term throughout.
+- **移除 / 删除 / 清空 remain three distinct verbs**, and the committed 清除 is a correctly
+  scoped fourth. 移除 = take out of a container (`tr_service_remove_*`, `tr_service_delete_cd`
+  移除服务 — the key *name* says "delete" and did not mislead the translator); 删除 = destroy
+  (`history_action_delete`, `history_delete_confirm_title`, `settings_ocr_disable_delete`);
+  清空 = empty a collection (`history_clear_menu`, `history_clear_confirm_title`); 清除 =
+  clear an input field (committed `btn_clear`, `lang_search_clear_cd`, `dictionary_clear_query`).
+  `tr_service_remove_message` still carries 移除 **and** 删除 in one sentence exactly as EN does.
+  EN "Clear" maps to two zh verbs — but that is correct differentiation (you 清空 a list, you
+  清除 a box), not a split.
+- **Measure words — every counted noun re-read with a real value.** 部 for dictionaries
+  (`settings_yomitan_count_summary`: 已导入 3 部词典; and correct at count = 1); 个 for tokens
+  (`tr_service_status_usage_today_fmt`: 今日：12,345 个 token) and for phrases
+  (`llm_prompt_advisory_missing_count`: 多少个短语); 条 for history entries
+  (`history_delete_confirm_title` 这条记录, `history_empty_none` 逐条出现); 行 for lines of
+  context; 秒 / MB used bare as units, correctly taking no classifier
+  (`game_audio_trim_duration`, `update_error_no_space`). No missing or wrong classifier.
+- **Placeholder spacing survived the fixes intact.** Re-verified all 20 placeholder-bearing
+  delta strings with real values dropped in. `hint_label` resolves to **假名注音** or **拼音**
+  — both Chinese — so `hotkey_show_hint_title` (长按以显示假名注音), `hotkey_auto_hint_title`
+  and `hotkey_auto_hint_dialog_title` are right to omit the space, and the last is
+  byte-identical to the committed `live_mode_auto_with_hint` (自动%1$s). Every Latin/digit
+  placeholder correctly keeps its spaces (由 PaddleOCR 识别, 下载大小：128 MB, 还需 230 MB,
+  移除 OpenAI？, 密钥 ••••4f2a). No space after full-width ：or ，(开启该权限时，Android 可能…),
+  none before ）or ？. Zero regressions.
+- **Full-width punctuation — programmatically clean.** No half-width `()`, no half-width
+  `,.?!:;` after Han. Full-width （）：？，。used throughout; 破折号 —— native and correct in the
+  five strings that carry EN's em dash (the locale exemption applies). The half-width `/` in
+  点按以启动/停止… matches the committed `inflection_passive` 被动/可能.
+- **Truncation — none, including the one row worth measuring.** `activity_game_audio_trim.xml`
+  puts three buttons in a single horizontal row; zh (改用文字转语音 / 不使用音频 / 使用所选片段
+  = 18 Han glyphs) is **narrower** than the EN it already ships with ("Use TTS instead" /
+  "No audio" / "Use selection"). Same for the hotkey rows (点按以启动/停止自动假名注音 < "Tap to
+  start/stop Auto Furigana"). The misc chips wrap rather than ellipsize, so length is moot there.
+- **Register unchanged by the fixes: casual 你, zero 您, zero Traditional characters** across
+  all 174 (programmatic). 开/关 in `settings_cell_history_summary_*` still matches the
+  committed `capture_lifecycle_state_on/off`.
+- **One noun per concept, still.** 提示词 across all 20 `llm_prompt_*` keys (never 请求/查询);
+  关键词 for keyword; 请求 for the wrapped request; 上下文 for context; 短语 for phrase (vs 文本
+  for text, mirroring EN's own phrases/text split); 截取 for capture, 截图 for screenshot
+  (matching committed `anki_screenshot_remove_content_description`); 查询 for both word lookup
+  and usage check (two EN verbs, one zh verb — but in unconfusable contexts, and 查询用量 matches
+  the committed `tr_service_status_loading`).
+- **No logic inversions.** Re-read every negative/conditional: `update_error_downgrade`
+  (不比…新), `settings_ocr_use_manga_subtitle` (不建议用于自动翻译), `settings_llm_context_subtitle`
+  (仅限在线), `audio_source_game_enable_hint` (供**以后**的卡片使用), `game_audio_trim_no_audio`
+  (不使用音频 — the action, not a status), `history_empty_off`, `update_unknown_sources_message`
+  (已下载的更新会被保留). All correct.
+- **Out-of-scope FYI, no action:** the delta's 账号 (`service_account_required*`,
+  `service_no_account_required`) is the right word for a sign-up account, but the *committed*
+  `crash_dialog_message` says 账户信息 for the same EN "account". Committed and outside the
+  delta, so not filed — noted only so it isn't rediscovered as a delta defect next round.
+
+**Net round 2: 0 🛑, 0 ❌, 0 ⚠️, 3 💬.** All twelve round-1 fixes are correct; none
+introduced a collision, a broken agreement, or an orphaned sibling, and one
+(`settings_debug_log_trace`) improved on the suggestion it was given. The 38 misc labels
+remain mutually distinct — the property `.distinct()` depends on — and all four clusters
+stay separable. The three 💬s are optional polish on strings that are already clear.
+**SHIP.**
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "即使画面文字很多也很快" | "即使画面文字很多也迅速" | The English comment forbids reusing the literal Fast tier label; the first pass reused 快, the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+
+### Clean areas (delta) — checked, no findings
+
+Pangu spacing audited on every new string that mixes scripts — 「PlayTranslate 需要相机权限」, 「此 PDF 有密码保护」, 「PDF 和漫画压缩包」, 「已导入 <xliff:g>%d</xliff:g> 部词典」, 「<xliff:g>%d</xliff:g> 行」 — and deliberately suppressed around the language placeholder in `image_import_no_text` and `camera_snapshot_no_text`, which fill with Chinese (未在此图像中检测到%1$s文字), matching the committed `status_no_text`. The em dash in `camera_no_text_hint` is written —— per the locale's rule. 你 throughout, no 您. 自启动 and 无限制 in `a11y_stuck_message_xiaomi` are MIUI's own Chinese labels, so the setting is findable. 截取 kept as the capture verb (matching 截取与叠加层 and 正在截取画面); 快照 for the camera freeze-frame stays distinct from 截图, which `anki_group_screenshot` owns. 引擎 (engine) / 工具 (tool) / 模型 (model) stay three separate nouns — all three meet in `settings_ocr_delete_camera_import_note`. Plurals `other` only, with 部 / 行 measure words.
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ found and fixed, no ❌.
+
+---
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Independent review — the reviewer did not write these translations. Scope is the eight
+keys added by the working diff: `card_words_in_sentence`, `anki_added_sentence_success`,
+`anki_added_word_success`, `game_audio_zoom_hint`, `anki_first_field_unmapped`,
+`anki_first_field_empty`, `history_hide_translations_toggle_title`,
+`history_hide_translations_toggle_subtitle`. The locale's translator agent was killed
+before its own self-verification pass, so the mechanical layer was re-run from scratch
+here rather than trusted.
+
+Mechanical layer verified programmatically over the delta: all eight keys present, no
+duplicates, no extras; every `<xliff:g>` span byte-identical to EN in inner content, `id`
+and `example`, and none re-indexed, split or reordered; placeholder multisets identical
+to EN (`%1$s` ×1 in both first-field strings, none elsewhere); `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'` or `"`; `name="…"` untouched; brand name
+Anki left untranslated and outside the translated run. Anchor positions confirmed against
+English document order — each new key sits between the same two neighbours it has in
+`values/strings.xml` (`word_detail_common` → `card_words_in_sentence`;
+`anki_added_no_audio` → `_sentence_success` → `_word_success` → `anki_adding_in_progress`;
+`audio_source_game_enable_hint` → `game_audio_zoom_hint` → `game_audio_trim_duration`;
+`anki_field_mapping_unconfigured` → `_unmapped` → `_empty` → `anki_models_unavailable`;
+`history_capture_image_toggle_subtitle` → the two `history_hide_translations_*`
+→ `history_live_session_title`). The one apparent order divergence at
+`card_words_in_sentence` is the file's long-standing placement of the whole `pos_*` block
+near the end, not a misplacement of the new key. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | 💬 | 双指张合可显示更多或更少的音频 | 双指张合可查看更多或更少的音频 | The pinch term itself is right — 双指张合 is AOSP/Google's own zh-CN wording, not 捏合 — and the caption fits the cell. Only the verb is a shade off: 显示 makes the app the actor, while Chinese gesture hints put the user there (双指张合可查看更多内容). 显示更多或更少的音频 also tracks the English word-for-word, and "less audio" is looser in Chinese than in English, where the waveform makes it obvious. Optional; the current text is grammatical and clear. |
+
+### Clean areas (delta) — checked, no findings
+
+**The two one-tap toasts pattern-match their family.** `anki_added_sentence_success` /
+`anki_added_word_success` reuse `anki_added_no_audio`'s exact tail 已添加到 Anki rather
+than inventing a second "added to Anki" phrasing, and they name the card shape with the
+same two words the mode switch uses — 句子 from `anki_mode_sentence`, 单词 from
+`anki_mode_word` — which is the whole point of these strings (one-tap applies the
+remembered mode silently, so the toast is where it becomes visible). 卡片 for "card"
+matches `anki_send_failed_title` / `anki_card_type_*`, and stays distinct from 抽认卡,
+which `anki_permission_rationale_message` uses for "flashcard".
+
+**笔记 is the right word and is used consistently.** It is Anki/AnkiDroid's own zh-CN term
+for a note (against 卡片 for card, 牌组 for deck), so the note-vs-card distinction the two
+first-field strings depend on survives: `anki_first_field_empty` keeps 该卡片 / 每张卡片
+for the card and 识别笔记 for the note, exactly mirroring English. Both strings use 笔记 —
+no drift between them. Worth recording that 笔记 appears nowhere else in this locale,
+because the app renders Anki's *note types* as 卡片类型 throughout (mirroring English's own
+"card type" choice), so a user meets 笔记 for the first time here. That is inherited from
+the English source, not a translation defect, and both strings name Anki as the actor
+(Anki 使用第一个字段来识别笔记), which frames 笔记 as Anki's concept rather than the app's.
+No change recommended.
+
+**Toast clamp has margin.** `anki_first_field_unmapped` renders 20 Han characters plus
+`Anki` and the field name — about 48 half-width columns with the `Key` example, against
+English's 52 for the same string. It is *shorter* than the source it was clamped for, so
+the Android 12+ two-line ceiling is no tighter here than in English, and no accuracy was
+traded for brevity. `anki_first_field_empty` is a full alert, where its 51 characters are
+fine.
+
+**Quoting and punctuation follow the file's house style.** The field name is wrapped in
+full-width “ ” in both first-field strings — the locale's registered quote pair, and the
+same convention already used for inline names in `anki_content_source_pick_title`
+(映射“%1$s”), `anki_card_type_basic_no_mapping` (“正面”和“背面”) and
+`anki_permission_rationale_message` (点按“继续”). Full-width ，。 throughout; no half-width
+punctuation leaked in.
+
+**Pangu spacing audited on every mixed-script string.** 已添加到 Anki and 以便 Anki 识别 take
+the single Han↔Latin space; 字段为空。Anki 使用 correctly takes *no* space after the
+full-width 。 before the Latin run; and no space is inserted inside “%1$s”, where the
+quotes are full-width — correct on both counts. The Han-only strings need none.
+
+**History terminology is the established one, not a second coinage.** 译文 for
+"translation" matches `section_translation`, `anki_group_translation`,
+`cd_copy_translation` and `cd_toggle_translation_visibility` — and is the right half of
+the 译文/翻译 pair, since the toggle hides the translated *text*, not the act. 截取到的 is
+the app's committed capture verb in exactly the participle form
+`history_toggle_subtitle` (将截取到的句子保存在此设备上) and
+`settings_cell_history_summary_on` (截取到的句子记录) already use, so no second capture
+verb was introduced. 文字 rather than 文本 is the correct pick of the file's two words for
+"text": 文字 is what the OCR reads (`status_no_text` 检测到%1$s文字), which is what a
+History row holds. 点按 matches the file's tap verb, and 记录 matches
+`history_delete_confirm_title` / `history_clear_confirm_message` for a history entry.
+
+**`card_words_in_sentence` matches the app's own header style.** 句子中的单词 parallels
+`anki_group_words_count`'s 卡片内的单词 — the same 「…的单词」 shape — so the baked-in card
+header and the editor group header read as one system. The compact 句中单词 (the analogue
+of ja 文中の単語) would also work, but breaking the parallel to save two characters is not
+worth it on a header with no width constraint; the card CSS's ALL CAPS is a no-op on Han.
+
+**Register and script.** None of the eight strings addresses the user with a pronoun, so
+the 你 / never-您 rule is not contacted; no 您 was introduced. Simplified characters only
+(单 显 请 为 识 别 笔 记 该 张 须 隐 译 点). Measure word 张 correctly applied to 卡片 in
+`anki_first_field_empty`. Grammar re-read with real values substituted for `%1$s` — both
+`Key` and a longer free-form name like `Expression (Japanese)` — reads correctly in both
+first-field strings, since the placeholder sits inside quotes followed by the classifier
+字段 and never carries a bare grammatical attachment.
+
+### Verdict
+
+**PASS.** One 💬 nit, no 🛑 / ❌ / ⚠️. Nothing blocks shipping these eight keys.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+None applied. No 🛑/❌/⚠️; one 💬 recorded below.
+
+| name | severity | current | note |
+|---|---|---|---|
+| yomitan_update_skipped_title vs yomitan_update_repair_message | 💬 | 「未应用更新」 / 「…在此版本的应用中使用。」 | 应用 appears as the verb *to apply* in the first and the noun *app* in the second, inside the same feature. Left as is: the two live in different alerts, position disambiguates them in both cases, and 应用 is the file's established word for the app (`yomitan_outdated_label` 「应用更新后需要重新导入」), so replacing either would introduce a second term to fix a collision no reader is likely to hit. Recorded so a future pass does not "discover" it again. |
+
+### Clean areas (delta) — checked, no findings
+
+**Pangu spacing.** One space between Han and every adjacent Latin/digit run —
+「%1$s 可更新到版本 %2$s。」, 「需要重新下载 %1$s 的数据」, 「%1$s 已是最新版本。」,
+「%1$s 已更新到最新版本。」 — and none before full-width punctuation, including the digits
+inside full-width parentheses in 「经典角度阈值（10°）」. No space between Han runs anywhere.
+
+**Update vocabulary reused from the app updater.** 「有可用更新」 and 「无法检查更新」 are
+byte-identical to `update_dialog_title` / `update_check_failed_title`;
+`yomitan_update_check_failed_message` follows `yomitan_download_error_message`'s
+「请检查你的网络连接后重试」; `yomitan_update_scan_active_message` closes with
+`anki_models_unavailable`'s 「请稍后重试」; 「正在检查更新」 matches
+`update_progress_verifying` 「正在验证…」; 「后台」 matches
+`onboarding_notif_row_silent_sub`'s 「在后台完全静默运行」.
+
+**「源语言」 is the file's own term**, from `llm_prompt_kw_source_desc` (「源语言的英文名称」),
+and deliberately not 「游戏语言」 (`pack_upgrade_label_source`) — the row names the
+dictionary's declared language, not the capture language.
+
+**Terminology.** 词典 (dictionary), 释义 (definitions — matching
+`yomitan_single_dict_title`), 版本, 纯文本, 排版和样式. Simplified characters only; casual
+你 in 「请检查你的网络连接后重试」, never 您.
+
+**Sentence-final 。 follows the nearest neighbour.** `yomitan_styling_subtitle` ends with 。
+like `yomitan_single_dict_subtitle` — the other multi-clause subtitle in the same Terms
+section — rather than following `yomitan_auto_update_subtitle`, which is a single clause in
+a different card.
+
+**「已更新到最新版本」 carries EN's "now"**, keeping `yomitan_update_done_message` distinct
+from `yomitan_update_none_message` (「已是最新版本」). Two other locales lost that contrast
+this round.
+
+### Verdict
+
+**PASS.** No 🛑/❌/⚠️, one 💬 recorded as a decision. Chinese has no gender, case or
+agreement contact with the dictionary-title placeholder; the only real risk in this delta
+was pangu spacing around the Latin-script fills, and it holds throughout.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+One 💬, applied.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| anki_added_simplified | 💬 | 「已添加到 Anki（已简化释义以适应大小）」 | 「已添加到 Anki（释义已简化以适应大小）」 | Two 已 in one short toast, the second immediately after the first clause's own. Moving 释义 to the front makes the parenthetical a topic-comment clause, which is how the sibling toasts read, and drops the stutter without changing meaning. |
+
+### Clean areas (delta) — checked, no findings
+
+**Pangu spacing holds in all four mixed strings.** A space before each Latin run
+(「发送到 AnkiDroid」, 「已添加到 Anki」, 「强制使用 mmap 加载权重」, 「设备端 LLM」), **no** space
+before full-width punctuation (「AnkiDroid。」, 「Anki（」), and **no** space where a Han run
+meets a Han run. In `anki_card_too_large_failed` the span is preceded by 「，」 with no space
+and followed by a space — matching `anki_send_failed_message`'s own 「AnkiDroid 未接受该卡片」.
+
+**释义 not 定义.** The Anki and word-detail surfaces both label this field 释义
+(`anki_group_definitions`, `word_detail_group_definitions`, `yomitan_single_dict_title`), so
+all four oversize strings use 释义. 纯文本 comes from `yomitan_styling_subtitle`'s
+「关闭后始终使用纯文本」.
+
+**单词 / 句子** in the advice match `anki_mode_word` and `anki_mode_sentence`.
+
+**Register.** Casual 你 register is not exercised (no second-person in this delta); 请 opens
+the advice sentence as it does in `anki_send_failed_message` 「请确保…」. Simplified
+characters only; full-width （）、。？ throughout.
+
+**Debug rows.** 「强制使用 mmap 加载权重」 follows `settings_debug_force_single_screen` 「强制单屏」;
+设备端 for on-device is `llm_prompt_row_system_subtitle`'s 「云端和设备端 LLM 翻译器」 rather than a
+新 coinage. 「短文本离线路由」 is a four-term noun stack, kept because the mode rows in this
+block are noun stacks too (「经典角度阈值（10°）」).
+
+### Verdict
+
+**PASS after fix.** One 💬, applied. The spacing rule — this locale's standing hazard —
+was verified character by character on every string that mixes scripts.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** 「切换内嵌拼音」 mirrors `cd_toggle_inline_furigana`
+「切换内嵌假名注音」; 拼音 is the glossary term.
+
+**Actions, not options.** 「更多操作」: the parked sheet's hint says 更多选项 for "more
+options", but this English names actions, and 操作 is the word for them.
+
+**Row names.** 「假名注音」「拼音」 are `overlay_mode_option_*`; 「朗读」 is the verb of
+`cd_read_original_aloud` 「朗读原文」; 「编辑文字」 uses 文字, the file's dominant word for text
+(32 uses against 11 for 文本; `cd_text_size` 「文字大小」). No Latin runs in the delta, so the
+Pangu spacing rule does not arise.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| translation_error_discard_card_message | ⚠️ | 打开设置后，这张卡片将会丢失，你需要通过新的截取重新生成。 | 打开设置后，这张卡片将会丢失，需要重新截取屏幕后再次生成。 | 通过新的截取 calques "from a new capture"; 截取 reads as a verb, and 重新生成 has no object. |
+| settings_filter_furigana_title (not in the delta; same card) | ⚠️ | 从 OCR 结果中过滤振假名 | 从 OCR 结果中过滤假名注音 | The file's only 振假名. The Overlay Mode chooser two rows above says 假名注音 (`overlay_mode_option_furigana`), as do eight other strings and this delta's swap action. The row moved onto this card in aae1925d, which put the two words on one screen. The translation guide's "furigana = 振假名" line disagrees with the file; the file wins (parameters doc). |
+| settings_edge_indicator_subtitle | 💬 | 显示叠加层时，在屏幕四周显示柔和的光晕。 | 叠加层显示期间，屏幕四周会出现柔和的光晕。 | 显示 twice in one short line. |
+
+### Clean areas (delta) — checked, no findings
+
+**Terms.** 快捷菜单 matches the removed tap hint and `onboarding_a11y_row_menu_title`;
+拖动 / 长按 / 点按 are that hint set's gestures. Reused verbatim: 更改游戏语言
+(`cd_change_source_language`), 截取屏幕, 启动/停止自动翻译 (the hotkey), 无法翻译
+(`anki_translation_error`), API 密钥无效, 实验性功能。, 叠加层 (the screen title and 叠加层模式).
+The swap names the overlay modes as `overlay_mode_option_*` do (翻译 / 假名注音 / 拼音).
+
+**Spacing.** A Latin service name meets the full-width colon with no space (Gemini：…);
+API 密钥 keeps its space; （HTTP 404） in full-width parentheses; no space around the pill's
+placeholder, which fills with Chinese (正在从日语翻译). 你 register.
+
+**Pills as a set.** 连接错误 (the device) and 无法连接 (one service) stay distinct; 余额不足
+(credits) is kept apart from 本月额度已用完 (quota).
+
+### Verdict (round 1)
+
+2 ⚠️ + 1 💬, all to apply (one ⚠️ is the out-of-delta neighbour).
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fixes present: the discard body (重新截取屏幕后再次生成), the edge-indicator subtitle (叠加层显示期间…), and the out-of-delta furigana row now 从 OCR 结果中过滤假名注音, so the Overlay card uses 假名注音 throughout. Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 PKT/../tools/mech_check.py PKT/../keys.txt zh-rCN` reports
+`checked 1 locales x 41 keys; problems: 0` (all 41 present; `<xliff:g>` spans and `%1$s`
+byte-identical to EN; `\n` counts match in the email body; no unescaped `'`/`"`, stray tags,
+double spaces or edge spaces), and `python3 scripts/l10n_diff.py --locale
+app/src/main/res/values-zh-rCN/strings.xml` reports `missing=0 orphan=0 modified=0` (in sync).
+Also checked: the file parses, no duplicate `name=`, the two orphans
+(`settings_debug_export_logs_title` / `_subtitle`) are gone and `settings_debug_export_logs_subject`
+stays; every Han character in the delta is in GB2312 (Simplified only); no 您; quotes are “ ”.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice` picks one body by exit kind and appends `' '` + `kill_notice_restored`
+  only when a floating icon is actually on screen; See options (accent fill) opens `KeepRunningActivity`,
+  Not now cancels. After 。 the code's ASCII space shows as a small extra gap in Chinese: harmless, and
+  only the code could drop it.
+- `KeepRunningActivity`: the Report a bug row under the cards binds the Settings row's two strings; the
+  Xiaomi battery card reuses `keep_running_battery_line`; the close-after-lock card opens the system
+  Battery screen (`ACTION_POWER_USAGE_SUMMARY`) and the Samsung card the global firmware's Device care
+  battery activity (`com.samsung.android.lool`), each falling back to App info.
+- `LogExporter`: the no-email toast is `LENGTH_LONG` with the address filled in and is followed at once by
+  the share sheet; the hub summary in `settings_row_hub.xml` is `singleLine` + `ellipsize="end"`.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_huawei_close_after_lock_line | ⚠️ | 该选项位于“电池”>“更多电池设置”中。否则每次锁屏时 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> 都会被关闭。 | 该选项位于“电池” → “更多电池设置”中。开启时，每次锁屏都会关闭 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>。 | 否则 needs a condition to negate. Here it follows the sentence that says where the option is, so it attaches to the location ("if it is not there"); ja (オフにしないと) and ko (끄지 않으면) recast it the same way. Separator: next row. 电池 › 更多电池设置 is confirmed on Huawei's own zh-CN page, read today (zh-cn00428704: 进入设置 > 电池 > 更多电池设置). |
+| keep_running_samsung_never_sleeping_line | 💬 | 位于“设备维护”>“电池”>“后台使用限制”中。手机需要内存时，会关闭休眠中的应用程序。 | 位于“设备维护” → “电池” → “后台使用限制”中。手机需要内存时，会关闭休眠中的应用程序。 | Separator only. These two keys hold the file's only bare `>` paths; every other path in the file is a spaced → (设置 → 无障碍 → 已下载的应用), the translator's notes say →, and the other 11 locales use an arrow (ar ←) or prose in both keys. `>` is common in Chinese help pages, so this is consistency, not correctness. |
+
+### Clean areas (delta) — checked, no findings
+
+**Kill notice, read as the user meets it.** Android 关闭了 PlayTranslate; each of the three bodies with
+" 现在已重新开启。" appended reads naturally, because PlayTranslate stays the topic, so the subjectless
+sentence never attaches to 部分手机 or to 手机的电池或内存管理功能. 已开启的 renders "while it was on" in
+all three bodies and pairs with 重新开启, the app's On verb (`capture_lifecycle_start`). The stopped body
+leaves the attribution to the user, as English does. 查看解决方法 says more than a literal 查看选项 and
+echoes the page's 解决; 暂不 = `btn_not_now`.
+
+**Support card and the page.** 解决图标消失问题 is byte-identical in the row and the toolbar (176 dp of
+~272). The five rows read cleanly in order; 支持团队 sits naturally between the 支持 header and the
+支持 PlayTranslate donation row, two ordinary senses of one zh-CN word. `keep_running_empty` says 报告错误,
+the title of the row beneath it, and 重现 as in `crash_email_body`. Each 否则 line follows an imperative
+title (the generic battery card, both Xiaomi uses of the battery line, Xiaomi autostart, OPPO, vivo); the
+OPPO and vivo lines are identical, as in English. The tile and restart cards reuse 添加快捷设置图块 and the
+`a11y_stuck_message` sentences.
+
+**Email flow.** 发送崩溃报告 / 发送错误报告; the subject mirrors `crash_email_subject`
+(PlayTranslate 错误报告 – v3.3.0); the body uses full-width ？（）。 and the precedent's 设备信息 / 近期日志.
+The toast wraps to 2 lines at 296 and 320 dp with the address whole on line 2; the hold path keeps
+分享日志 / PlayTranslate 日志.
+
+**Widths.** Report a bug subtitle 260 dp (English 256); its first sentence, 169 dp, fits even 216 dp, so
+the email action survives the clip on a 360 dp phone. Keep-running subtitle 160 dp.
+
+**Platform labels.** 无限制 is AOSP's; 电池使用 shortens 应用的电池使用情况 in a title whose card opens
+Android's own dialog, so nothing has to be found by name. Huawei 应用启动管理 and the three switches match
+the official cells, and Huawei's zh-CN page zh-cn00428704, read today, confirms 允许后台活动 and the
+电池 › 更多电池设置 path. OPPO (允许应用自启动, 允许完全后台行为) and vivo (自启动, 允许后台高耗电) are
+China-ROM labels from Huawei-authored pages: secondary, but the right ROM for this locale. Xiaomi 自启动 /
+省电策略 / 无限制 repeat `a11y_stuck_message_xiaomi`. 锁屏清理 is the EMUI 5 name of the only firmware that
+had the option (known issue 1) and a better search key than a calque of the English; nothing to add to the
+known issue.
+
+**Samsung (global-firmware wording, unverified).** The choice is right: the card deep-links the global
+firmware's Device care battery screen (`com.samsung.android.lool`), and a China-market Galaxy
+(智能管理器 › 电池 › 后台控制 on samsung.com.cn) has no never-sleeping list for any wording to match.
+设备维护 and 后台使用限制 agree with the one Simplified Chinese path found today, a Samsung community reply
+quoted in a search summary (设置 → 电池和设备维护 → 电池 → 后台使用限制 → 永不休眠的应用程序; the thread
+itself returned 403). That reply names the list without 自动, the newer form that matches the English
+"Never sleeping apps"; 永不自动休眠的应用程序 is the older form Samsung Hong Kong's official page prints.
+Either is recognisable on screen, so no row; one look at a global Galaxy set to 简体中文 would settle it.
+
+**Language mechanics.** 你 throughout, no 您; Simplified only; Pangu spacing checked programmatically (one
+space at each Han/Latin boundary, none at full-width punctuation); “ ” quotes. The ”、“ between the three
+Huawei labels: GB/T 15834 usually drops 、 between quoted items, but both are current practice, so not
+raised. 手机 for "phone" is known issue 3.
+
+### Verdict (round 1)
+
+1 ⚠️ + 1 💬, both to apply: `keep_running_huawei_close_after_lock_line` (the 否则 sentence and the
+separator) and `keep_running_samsung_never_sleeping_line` (the separator).
+
+### Round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 PKT/../tools/mech_check.py PKT/../keys.txt zh-rCN` reports
+`checked 1 locales x 41 keys; problems: 0` (the same check on `a11y_stuck_message_xiaomi`: 0), and
+`python3 scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports
+`missing=0 orphan=0 modified=0` (in sync). Also re-checked: the file parses, no duplicate `name=`,
+the two orphans are gone and `settings_debug_export_logs_subject` stays; every Han character in the
+delta is in GB2312; no 您; quotes “ ” only; no bare `>` left; Pangu spacing at every Han/Latin and
+Han/placeholder boundary.
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `keep_running_huawei_close_after_lock_line` (⚠️): applied, byte-identical to the suggestion. 开启时 takes 该选项
+  from the sentence before as its subject, so the line reads correctly under 关闭“锁屏清理”.
+- `keep_running_samsung_never_sleeping_line` (💬): applied, byte-identical. No `>` path is left in the file
+  (the only `&gt;` is the `&lt;img&gt;` sample in `anki_content_picture_desc`); both keys now use the file's
+  spaced → (设置 → 无障碍 → 已下载的应用). zh-rHK writes the same paths unspaced because 「」 carry their own
+  side space; each file is consistent with itself.
+- Nothing around them moved: `keep_running_title` and `settings_support_keep_running_title` are still both
+  解决图标消失问题, the OPPO and vivo lines are still identical, and neither fixed key has a width limit (both
+  are card lines, which wrap).
+
+#### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| kill_notice_body_other | 💬 | 你的手机关闭了已开启的 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>。这就是悬浮图标消失的原因。部分手机会为了省电这样做。 | 你的手机关闭了已开启的 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>。这就是悬浮图标消失的原因。部分手机会为了省电而这样做。 | 为了…而… is the written form in a dialog body. This file already says it that way in the string the delta borrows its wording from (`a11y_stuck_message`: 系统为省电而强行停止应用), and zh-rHK has 為了省電而這樣做. Optional polish; the current sentence is not wrong. |
+
+#### Verdict (round 2)
+**PASS.** Both round-1 fixes landed. All 41 strings were re-read as the user meets them: the kill notice
+with each body followed by " 现在已重新开启。", the five Support rows in order, the Fix page in each ROM's
+card order with the empty label and the Report a bug row, and the email flow with PlayTranslate,
+support@playtranslate.com and 3.3.0 filled in. Widths are as measured: the Report a bug subtitle is 260 dp,
+and its email sentence (169 dp) is whole even at 216 dp; the Keep-running subtitle is 160 dp; the toolbar
+title takes 176 of ~272 dp; the toast is 2 lines at both 296 and 320 dp, with the address whole on line 2.
+Open: one optional 💬 (`kill_notice_body_other`). The Samsung global-firmware wording stays unverified, as
+round 1 recorded.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite)
+
+Mechanical layer: `python3 TOOLS/mech_check.py F2/keys2.txt zh-rCN` reports
+`checked 1 locales x 15 keys; problems: 0` (all 15 present; every `<xliff:g>` span, including
+`app_name2` in the three two-span lines, byte-identical to EN; `\n` count 2 in `a11y_stuck_message`
+as in EN; no unescaped `'`/`"`, stray tags, double spaces or edge spaces), and `python3
+scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports
+`missing=0 orphan=0 modified=0` (in sync). Also checked: the file parses, no duplicate `name=`; the
+four keys removed from English (`restricted_settings_title` / `_message`,
+`keep_running_huawei_close_after_lock_title` / `_line`) are gone; every Han character in the 15 values
+is in GB2312 (Simplified only); no 您; quotes “ ” only; Pangu spacing checked programmatically (one
+space at every Han/Latin, Han/⋮ and Han/span boundary, none beside full-width punctuation, none between
+Han runs).
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` appends the addendum on API 33+ only, as `message + "\n\n" + step`,
+  in `MainActivity.showAccessibilityDialog` and `SettingsRenderer.showOverlayIconA11yAlert` (system AlertDialogs),
+  `showAccessibilityRequiredAlert` (OverlayAlert, the three `a11y_required_*` messages) and
+  `KeepRunningActivity.lineOf` (the accessibility card, not in its stuck state). The stuck alert
+  (`SettingsRenderer.showA11yStuckAlert`) never takes it, and adds `a11y_stuck_message_xiaomi` after `\n\n`
+  when `Build.MANUFACTURER` is Xiaomi.
+- `KeepRunningItems.ids`: Xiaomi gets autostart, battery (with its own line now) and lock; the generic battery
+  card is skipped on Xiaomi and hidden once the exemption holds; every other ROM gets its one card first.
+  `openFirst` tries the ROM's screens (Xiaomi battery: `com.miui.powerkeeper` `HiddenAppsConfigActivity` with
+  the package, the app's own battery page; generic battery: `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, the
+  AOSP 要允许应用一直在后台运行吗？ dialog) and, when none opens, shows the `LENGTH_LONG` toast and opens App info.
+- Titles and lines are the `settings_row_link` title and subtitle inside a card and wrap; the toast is the
+  system text toast (2 lines, 14 sp).
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| kill_notice_body_other (outside F, carried from round 2 of the first pass) | 💬 | 你的手机关闭了已开启的 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>。这就是悬浮图标消失的原因。部分手机会为了省电这样做。 | 你的手机关闭了已开启的 <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>。这就是悬浮图标消失的原因。部分手机会为了省电而这样做。 | Confirmed, still optional. 为了…而… is the written pattern for a purpose clause in a dialog body; without 而 the sentence reads as speech. The precedent round 2 cited (`a11y_stuck_message`'s 为省电而强行停止应用) left with the deleted cause sentence, but zh-rHK's twin says 為了省電而這樣做 and the two files should not differ here. |
+
+No findings in the 15 keys.
+
+### Clean areas — checked, no findings
+
+**Surfaces read as sets.** The addendum closes each of the five messages naturally. After
+`accessibility_dialog_message` and `overlay_icon_a11y_required_message` it follows 依次前往：设置 → 无障碍 →
+已下载的应用 → PlayTranslate → 启用。, so 开关 is the switch that step names; after the three
+`a11y_required_*` messages and the accessibility card's line it has no earlier antecedent, exactly as the
+English "the switch" has none, and the user meets the switch one tap later. 先…然后… orders the three steps,
+and the one sentence wraps in the 280 dp card. Every card reads as title + line: the generic battery card
+(允许 PlayTranslate 一直在后台运行 / 如果手机关闭了…，此设置可让它自行重新启动), the tile card (添加快捷设置图块 /
+可在任意界面重新开启…), the three Xiaomi cards, and the Huawei, OPPO, vivo and Samsung cards, whose lines open
+with the search word or path, as English does, and close with the 否则 hedge where English has one. The stuck alert reads 无障碍服务需要重启
+→ the two paragraphs → the Xiaomi paragraph, whose 允许…自启动 and 将其电池使用设为“无限制” are the two Xiaomi card
+titles' own words. The toast then App info: 此手机上无法打开该页面 is what the code means (the launch failed), and
+该选项 sends the user back to the card title.
+
+**Measured.** The toast wraps to 2 lines at 296 dp (此手机上无法打开该页面。请改为在手机的设置 | 中搜索该选项。)
+and at 320 dp (…的设置中 | 搜索该选项。), so it fits even the 360 dp phone the English does not.
+
+**Labels.** AOSP zh-CN, read in the cached android16-qpr2 Settings strings: 应用信息 (`application_info_label`),
+允许受限制的设置 (`app_restricted_settings_lockscreen_title`; AOSP wins over the old reviewed 允许受限设置),
+要允许应用一直在后台运行吗？ (`high_power_prompt_title`, which the battery title echoes as 一直在后台运行), 无限制.
+Huawei, official: 应用启动管理, the 自动管理 switch, 允许自启动, 允许关联启动, 允许后台活动. OPPO 完全后台行为 and vivo
+“电池” / 后台高耗电 are the China-ROM words from Huawei-authored pages, secondary but the right ROM for this
+locale, and each line matches its unchanged title. Samsung (unverified for a global Galaxy in 简体中文): “电池”,
+“后台使用限制”, “永不自动休眠的应用程序” agree with the title and with the first pass's decision. Xiaomi
+(unverified): 省电策略, 无限制, 最近任务; a search today found only a 2026-07 multi-brand guide that still calls the
+Xiaomi per-app entry 省电策略, so the “电池” and “电量” offered for HyperOS 2 and 3 have no source either way;
+the line's 电池相关的选项 carries the instruction whatever the entry is called.
+
+**Search words.** One per ROM, as the translator said: “自启动” for Xiaomi, OPPO and vivo, since the China ROMs
+use that word in all three (自启动管理 on MIUI, from a Xiaomi Q&A; 允许应用自启动 on ColorOS, from Huawei's OPPO
+page; 搜索“自启动” on Huawei's vivo page), so a literal second word for "auto-launch" would not be the ROM's. Huawei's
+“应用启动管理” is the official label. Each is quoted as the word to type; the second, bare 自启动 is the verb
+(允许 PlayTranslate 自启动), which English leaves unquoted too. The Xiaomi title 允许“自启动” (outside F) quotes the
+same word the line quotes as the search word, so the card reads as one; the stuck alert's bare 自启动 is the verb.
+No change.
+
+**CHANGED keys moved only where English moved** (compared with HEAD and the pre-rewrite values):
+`a11y_stuck_message` is the reviewed string minus 这通常发生在系统为省电而强行停止应用之后。, byte for byte;
+`a11y_stuck_message_xiaomi` changes only 为…开启“自启动” → 允许…自启动, 省电策略 → 其电池使用 and 会 → 可能会;
+`keep_running_xiaomi_lock_line` keeps its first sentence; `keep_running_xiaomi_battery_title` swaps only the entry
+name; the tile line drops 只需滑动并点按一次 as English dropped the swipe. The rewritten lines carry every clause of
+the new English, the hedges as 可能 and the battery line's verified effect without one.
+
+**Two-span lines.** Xiaomi, OPPO and vivo read naturally with PlayTranslate in both places: the second mention
+sits in the 否则 sentence, a sentence after the first, and 它 then refers back to it unambiguously.
+
+**Other.** 系统设置 for "app settings" mirrors 应用的系统设置 in the stuck alert the same Xiaomi user reads; the file
+uses 系统设置 only for the phone's Settings (`camera_permission_denied`) and the app's own Settings has no 系统
+section, so PlayTranslate 的系统设置 cannot be taken for an in-app page. 在 Android 13 及更高版本中 is the right
+conjunction for "and later" beside `requires_android_11_message`'s 或更高版本 for "or newer". 你 only, 点按 /
+长按 / 菜单 / 图标 as in the file, full-width （）、。， and Pangu spacing throughout.
+
+### Verdict (round 1)
+
+0 ❌, 0 ⚠️, 0 💬 in the 15 keys: **PASS.** The carried optional 💬 on `kill_notice_body_other` is confirmed
+(为了省电而这样做); apply it at discretion. Labels left unverified, as recorded: Xiaomi's names, Samsung in
+简体中文 on global firmware, and the OPPO and vivo China-ROM words (secondary).
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 TOOLS/mech_check.py F2/keys2.txt zh-rCN` reports
+`checked 1 locales x 15 keys; problems: 0`; the same check on `kill_notice_body_other` (the round-1
+fix, outside the 15), on `F2/keys-extra-f2.txt` and on the five ROM card titles reports 0; and
+`python3 scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports
+`missing=0 orphan=0 modified=0` (in sync). Also re-checked: the file parses, no duplicate `name=`; the
+four keys removed from English are gone; every Han character in the 15 values and in
+`kill_notice_body_other` is in GB2312; no 您 in the file; quotes “ ” only (56 pairs, no 「」); Pangu
+spacing checked programmatically (one space at every Han/Latin, Han/⋮ and Han/span boundary, none beside
+full-width punctuation, none between Han runs, no half-width punctuation).
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `kill_notice_body_other` (💬, outside the 15): applied, byte-identical to the suggestion (部分手机会为了省电而这样做).
+  With " 现在已重新开启。" appended it still reads naturally, and the clause now matches zh-rHK's 部分手機會為了省電而這樣做.
+
+#### Findings (round 2)
+
+No new findings.
+
+#### Verdict (round 2)
+**PASS.** The round-1 fix landed and nothing else moved: the regenerated packet matches the file in all 53 rows
+(the 15 keys and the 38 strings around them), and the working-tree diff touches no key outside the two passes'
+sets. The 15 keys were re-read as the user meets them, with PlayTranslate filled in. The addendum closes
+`accessibility_dialog_message`, `overlay_icon_a11y_required_message`, the three `a11y_required_*` messages and the
+accessibility card's line as a paragraph of its own. After the two Settings paths, 开关 is the switch of the 启用 step;
+after the other four it has no earlier antecedent, as in English. Each ROM's cards read title + line in
+`KeepRunningItems` order, every search word is its own title's word (“自启动” for Xiaomi, OPPO and vivo; Huawei's
+“应用启动管理”), and the two-span lines carry PlayTranslate twice without strain. The stuck alert's Xiaomi paragraph
+uses the two Xiaomi card titles' words, and the toast is unchanged (28 characters, 2 lines at 296 and 320 dp).
+AOSP labels re-read in the cached android16-qpr2 zh-CN Settings strings: 应用信息, 允许受限制的设置,
+要允许应用一直在后台运行吗？, 无限制. 及更高版本 here and 或更高版本 in `requires_android_11_message` each fit their
+sentence (a range after 在…中, an alternative after 需要), so zh-rHK's change to 或以上 needs no zh-rCN counterpart.
+Labels left unverified, as recorded: Xiaomi's names, Samsung in 简体中文 on global firmware, and the OPPO and vivo
+China-ROM words (secondary).
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports `values-zh-rCN missing=0 orphan=0 modified=0`, "in sync". The three new names are each present once and are the file's only change (`git diff`). The delta has no `<xliff:g>`, placeholders or markup, no unescaped `'`/`"`, and no dashes. A script checked it for GB2312-only Han, Pangu spacing (no missing space at a Han/Latin seam, none beside full-width punctuation), “ ” only, NFC, and no odd or double spaces. **No 🛑 build-breaking issues.**
+
+| key | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_index_translate_note | 💬 | 免费，无需 API 密钥。由 Bilibili 运营，未公布使用限额。截取到的文字会发送给 Bilibili 进行翻译。 | 免费，无需 API 密钥。由 Bilibili 运营，未公布使用上限。截取到的文字会发送给 Bilibili 进行翻译。 | This file says 上限 for a usage limit: `translation_error_daily_quota` 已达到每日上限, the pill whose English comment calls it the service's "daily usage limit". Its word for quota is 额度 (`translation_error_monthly_quota`, `degraded_warning_quota`). 限额 is a third word and appears nowhere else in values-zh-rCN. zh-rHK already says 使用上限, so with this change it is a straight derivation again. Optional. |
+
+Clean areas: Render code read first. The note is `tvProviderNote` (13 sp, no line cap), shown where the key section would be. The picker and the remove alert switch to `_keyless` when `account.requiresKey` is false (Lingva, Index-Translate). **`llm_backend_index_translate_note`** has all four English facts. 未公布 keeps "publishes no usage limits" and does not say there are none. API 密钥 is `llm_backend_api_key_label`, and 「截取到的文字」 is `tr_service_order_footer`'s own phrase. 发送给 is the file's verb (`crash_dialog_message`, `llm_prompt_fatal_missing_text`), and 由 Bilibili 运营 is the natural "run by". **`llm_model_picker_fetch_failed_keyless`** matches its sibling except for the middle clause. 「请稍后重试」 is the file's existing phrase (`anki_models_unavailable`), and “自定义…” is `llm_backend_model_custom_entry` verbatim in the same quotes. **`tr_service_remove_message_keyless`** is its sibling without the key clause. Read with the title 「移除 Bilibili Index-Translate？」 and the 移除 button, the alert uses one verb, and remove (移除) stays distinct from delete (删除), as in the sibling. The register needs no pronoun.
+
+### Disposition (2026-10-14)
+
+Applied the 1 💬 (使用限额 → 使用上限, the file's word for a usage limit and zh-rHK's).
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems` (no line for zh-rCN: every key present, `<xliff:g>` spans byte-identical to EN, placeholders and markup counts match, no raw `'`/`"`, no stray or double spaces, XML well-formed); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports `values-zh-rCN missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- Error pill (`TranslationErrorPills.kt`): 14 sp, `maxLines = 2`, ellipsized; `TranslationErrorMessages` maps `NOT_RUNNING` to the new key with the service name. For a PlayTranslate Cloud error the pill's gear opens the cloud page (`PtCloudSettingsActivity` header comment), so the pill's word and the status row's word meet one tap apart.
+- Cloud page (`activity_pt_cloud_settings.xml`, `settings_row_switch.xml`): two switch rows in one card (title 15 sp, subtitle 13 sp, no `maxLines`, both wrap), the key label over a `singleLine` field whose hint is the key hint, Save, then a status card: `pt_cloud_status_title` (weight 1) with the value at its end (`Text.PT.RowValue`, 13 sp). The value starts as 未检查, becomes 检查中 on every resume and Save, then one of the five answers.
+- Hub (`RootSettingsViewModel.cloudDigest`, `settings_row_hub.xml`): the summary is `singleLine` + `ellipsize="end"`, about 216 dp wide on a 360 dp phone (360 − 2×14 section padding − 2×16 row padding − 36 chip − 2×14 text margins − 18 chevron).
+- Capture & overlay (`bindCloudOcrRow`): the cloud row's subtitle is set once and shows in every switch state, above the engine rows. Translation services (`PtCloudBackend.status` → `OnlineServicesController.renderBackendStatusLine`): the no-key line sits in `tvRowSubtitle2`, which wraps. Quick menu (`updateCloudHeader`): the two keys are the strip's contentDescription only; the strip shows the brand and a wifi glyph.
+- Toast (`KeepRunningActivity.openFirst`): `LENGTH_LONG`, then App info opens.
+- Part B: `WordDetailBinder.addGroupHeader` applies `uppercase(Locale.ROOT)`, a no-op on Han. `LlmBackendSettingsActivity.applyReasoningRow` shows either the switch row or the title, subtitle and `buildPillToggle` segments (13 sp shrinking to 10 sp before ellipsizing, narrower padding above three segments). `ScreenshotCropEditor` passes the instruction to the shared editor pill; `WorkspaceAnkiPages` uses `anki_screenshot_crop` as the page title and `AnkiScreenshotCell` as the button's contentDescription. `MagnifierLens.addLoadMoreRow`: 13 sp, link colour, centred, `maxLines = 1`, replaced by `lens_loading` while it loads.
+
+### Findings
+
+No findings in the 39 keys: 0 ❌, 0 ⚠️, 0 💬.
+
+### Clean areas (checked, no findings)
+
+**Error pill.** `translation_error_not_running` (`%1$s：未运行`) has the family's shape: the span, a full-width colon with no space, then a short state, like 无法连接 and 响应异常 above it. With PlayTranslate Cloud filled in it is shorter than the English, well inside the pill's two lines. 未运行 is also the status row's word (`pt_cloud_status_not_running`), so the gear lands on the same word.
+
+**Cloud page.** The switch titles 识别屏幕文字 / 翻译文字 read as a verb-object pair. The first uses the file's OCR verb (`status_ocr` 正在识别文字…, `ocr_source_label` 由 %1$s 识别, `settings_ocr_tier_accurate_note` 能识别小字). Each subtitle is one sentence with one comma and keeps both English facts. The OCR one has the server GPU and the device doing none of the work (设备性能全部留给游戏). The translation one has the several paid models included and the best one per request (每次翻译自动选用最合适的一款; 多款 … 一款 agree). The key label 客户端密钥 and the hint 粘贴你收到的密钥 use the file's 密钥 (`llm_backend_api_key_label` API 密钥, `tr_service_key_tail_fmt` 密钥 ••••) and its paste verb (`hint_deepl_key` 在此粘贴你的…). The hint uses casual 你. The status row is 服务 with one of 运行中 / 启动中 / 未运行 / 无法连接 / 响应异常（500） / 检查中 / 未检查. These are short state words that replace one another in a single slot. 服务 needs no 状态 after it: the value beside it completes the row (服务 … 运行中), as English's Service / Running does. 无法连接 is `translation_error_unreachable`, 响应异常 is `translation_error_bad_response`, and 未运行 is `translation_error_not_running`, byte for byte. AOSP zh-CN writes in-flight states in sentences as 正在检查 / 正在启动 (5 and 6 uses; 检查中 and 启动中, 0). The X中 form suits a value slot and keeps the set parallel, as English's participles do. The file's own 正在检查更新 (the update-check titles) is a phrase, not a value slot, so the two forms do not compete. The HTTP code sits in full-width parentheses with no space, as a protocol digit string.
+
+**Settings hub.** Measured at 13 sp (PingFang SC): 服务器级 OCR 和翻译 is 128 dp, 仅服务器级 OCR 98 dp and 仅翻译 39 dp. All are whole in the ~216 dp single-line summary, and all three still fit at 180 dp. 关 is the file's Off state word (`capture_lifecycle_state_off`, `settings_cell_history_summary_off` 关 · 截取到的句子记录), so the Configure card says Off one way. AOSP's 已关闭 is not the file's choice and is not raised. 仅翻译 / 仅服务器级 OCR mirror the English pair. In a digest slot, 仅翻译 reads as a state, not as an instruction.
+
+**Capture & overlay, OCR section.** 服务器级 OCR，设备零负载 is a two-part comma note like the engine notes under it (最适合游戏，单词查询最精准; 能识别小字，速度较慢; 快得多，可能漏掉小字). The group's header above it, 图像转文字（OCR） (outside the delta), names the same technology and does not clash. 服务器级 is spelled the same in the pitch, the OCR-only digest and this row. It carries the English pun: server-class quality, and run on the server, which the page's subtitle spells out (在服务器 GPU 上).
+
+**Translation services page.** 内置顶尖付费翻译模型 stands where the store rows read 需要账号, and it shares 内置 + 付费翻译模型 with the page's toggle subtitle. Its line wraps (`item_online_service.xml`, no `maxLines`).
+
+**Quick menu (screen reader).** PlayTranslate Cloud：可用 / PlayTranslate Cloud：不可用. 不可用 is `backend_status_unavailable_default` and the file's word in eight other strings. The colon gives TalkBack its pause.
+
+**Fix disappearing icon toast.** 无法打开该页面。请改为在手机的设置中搜索该选项。 drops the old 此手机上. It now says the app could not open the screen, not that the phone lacks one, which is the English change. The second sentence is the reviewed one, unchanged: 搜索 is the cards' verb (在设置中搜索“…”), and 该选项 points back to the card title. Measured at 14 sp: 24 characters, 336 dp, so 2 lines at 296 dp (…搜索该 | 选项。, an ordinary character break) and at 320 dp, with nothing dropped.
+
+**Part B, word detail headers.** 变位 (verb conjugation, as in 动词变位), 变格 (noun declension) and 词形 (word forms, for the label-and-form list) are the standard terms, each one noun like 释义 and 汉字 beside them. Uppercasing does not touch them.
+
+**Part B, crop.** 裁剪截图 works both as the button's label for TalkBack and as the page title. 截图 is the file's screenshot word (`anki_group_screenshot`, `anki_screenshot_remove_content_description` 移除截图). 拖动边缘以裁剪截图 repeats `region_overlay_drag_instruction`'s opening (拖动边缘以…) word for word, the shape the English comment asks for. 裁剪 is also the audio-trim word (`anki_game_audio_cell_untrimmed` 保存时裁剪). Chinese uses it for both, and each names its object, so they never read alike.
+
+**Part B, thinking.** 思考模式 and 思考强度 share 思考, as both English comments require. The subtitles say 推理 for "reasons", just as English uses Thinking for the feature and reasons for the process. token stays Latin as in `tr_service_status_usage_today_fmt` (个 token). 按输出 token 计费 is "billed as output tokens", and 也 adds the "(like the answer)" that the comment implies. 越高越慢 reads off the title's 强度. The segments 关 / 最低 / 低 / 中 / 高 are one or two characters each, well inside the ~45 dp per segment of a four-segment row, so nothing shrinks. 最低 under 低 reads as the bottom of the scale, and 关 is the file's Off. 作答 is a touch more written than 回答 but natural for a model answering; not raised.
+
+**Part B, lens.** 加载更多（2） uses the file's 加载 (10 uses), fits one line at 13 sp, and sits beside the caption 其他匹配 and its own loading text 正在查询….
+
+### Pangu spacing and script audit
+
+Checked by script over all 39 values, with each `<xliff:g>` span counted as one unit:
+- Every Han character is in GB2312, so the text is Simplified only. There is no 您: the only pronoun is the casual 你 in `pt_cloud_key_hint`. There are no quotes in the delta, no half-width punctuation beside Han, and everything is NFC.
+- Han/Latin seams, each with one space on both sides and none before full-width punctuation: 服务器级 OCR 和翻译, 仅服务器级 OCR, 在服务器 GPU 上运行更强的 OCR，, 服务器级 OCR，设备零负载, 按输出 token 计费 (twice).
+- Span seams: `%1$s：` in three keys (the span fills with PlayTranslate Cloud, and a full-width colon takes no space); `（%1$s）` and `（%1$d）` (digits inside full-width parentheses, no space). No span fills with Chinese text, so the no-space rule for language names does not arise.
+- Key order and placement match English: the new keys sit after `translation_error_unreachable` and after `settings_yomitan_outdated_summary`, as in `values/strings.xml`.
+
+### Disposition (2026-10-27)
+
+No findings; nothing to apply.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems` (no line for zh-rCN); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-zh-rCN/strings.xml` reports `values-zh-rCN missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+Round-1 changes checked: none to check. Round 1 had no findings and its Disposition applied nothing, and the file is the one round 1 read: its SHA-1 (`dfa8e8e7…`) matches `SP/locale-hashes-after-fixes.txt`, it was last written at 11:33, before round 1's zh scratch work (12:03 to 12:09), no `SP/fixes-*.tsv` row names zh-rCN, every value the round-1 section quotes is the file's value, and `git diff` still shows exactly the 24 Part A keys (23 added, `keep_running_screen_unavailable` reworded).
+
+#### Findings (round 2)
+
+No findings.
+
+#### Verdict (round 2)
+
+**PASS**; nothing is open in the strings. All 39 values were re-read from scratch where they render, with the render code read again (not seen on a device). The pill's `%1$s：未运行` has the family's shape and is the status row's word one gear tap away; 无法连接 and 响应异常 match the pill family byte for byte; 密钥, 粘贴, 识别 and 关 are the file's words; both thinking titles share 思考. Re-measured with the width tool (PingFang SC): the hub summaries are 128 and 98 dp in a ~216 dp single line, and the toast is 336 dp, 2 lines at both 296 and 256 dp. Changes made to other locales after round 1 were weighed for zh and do not carry over. fr and pt-rBR gave the reasoning subtitle a verb, but 模型作答前推理的程度。 is how this file already renders that English shape (`settings_capture_interval_hint` 在自动翻译期间截取游戏画面的频率。). es and pt-rBR swapped Off for None to fit the segment, and 关 is one character. ru dropped a word that also means "switched on", and 内置 has no such sense. Outside the strings (read in code): the cooldown line under the status row takes an English description from `PtCloudErrors`, so a stopped server can show 未运行 above "Not running · 重试于 15:42". That is app-wide, already recorded in the de, fr, es, pt-rBR, ru, tr and ar sections and reported to the developer, so it is not a zh-rCN finding.

@@ -1,0 +1,777 @@
+# Vietnamese (values-vi) localization review
+
+Mechanical layer is clean: all placeholders, `<xliff:g>` contents, `<b>` markup, `\n`, `\{ \}`, `&lt;img&gt;`, `&amp;`, and `\"` escapes are intact; no unescaped apostrophes; plurals use `other` only; brand names untranslated. No 🛑 findings.
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| accessibility_dialog_message (term used app-wide: accessibility_service_description, accessibility_dialog_title/_open, status_accessibility_needed, tile_subtitle_a11y_required, btn_open_a11y_settings, overlay_icon_a11y_required_title/_message, a11y_required_alert_title, a11y_required_displays/hotkey_message, enhanced_auto_translate_subtitle_off, restricted_settings_message) | ❌ | "Trợ năng" / "Cài đặt → Trợ năng → Ứng dụng đã cài đặt" | "Hỗ trợ tiếp cận" / "Cài đặt → Hỗ trợ tiếp cận → …" | "Trợ năng" is Apple/iOS's term. Google Android's Vietnamese UI and help docs use "Hỗ trợ tiếp cận" — users following the nav path won't find a "Trợ năng" entry in Settings. Term is at least internally consistent, so it's one global substitution. (Side note: Android's accessibility list section is "Ứng dụng đã tải xuống"; the EN source says "Installed apps", so that mismatch is upstream, not the translator's.) |
+| hymt_legal_message | ❌ | "(1) Bạn hiện không cư trú hoặc không ở trong EU…" | "(1) Bạn hiện không cư trú hay đang ở trong EU, Vương quốc Anh hoặc Hàn Quốc." | Double negative "không … hoặc không …" parses as ¬A ∨ ¬B — satisfied if only one is true — weaker than the English warranty "not residing or located" = ¬(A ∨ B). One negation scoping both verbs restores the legal force. Rest of the block is faithful: §5(b) kept, country list complete, "xác nhận và cam đoan" carries "affirm and warrant". |
+| onboarding_a11y_title, mp_overlay_permission_title (+ both message bodies, onboarding_a11y_body) | ⚠ | "Hiển thị trên ứng dụng khác" | "Hiển thị trên các ứng dụng khác" | Android's system permission page is named "Hiển thị trên các ứng dụng khác" (with "các"); these dialogs name the setting the user must find. |
+| settings_capture_display_footer | ⚠ | "Màn hình mà bạn đang xem PlayTranslate sẽ được bỏ qua." | "Màn hình bạn đang dùng để xem PlayTranslate sẽ được bỏ qua." | Relative clause dropped the "on": current literally reads "the screen that you are viewing PlayTranslate". |
+| word_detail_tatoeba_attribution | ⚠ | "Câu từ Tatoeba" | "Câu trích từ Tatoeba" | "câu từ" is itself a word ("wording"), inviting a misparse before reaching "Tatoeba". |
+| anki_sort_field_empty | ⚠ | "sẽ gây lỗi từ chối trùng lặp khi gửi" | "sẽ khiến thẻ bị từ chối do trùng lặp khi gửi" | "lỗi từ chối trùng lặp" is a garbled compound; the error is the card being rejected as a duplicate. |
+| tts_no_engine_row_subtitle | ⚠ | "công cụ đọc giọng nói" | "công cụ chuyển văn bản thành giọng nói" | Nonstandard coinage ("voice-reading tool"); fix also aligns with the row title and section header terminology. |
+| settings_ocr_delete_shared_msg | ⚠ | "nó sẽ tải lại trong lần tiếp theo bạn chuyển sang một trong số đó" | "mô hình sẽ được tải lại vào lần tới bạn chuyển sang một trong các ngôn ngữ đó" | Missing passive "được"; "một trong số đó" has a vague referent. Lead-in "cũng được dùng bởi các ngôn ngữ này" is also a "bởi"-passive calque — "Các ngôn ngữ này cũng dùng %1$s" is more natural. |
+| crash_dialog_discard | 💬 | "Hủy bỏ" | "Xóa báo cáo" | Sits next to "Hủy"-style buttons elsewhere; users may read it as plain Cancel, but it permanently deletes the crash report. |
+| pack_upgrade_progress_format_with_bytes | 💬 | "%2$s trên %3$s" | "%2$s / %3$s" | Every other byte-progress string (bergamot, qwen, gemma, hymt, install_downloading_with_bytes) uses "/"; lone outlier. |
+| word_detail_group_hanzi | 💬 | "Hanzi" | "Chữ Hán" | Vietnamese learners of Chinese near-universally say "chữ Hán"; "Hanzi" is opaque in VN. ("Kanji" is fine — established loanword among JP learners.) |
+| overlay_icon_gesture_drag | 💬 | "<b>Kéo</b> trên từ" | "<b>Kéo</b> qua các từ" | "kéo trên từ" is a calque of "drag over words". |
+| pt_accent_teal | 💬 | "Mòng két" | "Xanh mòng két" | Bare "Mòng két" is the duck; the color name needs "Xanh". |
+| note_mlkit_service_unavailable, settings_cell_translation_services | 💬 | "Dịch vụ dịch" | "Dịch vụ dịch thuật" | Avoids the "dịch dịch" stutter; "dịch thuật" is the standard noun. |
+| qwen_mnn_status_verifying (same in qwen35_2b/gemma_e2b/hymt) | 💬 | "Đang xác minh bản tải…" | "Đang xác minh tệp đã tải…" | "bản tải" is a non-word; at least consistent across all four rows. |
+| crash_dialog_message | 💬 | "vừa nhận dạng (OCR) hoặc tra cứu gần đây" | "nhận dạng (OCR) hoặc tra cứu gần đây" | "vừa" and "gần đây" both mean "recently" — doubled. |
+| live_mode_auto_with_hint | 💬 | "Tự động %1$s" → "Tự động Furigana" | "%1$s tự động" → "Furigana tự động" | Vietnamese modifier order; moving the whole xliff block is permitted. |
+| hymt_legal_message | 💬 | "Liên minh Châu Âu" | "Liên minh châu Âu" | Standard orthography: "châu" lowercase in "châu Âu". |
+
+Sections checked and clean: onboarding, word detail, Anki review sheet and all content-source/flag descriptions (Example: samples correctly left untranslated, `\{\{furigana:\}\}` and `&lt;img&gt;` intact), all four MNN model families (fully parallel and consistent), low-memory gate, cooldown lines ("Thử lại lúc" for times vs "Thử lại vào" for dates is exactly right), TTS picker, hotkeys, region picker, debug section, toasts.
+
+## Verdicts
+
+- **Register consistency:** pass — polite "bạn" throughout, "Hãy" imperatives in prompts, no register drift.
+- **Terminology consistency:** pass — deck=bộ thẻ, card=thẻ, loại thẻ; gói ngôn ngữ; phím tắt; lớp phủ; chụp màn hình; tải xuống/xóa; mạng có đo lượng dữ liệu — all uniform; only the "trên"-vs-"/" byte-progress outlier.
+- **Android-settings wording:** needs work — Accessibility must become "Hỗ trợ tiếp cận" (app-wide) and overlay title needs "các"; Quick Settings ("Cài đặt nhanh", "ô") and metered wording match the system.
+- **Diacritics:** pass — full sweep found no missing or wrong tone/vowel diacritics and no syllable-spacing errors.
+- **Grammar around placeholders:** pass — all composed strings read naturally with real values ("Cần bộ nhớ 4 GB", "3 bộ thẻ Anki", "Dịch Toàn màn hình", "GIỌNG TIẾNG NHẬT"); classifiers natural.
+- **Truncation risk:** pass — "Tự động / Tạm dừng / Cài đặt / Vùng" and "Vùng\nchụp" are all short.
+- **Legal text:** structurally faithful (§5(b), EU/UK/South Korea list, "xác nhận và cam đoan") but clause (1)'s double negative weakens the attestation — must fix before ship.
+- **Overall:** fix-then-ship — two ❌ items (accessibility term swap, legal clause (1)) plus the ⚠ polish; everything else is a solid, internally consistent native-quality translation.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR set — both `yomitan_import_summary_count` and `yomitan_import_summary_more` collapsed to Vietnamese's single `other`; `processDebugResources` BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+None. All 29 keys are natural, correct, and terminology-consistent. Nothing rises even to 💬.
+
+What was checked, key by key:
+- **Anki pitch/frequency (8):** `anki_content_pitch_position` "Vị trí trọng âm cao độ" reuses the same compound as `yomitan_category_pitch_accent`; `_desc` correctly uses "giáng" for the downstep and keeps the "PitchPosition"/"PAOverride" field names + the `0,2` example verbatim. The four `frequency_*` keys reuse "tần suất" uniformly ("Danh sách tần suất", "Số sắp xếp theo tần suất"); `_harmonic_desc` renders harmonic mean as "trung bình điều hòa" (correct) with a natural "(càng thấp = càng thường gặp)" gloss; ★/"Frequency"/"FrequenciesStylized"/"FreqSort"/"FrequencySort" field names all left as-is per the Example:/quoted-field rule.
+- **OpenAI base URL (3):** `llm_backend_advanced_header` "Nâng cao" matches existing "nâng cao" usage; `llm_backend_base_url_label` "URL tùy chỉnh" has correct adjective-after-noun order; `llm_backend_base_url_invalid` preserves `https://`/`http://` and the em-dash, and renders "local or LAN address" idiomatically as "địa chỉ cục bộ hoặc trong mạng LAN".
+- **Yomitan import + auto-update:** all summary lines reuse the file's established verbs/terms ("Đã nhập rồi" = `yomitan_duplicate_title`; "Không thể đọc" = the verb in `yomitan_invalid_message`; "Không đủ dung lượng" = `yomitan_no_space_title`); `từ điển`/`tệp` classifiers natural; `yomitan_auto_update_subtitle` faithful with consistent "tải xuống"/"cài đặt".
+- **Audio picker (6):** `audio_source_tts_name` "Chuyển văn bản thành giọng nói" matches `settings_header_text_to_speech` / `settings_cell_tts` exactly (the old "công cụ đọc giọng nói" coinage the full review flagged is now gone — `tts_no_engine_*` reads "công cụ chuyển văn bản thành giọng nói"); `audio_no_results` = `lang_search_no_results`; `audio_source_picker_title` "Âm thanh" = `anki_group_audio`; `audio_loading`/`audio_error_loading` follow the standard "Đang tải…" / "Không thể tải" pattern.
+
+## Clean areas (delta)
+- **Diacritics / tone marks:** full sweep of all 29 strings — every syllable carries its proper tone/vowel diacritic (trọng âm cao độ, giáng, điều hòa, tần suất, tệp, dung lượng); no stripped-ASCII syllable, no wrong-tone syllable.
+- **Syllable spacing:** each syllable space-separated; no merged/run-together syllables in any new string.
+- **"of"/count vs byte-progress separator:** correctly disambiguated — item counts use "X trên Y" (`yomitan_importing_progress` "Đang nhập 2 trên 5", `yomitan_import_summary_count` "4 trên 6 từ điển"), while byte progress everywhere uses "/". This is the natural Vietnamese split ("2 out of 5" vs "12 MB / 84 MB"), not the lone outlier the prior review noted (which has since been fixed — `pack_upgrade_progress_format_with_bytes` now uses "/").
+- **Classifiers in collapsed plurals:** `yomitan_import_summary_count` keeps "từ điển"; `yomitan_import_summary_more` "+%1$d tệp nữa" adds the natural "tệp" classifier (the elided items are file names) — both read correctly in the single `other` form.
+- **Terminology reuse:** tần suất, trọng âm cao độ, từ điển, nhập (import), tải xuống/cài đặt, âm thanh, and Chuyển văn bản thành giọng nói are all consistent with the rest of the file and with each other.
+- **Register:** polite **bạn**-level throughout (no second-person needed in these mostly-label strings; "Hãy …" imperatives where present in neighbors are consistent); no register drift.
+- **Short-label truncation:** "Nâng cao", "URL tùy chỉnh", "Âm thanh", "Đang tải…", "Không thể tải", "Tự động cập nhật", "Tệp không xác định" are all short — no truncation risk.
+- **Example:/quoted-field rule:** honored — Anki `*_desc` output samples (`0,2`, `★`, `★★★`) and Lapis/JPMN field names left untranslated.
+
+---
+
+# Delta review — 2026-07-14 sync (174 keys)
+Scope: the 170 newly-translated + 4 changed-English keys (History screen, Advanced LLM prompt editor, in-app updater, game-audio trim, translation-service page, MangaOCR toggle, stream-scope prompt, floating-menu panel, the 38 `misc_*` register tags).
+
+**Mechanical layer verified programmatically across all 174 keys:** every `%n$s`/`%d` placeholder present and matching; every `<xliff:g>` span byte-identical to EN (inner content, `id`, `example`); the bare literal keywords `{text} {source} {source_code} {target} {target_code} {context} {N} {strings}` reproduced byte-for-byte in Latin in running prose (`llm_prompt_fatal_missing_text/_strings`, `llm_prompt_advisory_missing_source/_target/_count`); `\n` preserved (1 in `floating_menu_capture_screen`); `<b>`/`&lt;&gt;&amp;`/`\{ \}` counts match; no unescaped `'` or `"`; `name=` untouched; `settings_yomitan_count_summary` collapsed to Vietnamese's single CLDR `other` with **no invented `one`**; file is NFC-normalized with no stray combining marks; `:app:processDebugResources` BUILD SUCCESSFUL. **No 🛑.**
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_prompt_advisory_foreign_token | ❌ | "Câu lệnh này không điền giá trị cho {text}, nên **nó** sẽ được gửi đi nguyên văn." | "Câu lệnh này không điền giá trị cho {text}, nên **từ khóa này** sẽ được gửi đi nguyên văn." | The whole job of this line is to say *which* thing goes to the model as literal text — the keyword. But "nó" has two candidate antecedents ("Câu lệnh này" and "{text}"), and subject-continuity makes the **wrong** one (the prompt) the preferred parse: "so *it* [the prompt] will be sent verbatim." Naming the referent kills the ambiguity, and "từ khóa" is already the file's word for keyword (`llm_prompt_keywords_header` = "Từ khóa"). |
+| llm_prompt_kw_count_desc | ⚠️ | "Số cụm từ trong **lô dịch**" | "Số cụm từ trong **loạt dịch**" | Glossary: one English term → one translation. "Batch" is rendered two ways inside the same feature — `llm_prompt_row_batch_title` = "Câu lệnh **hàng loạt**", this key = "**lô** dịch". These are the file's only two "batch" strings and they disagree; the legend sits directly under the editor whose title says "hàng loạt". |
+| floating_menu_capture_screen | ⚠️ | "Chụp\nmàn hình" | "Chụp\nmàn hình" (non-breaking space) | Vietnamese is **the only one of 12 locales** whose line 2 is two words. `FloatingIconMenu.fitLabel()` shrinks the label until the widest *unbreakable run* fits `labelColumnPx` (66dp) — but `BreakIterator` splits "màn hình" into two runs, so the guard never measures the string that actually has to fit line 2 as a unit. At default scale it fits (~47dp of 66dp at 11sp) and renders fine; at fontScale ≳1.4 "màn hình" overflows, wraps to a 3rd line, and `maxLines=2` (no ellipsize) silently **drops "hình"**. A NBSP makes it one run, so `fitLabel` shrinks it correctly. Zero visual change at default scale. |
+| misc_historical | ⚠️ | "Lịch sử" | "Từ lịch sử" | Bare noun = "History" — reads as a *topic/domain* label (the same italic " · " line also carries pass-through domain tags), not as the usage label "the word denotes a thing of the past". "Từ lịch sử" reuses the file's own "Từ X" pattern (Từ cổ, Từ mới, Từ nam/nữ giới) and marks it as a word class. |
+| misc_childrens | ⚠️ | "Trẻ em" | "Từ trẻ em" | Same bare-noun problem ("Children"), and it's the odd one out among the speaker-group tags: `misc_female_speech` = "**Từ** nữ giới", `misc_male_speech` = "**Từ** nam giới". "Từ trẻ em" restores the pattern. |
+| misc_slur | 💬 | "Lăng mạ" | "Từ lăng mạ" | "Lăng mạ" names the *act* of reviling; a slur is a *word class*. The "Từ X" prefix also widens the gap from its neighbour `misc_offensive` = "Xúc phạm". (Cluster is already distinguishable — this is polish.) |
+| misc_dated | 💬 | "Lỗi thời" | "Từ cũ" | Vietnamese lexicography's obsolescence pair is **cổ** (archaic) / **cũ** (dated), and `misc_archaic` already uses "Từ cổ". "Lỗi thời" ("outmoded") leans toward *obsolete*, crowding `misc_obsolete`. Trade-off: "Từ cổ"/"Từ cũ" differ by one diacritic, so keep only if that reads cleanly at 12.5sp italic. |
+| misc_informal, misc_obsolete | 💬 | "Không trang trọng", "Không còn dùng" | (keep — see note) | The only two labels phrased as English **glosses** ("not formal", "no longer used") rather than Vietnamese register terms, and the two longest in the set. But there is no better short native term: "thân mật" is taken by `misc_familiar`, and "suồng sã" is pejorative. Recommend **keeping** — accuracy beats brevity here (they wrap, they do not truncate). Logged so the next reviewer doesn't re-litigate. |
+| misc_humble | 💬 | "Khiêm nhường" | "Khiêm ngữ" | Its cluster sibling is "Kính ngữ" (sonkeigo); "Khiêm nhường" drops the ‑ngữ marker and reads as the character trait "modest" rather than a speech register. Optional — the current form is understood. |
+| update_dialog_download | 💬 | "Tải và cài đặt" | "Tải xuống và cài đặt" | Objectless download verb: the file's standalone form is "Tải xuống" (`lang_download`, 20 hits). Bare "Tải" is fine *with* an object ("Tải Google TTS", "Tải mô hình") but this one has none. Not wrong, just the lone objectless "Tải". |
+| llm_prompt_discard_title, llm_prompt_discard_confirm | 💬 | "Bỏ **các** thay đổi?" / "Bỏ thay đổi" | "Bỏ thay đổi?" / "Bỏ thay đổi" | Title and its own confirm button disagree on "các". Drop it from the title so the button echoes it exactly. |
+| update_unknown_sources_button | 💬 | "Mở cài đặt" | "Mở Cài đặt" | The file already splits 4–2 on this: "Mở **C**ài đặt" (`btn_open_overlay_settings`, `btn_open_app_settings`, `btn_open_a11y_settings`, `accessibility_dialog_open`) vs "Mở **c**ài đặt" (`mp_overlay_permission_button`, `tts_no_engine_open_settings`). Cài đặt is the Settings *app*; side with the majority. Pre-existing split, so low priority. |
+| llm_prompt_warning_title | 💬 | "Hãy kiểm tra câu lệnh này" | "Kiểm tra lại câu lệnh này" | "Hãy" is an exhortation particle — verbose for a bold dialog **title**, and its sibling title `llm_prompt_invalid_title` ("Không thể lưu câu lệnh này") is a plain statement. |
+
+## Truncation — measured, not guessed
+
+All four surfaces the brief flagged were checked against the actual render code. Three cannot truncate:
+
+- **`service_llm_badge`** = "LLM" — unchanged from English, `wrap_content` TextView in all three layouts. No risk.
+- **`probe_initializing`** = "Đang khởi tạo…" — `StreamKindProbe.ProbeView.onMeasure()` **measures the localized string** and sizes the window to it (`SIZE_PX + labelW`). Self-fitting by construction; the code comment says as much.
+- **The 38 `misc_*` tags** — **not chips.** `WordDefinitionsView.buildMiscRow()` builds a `MATCH_PARENT` / `WRAP_CONTENT` italic TextView at 12.5sp with **no `maxLines` and no ellipsize**, joined with " · " by `renderMiscText`. They **wrap, they never clip**. Length is therefore a line-economy question (a long label pushes the register line to a second line under a compact gloss), not a truncation one — which is why `misc_informal` / `misc_obsolete` above are a "keep", not a "shorten". Also verified: all 38 Vietnamese labels are **distinct**, so `renderMisc(...).distinct()` cannot silently swallow one of a pair.
+- **`floating_menu_capture_screen`** is the only genuine risk — see the ⚠️ row above.
+
+## Clean areas (checked, no findings)
+
+- **`settings_yomitan_count_summary`** — `other` only, no invented `one`. "Đã nhập %d từ điển" reads correctly at every count (1, 2, 5, 11) and reuses the classifier-less "từ điển" the committed `yomitan_import_summary_count` already established.
+- **Classifiers / grammar around placeholders** — every `<xliff:g>` sentence read with a real value dropped in: "Gỡ **OpenAI**?", "Giữ lại mô hình đã tải (**68 MB**) hay xóa nó…", "Không đủ dung lượng trống để tải bản cập nhật (cần **230 MB**)", "Dung lượng tải xuống: **128 MB**", "Hôm nay: **12.345** token" (invariant — correct, Vietnamese has no plural marking), "Đã chọn **2,4** giây · Đã ghi **147** giây", "Nhận dạng bởi **PaddleOCR**", "**Furigana** tự động", "Đang cập nhật **PlayTranslate**", "Khóa ••••**4f2a**". All natural; no missing or wrong classifier anywhere.
+- **Terminology vs the committed file** — every glossary term checked against what is already shipped: **prompt** = "câu lệnh" in all 11 `llm_prompt_*` strings and *nowhere else* in the file (no collision with a CLI sense); **keyword** = "Từ khóa"; **Provider** = "Nhà cung cấp" (matches the committed `tr_service_order_footer`); **Translation service** = "dịch vụ dịch thuật" (matches the committed page title `settings_cell_translation_services` exactly — the earlier "Dịch vụ dịch" fix has landed); **Remove vs Delete** kept apart exactly as English does — services are *gỡ* (`tr_service_remove_*`, `tr_service_delete_cd`), entries/models are *xóa* (`history_action_delete`, `settings_ocr_disable_delete`), and `tr_service_remove_message` carries both in one sentence ("sẽ **gỡ** dịch vụ khỏi danh sách và **xóa** khóa API"); **Clear** = "Xóa toàn bộ lịch sử" (scope-distinct from "Xóa mục này?"); **History** = "Lịch sử" (`settings_cell_history` = `history_screen_title`); **Trim** = "Cắt" + "đoạn đã chọn" for the selection; **Game audio** = "Âm thanh trò chơi" (works as pill *and* section header); **LLM** kept as the initialism; **metered** = "…có đo lượng dữ liệu" (head noun correctly "kết nối", matching English's "metered connection"); **overlay** = "Lớp phủ"; **captured** = "chụp" throughout the History strings, reusing the established screen-capture verb.
+- **`ocr_source_label`** — "Nhận dạng bởi %1$s" is a structural mirror of the committed `translation_source_label` "Dịch bởi %1$s", exactly as the glossary requires.
+- **Register** — polite **bạn** throughout (`stream_kind_prompt_title`, `update_dialog_metered_note`, `llm_prompt_discard_message`, `audio_source_game_ready`, `llm_backend_base_url_custom_hint`, `llm_prompt_row_translation_subtitle`); no drift. **Sibling buttons are grammatically parallel** in every dialog: Giữ mô hình / Xóa mô hình; Dùng đoạn đã chọn / Phát đoạn đã chọn; Chia sẻ một ứng dụng / Chia sẻ toàn bộ màn hình; Vẫn lưu / Bỏ thay đổi / Đặt lại; Thử lại / Tải và cài đặt / Xem ghi chú phát hành / Mở cài đặt — all verb-first imperatives.
+- **Mid-sentence capitals** (`hotkey_show_translations_title` "Giữ để hiện **B**ản dịch", `hotkey_auto_translation_title` "Nhấn để bật/tắt **T**ự động dịch") are **not** a finding: the committed `status_hold_hint` ("Nhấn giữ **V**ùng hoặc **T**ự động…") already establishes that on-screen button/section labels are capitalized when named in prose.
+- **`hotkey_auto_hint_dialog_title`** = "%1$s tự động" — correct Vietnamese modifier order and byte-consistent with the committed `live_mode_auto_with_hint`, which now carries the same fix.
+- **Diacritics** — full Unicode-aware sweep of all 174 strings: every ASCII-only token is a genuinely diacritic-free Vietnamese syllable (chia, cho, cung, dung, ghi, khi, sao, tra, trong, thanh, nhau, quanh, minh, bao, hay, nay, sang, sau…) or an allow-listed brand/technical term. **No stripped or mistyped diacritic; no merged syllables.** File is NFC.
+- **Deliberate decisions honoured** — `stream_kind_share_one_app` / `_entire_screen` match Android VN's own consent wording ("Chia sẻ một ứng dụng" / "Chia sẻ toàn bộ màn hình"); `llm_prompt_kw_source_desc` / `_target_desc` correctly keep "Japanese" / "English" in Latin as the literal runtime expansions; `llm_status_low_memory_badge` left untouched, its em dash exempt.
+
+## Verdict
+
+**Ship after the ❌ and the four ⚠️.** This is a strong, natural, internally-consistent delta — the glossary was clearly worked from the committed file rather than from English, and the *gỡ*/*xóa* split, the `ocr_source_label` mirror, the `%1$s tự động` order and the `other`-only plural all landed correctly. The one substantive defect is the ambiguous pronoun in `llm_prompt_advisory_foreign_token`; the rest is polish plus one latent large-font clipping bug in the two-line capture button.
+
+---
+
+# Delta review round 2 — 2026-07-14
+Fresh independent re-derivation of the 174 delta keys after round 1's 13 corrections. Primary target: regressions introduced by those fixes.
+
+**Mechanical layer re-verified after the edits.** The one edit that could plausibly have broken the build or the string was `floating_menu_capture_screen`, so it was checked at the *compiled* level rather than by eye: `aapt2 compile` (build-tools 36.1.0) of `values-vi/strings.xml` emits the byte sequence `43 68 e1 bb a5 70 | 0a | 6d c3 a0 6e | c2 a0 | 68 c3 ac 6e 68` — i.e. `Chụp` + **LF** + `màn` + **U+00A0** + `hình`. The `\n` survived as a real newline, `&#160;` resolved to a genuine NBSP, the NBSP is **interior** (not leading/trailing), and it was neither downgraded to a plain space nor dropped by AAPT2's whitespace collapsing. All other placeholders, `<xliff:g>` spans, literal `{keyword}` tokens, `\{ \}`, `&lt;&gt;&amp;` and quote escapes are unchanged from round 1's verification. `settings_yomitan_count_summary` is still `other`-only. **No 🛑.**
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| game_audio_trim_use_tts, game_audio_trim_no_audio, game_audio_trim_save (3 keys, one fix) | ❌ | "Dùng TTS thay thế" / "Không có âm thanh" / "Dùng đoạn đã chọn" — **row = 487.8 dp** | "Dùng TTS" / "Bỏ âm thanh" / "Dùng đoạn này" — **row = 363.2 dp** | The trim editor's bottom action bar overflows every phone and clips the **primary confirm** off the right edge. Measured, not guessed — see "Trim-row width" below. The weighted `Space` in the row cannot rescue it (LinearLayout clamps a negative share to 0), and the row has no ellipsize, no `maxLines`, no scroll and no orientation lock. **Root cause is the layout, not the locale** — English itself needs 377.7 dp and already clips on a 360 dp phone. The shortening above is the locale-side mitigation: it buys back 124.6 dp and makes the row fit the 393–412 dp band that most phones sit in. It still cannot fit 360 dp, because nothing can. `"Dùng TTS"` also hits the 88 dp `minWidth` floor, so it costs nothing — exactly the width exception pt-BR already took with `"Usar TTS"`. (If the literal is preferred over `"Bỏ âm thanh"`, `"Không âm thanh"` gives a 387.0 dp row — still fits 393 dp+.) |
+| error_capture_blocked_secure | ⚠️ | "Không đọc được gì — ứng dụng **đang được chụp chặn** việc **chụp** màn hình." | "Không đọc được gì — ứng dụng này chặn việc chụp màn hình." | **Round-1 regression.** The fix imported `ứng dụng đang được chụp` from its sibling `error_single_app_not_fullscreen` for consistency — a good instinct that misfires here. In the sibling the participle is followed by a **negator** (`… đang được chụp **không** hiển thị…`), which cleanly opens the predicate. Here it is followed by another **verb** (`chặn`), and Vietnamese has no relativiser: the reader parses `ứng dụng đang được chụp` as a complete clause ("the app is being captured"), then hits `chặn` with no subject and has to reanalyse. It also puts **chụp** twice in nine words. English says "**this** app", not "the captured app" — the referent is already established, so the participle buys nothing and costs a garden path. |
+| llm_prompt_kw_count_desc | ⚠️ | "Số cụm từ trong **loạt dịch**" | "Số cụm từ trong **lô dịch**" (revert) | **Round-1 regression.** The consistency premise was false. "Batch" is not in the glossary's one-term-one-translation table, and the two sites are different parts of speech: `llm_prompt_row_batch_title` uses **hàng loạt**, a fixed *adverbial* compound ("en masse") that cannot be decomposed or nominalised, while this legend line needs a **noun** for "the batch". Forcing the adverb into the noun slot produced "loạt dịch", a coinage — bare `loạt` needs a determiner (`một loạt`, `hàng loạt`, `loạt này`), and `dịch` on its own is a live homonym (translate / epidemic), so "loạt dịch" briefly reads as "a wave of epidemics". `lô` is the standard Vietnamese computing noun for a batch (`xử lý theo lô`, `kích thước lô`), and the legend already sits under the "Câu lệnh hàng loạt" editor, so context does the disambiguating. If the glossary echo really is wanted, `"Số cụm từ trong một lần dịch hàng loạt"` keeps **hàng loạt** intact and is grammatical — but it is long for a legend line. |
+| llm_prompt_advisory_missing_source | 💬 | "…mô hình sẽ không biết **nó** đang dịch từ ngôn ngữ nào." | "…mô hình sẽ không biết đang dịch từ ngôn ngữ nào." | Its sibling `llm_prompt_advisory_missing_target` — which renders in the **same dialog, directly adjacent** — has no `nó`: "mô hình sẽ không biết cần dịch sang ngôn ngữ nào." One line carries the redundant pronoun and the other doesn't. Dropping it makes the pair parallel. (Not ambiguous — `nó` can only be `mô hình` — just asymmetric. Missed by round 1, which was looking at `nó` in the neighbouring `foreign_token` line.) |
+| misc_humble | 💬 | "Khiêm ngữ" | "Khiêm nhường ngữ" (optional) | Round 1's fix is *understood* — beside `misc_honorific` = "Kính ngữ" the parallel is transparent Sino-Vietnamese (kính/khiêm + ngữ) and it correctly marks a speech register rather than the character trait "Khiêm nhường" did. But "khiêm ngữ" is a coinage: the attested Vietnamese rendering of 謙譲語 is **khiêm nhường ngữ** (the standard set is tôn kính ngữ / khiêm nhường ngữ / thể lịch sự). Since these labels wrap rather than truncate, the longer attested form costs nothing. Keeping "Khiêm ngữ" is defensible; logged so it isn't re-litigated a third time. |
+| misc_idiomatic + misc_yojijukugo | 💬 | "Thành ngữ" · "Thành ngữ bốn chữ" | (keep) | JMdict tags a four-character compound with **both** `id` and `yoji`, so these two co-render on the same sense as "Thành ngữ · Thành ngữ bốn chữ" — a stutter English doesn't have ("Idiomatic · Four-character compound"). They are distinct strings, so `.distinct()` does not collapse them and nothing is lost. "Thành ngữ bốn chữ" is the correct Vietnamese gloss and there is no shorter native term. **Keep** — logged only so the next reviewer doesn't "fix" it into a collision. |
+
+## Trim-row width — measured
+
+Asked for explicitly. Measured against the **device's own font**: `/system/fonts/Roboto-Regular.ttf` pulled from the connected handset (variable Roboto, upem 2048, `wght` 100–900), instanced at **wght = 500** — that is what `sans-serif-medium` resolves to, and `Widget.Material3.Button`'s `textAppearance` is `?attr/textAppearanceLabelLarge` = **14 sp, sans-serif-medium, letterSpacing 0.00714286 em**. Geometry from the Material 1.14 AAR: TextButton horizontal padding **12 + 12 dp** (`m3_btn_text_btn_padding_*`), filled Button **24 + 24 dp** (`m3_btn_padding_*`), `android:minWidth` **88 dp** inherited from `Base.Widget.AppCompat.Button`, horizontal insets 0. Kerning ignored (< 0.5 % on these strings).
+
+| button | style | text | button width |
+|---|---|---|---|
+| `game_audio_trim_use_tts` | TextButton | "Dùng TTS thay thế" — 117.1 dp | **141.1 dp** |
+| `game_audio_trim_no_audio` | TextButton (+4 dp margin) | "Không có âm thanh" — 123.0 dp | **147.0 dp** |
+| `game_audio_trim_save` | filled M3 Button | "Dùng đoạn đã chọn" — 123.7 dp | **171.7 dp** |
+
+**Row = 12 + 141.1 + 4 + 147.0 + 0 + 171.7 + 12 = 487.8 dp.**
+
+The `<Space android:layout_width="0dp" android:layout_weight="1"/>` between `no_audio` and `save` does **not** absorb the overflow: `LinearLayout.measureHorizontal` gives a weighted child `share = childExtra * delta / weightSum`, which is *negative* here, and the spec is built with `Math.max(0, childWidth)` — so the Space collapses to 0 and stops. The three buttons keep their full measured widths (`btnTrimSave` is measured with `AT_MOST(screen − 24 dp)` because a weight was seen before it, so it takes its natural width and never wraps), the row's own width stays pinned at the screen width by the `EXACTLY` spec, and `layoutHorizontal` starts at `paddingLeft` (gravity is `center_vertical` only → horizontal START). **The overflow therefore falls off the right edge, taking the primary confirm with it.**
+
+`game_audio_trim_save` is laid out at **x = 304.1 dp** and spans to 475.8 dp:
+
+| screen | row overflow | `game_audio_trim_save` visible | reachable? |
+|---|---|---|---|
+| **360 dp** | **over by 127.8 dp** | **55.9 / 171.7 dp — 33 %** | **No, in any usable sense.** The label is centred at 328.1–451.8 dp, so only its first ~2 characters ("Dù…") are on screen. The 56 dp sliver is *technically* still touch-dispatchable — it lies inside the parent's bounds — but the user sees a filled button sheared in half with a truncated word and no confirm affordance. |
+| **411 dp** | **over by 76.8 dp** | **106.9 / 171.7 dp — 62 %** | **Cut, though pressable.** Roughly "Dùng đoạn đ" is visible; the button's right edge and the end of the label are off-screen. |
+
+Two aggravations: the activity has **no `screenOrientation` and no width-qualified layout**, and `GameAudioTrimActivity` pads `android.R.id.content` by the system-bar/cutout insets, so a landscape cutout subtracts further. Any `fontScale` above 1.0 also scales the text but not the paddings, widening the gap.
+
+**Not a Vietnamese-only bug.** English is 377.7 dp and already overflows a 360 dp phone by 17.7 dp; pt-BR (337.4 dp) fits only because it took the "Usar TTS" exception. The three-button floor is 3 × 88 dp + 28 dp = 292 dp, which leaves ~68 dp of total text budget to reach 360 dp — so **no Vietnamese wording that stays intelligible can fit a 360 dp screen** (the most aggressive candidate, "Dùng TTS" / "Không âm thanh" / "Dùng đoạn", is still 360.9 dp). The row needs a layout fix — weights + `maxLines="1"` + `ellipsize` on the two text buttons, or a vertical stack, or the confirm on its own full-width row. The string shortening in the ❌ row above is the mitigation that makes it survive the common 393–412 dp band in the meantime.
+
+## The NBSP edit — verified end to end
+
+`floating_menu_capture_screen` = `Chụp\nmàn&#160;hình` is **correct and introduced no regression**. Four things had to hold and all four do:
+
+1. **The `\n` survived.** Compiled bytes show a real `0x0A` between `Chụp` and `màn` (AAPT2 processes the `\n` escape into a newline *before* whitespace collapsing, so it is never eaten). The committed sibling `floating_menu_btn_capture_region` (`Vùng\nchụp`) compiles identically.
+2. **The NBSP is interior, and that is load-bearing.** `FloatingIconMenu.unbreakableRuns()` does `text.substring(start, end).trim()`, and Kotlin's `String.trim()` uses `Char.isWhitespace()` = `Character.isWhitespace() || Character.isSpaceChar()` — U+00A0 is `Zs`, so `isSpaceChar` is **true** and a *leading or trailing* NBSP would have been silently stripped. Between `màn` and `hình` it is untouched.
+3. **`BreakIterator` now sees one run.** U+00A0 is UAX #14 class **GL** (glue): no break before or after. `BreakIterator.getLineInstance(vi)` yields exactly `["Chụp", "màn hình"]`, so `fitLabel`'s `runs.maxOf { paint.measureText(it) }` finally measures the string that actually has to fit line 2 as a unit. That was the whole point of the edit and it lands.
+4. **Zero visual change at default scale.** Measured in the label's real paint (Roboto **Bold** — `captureLabel` calls `setTypeface(null, Typeface.BOLD)`, which round 1's estimate did not account for): `màn hình` = 4.164 em → **45.8 dp at 11 sp**, against a 66 dp column (78 dp button − 2 × 6 dp side padding). Comfortable. `Chụp` = 25.7 dp.
+
+**Residual (code, not locale — no action for the translator).** `fitLabel` shrinks 11 sp → 8.5 sp (`labelMinSp`), at which `màn hình` is 35.4 dp. The run therefore fits until **fontScale ≈ 1.86** (up from ≈ 1.44 without the NBSP — the edit buys a real ~0.4 of headroom). Android 14+ allows fontScale up to 2.0, and beyond ~1.86 the TextView can no longer break the glued run at a word boundary, so it makes a desperate mid-word break and `maxLines = 2` drops the tail ("Chụp / màn hì"). This is the `labelMinSp` floor, not the string: `Chụp màn hình` on one line is 74.6 dp at 11 sp and cannot fit 66 dp either, so two lines is forced and there is no shorter Vietnamese for "Capture screen". Lowering `labelMinSp` to ~8.0 sp would close the last of it.
+
+## The `misc_*` set after round 1 — re-derived
+
+Checked programmatically, not by eye. **All 38 labels are distinct strings**, so `renderMisc(...).distinct()` cannot silently swallow one of a pair. **No label contains `·`, `・`, `/` or `|`**, so none splits into two tags under `renderMiscText`'s `" · "` join. **No collision with the sibling `pos_*` family** (checked all 26) or with `yomitan_category_*`.
+
+The four clusters the parameters doc requires to stay distinguishable all survive the edits, and each is now internally coherent:
+
+- **offensiveness** — Miệt thị / Xúc phạm / Thô tục / **Từ lăng mạ**. Distinct, and the new `Từ` prefix on `misc_slur` widens the gap from `misc_offensive` = "Xúc phạm" without colliding with `misc_derogatory` = "Miệt thị" (which is what the *natural* word for "slur", `từ miệt thị`, would have done).
+- **obsolescence** — **Từ cổ** / Không còn dùng / **Từ cũ** / **Từ lịch sử**. `cổ` (archaic) vs `cũ` (dated) is the authentic pair from Vietnamese lexicographic practice (Hoàng Phê's *Từ điển tiếng Việt* uses exactly these two labels), so round 1's `Lỗi thời` → `Từ cũ` is right and no longer crowds `misc_obsolete`. The two differ by base vowel *and* diacritic (u + tilde vs o + circumflex + hook), which reads cleanly even at 12.5 sp italic.
+- **informality** — Khẩu ngữ / Không trang trọng / Thân mật / Tiếng lóng. Four distinct terms; round 1's decision to **keep** the two gloss-style labels stands (they wrap, they do not truncate).
+- **honorifics** — Kính ngữ / Khiêm ngữ / Lịch sự. Distinct; see the 💬 above.
+
+Nine labels now begin with **Từ** (cổ, cũ, mới, lịch sử, trẻ em, nam giới, nữ giới, lăng mạ, tượng thanh). That is a lot, but it is the correct Vietnamese lexicographic pattern (`từ cổ`, `từ lóng`, `từ địa phương`, `từ Hán Việt`), all nine are distinct, and the `Từ + noun` frame forces the "word" reading of `từ` over the preposition "from". `misc_childrens` = "Từ trẻ em" now matches `misc_male_speech`/`misc_female_speech` exactly as it should.
+
+One cross-family duplicate exists and is **not** a defect: `misc_polite` = `inflection_polite` = "Lịch sự". They render in different rows through different joins (`" · "` vs `", "`), never in the same list, so `.distinct()` never sees them together — and "polite" genuinely is the right word for both a polite *word* and a polite *inflection*. `inflection_*` is committed and out of scope anyway.
+
+## Clean areas (checked, no findings)
+
+- **The other ten round-1 fixes are all correct and introduced nothing.** `llm_prompt_advisory_foreign_token`'s "từ khóa này" kills the wrong-antecedent parse and reuses the file's own word for keyword (`llm_prompt_keywords_header` = "Từ khóa"); `misc_historical`/`misc_childrens`/`misc_slur`/`misc_dated` are covered above; `llm_prompt_discard_title` "Bỏ thay đổi?" now echoes its own confirm button `llm_prompt_discard_confirm` "Bỏ thay đổi" exactly; `update_dialog_download` "Tải xuống và cài đặt" restores the file's standalone download verb (`lang_download`, 20 hits) and is safe on width — `OverlayAlert.addButton` stacks buttons in a **vertical** LinearLayout, one full-width row each; `update_unknown_sources_button` "Mở Cài đặt" moves to the majority (now 5 capital-C vs 1 lowercase, and the lone survivor `mp_overlay_permission_button` is committed/out of scope — `tts_no_engine_open_settings` = "Mở cài đặt TTS" is correctly lowercase, since that names TTS settings, not the Settings app); `llm_prompt_warning_title` "Kiểm tra lại câu lệnh này" drops the verbose exhortative `Hãy` and now parallels its sibling title `llm_prompt_invalid_title` "Không thể lưu câu lệnh này" as a plain statement.
+- **`hotkey_auto_translation_dialog_title`** = "Tự động dịch" is **byte-identical** to the committed `live_mode_auto_translate_label` (line 1033) and `settings_header_auto_translate` (line 1301), and `enhanced_auto_translate_title` builds on it ("Tự động dịch nâng cao"). The apparent asymmetry with `hotkey_auto_hint_dialog_title` = "%1$s tự động" is not a defect — the hint label is a *noun* taking a post-posed modifier ("Furigana tự động"), the translate one is an *adverb + verb* ("automatically translate"). Both orders are correct Vietnamese and both match what is already shipped.
+- **`game_audio_trim_duration`** — the other string in the trim editor with a width question. `tvTrimDuration` uses `Text.PT.RowTitle` (15 sp, sans-serif-medium) inside the 48 dp-inset body: "Đã chọn 2.4 giây · Đã ghi 147 giây" = **226.3 dp** against 264 dp available at 360 dp. Fits, and the style sets no `maxLines`/`ellipsize`, so it would wrap rather than clip at large font scales. `game_audio_trim_play` ("Phát đoạn đã chọn", OutlinedButton, centred, ~173 dp against 264 dp) also fits. Only the bottom action bar is broken.
+- **Grammar around placeholders**, re-read with real values: "Gỡ **OpenAI**?", "Giữ lại mô hình đã tải (**68 MB**) hay xóa nó…", "Không đủ dung lượng trống để tải bản cập nhật (cần **230 MB**)", "Hôm nay: **12.345** token", "Khóa ••••**4f2a**", "Nhận dạng bởi **PaddleOCR**", "Nhấn để bật/tắt **Furigana** tự động", "Đang cập nhật **PlayTranslate**", "Đã nhập **3** từ điển". All natural; classifiers correct; no case/agreement contact points to break.
+- **Register** — polite **bạn** throughout the delta, no drift; sibling buttons stay grammatically parallel in every dialog (Giữ mô hình / Xóa mô hình; Phát đoạn đã chọn / Dùng đoạn đã chọn; Chia sẻ một ứng dụng / Chia sẻ toàn bộ màn hình; Vẫn lưu / Bỏ thay đổi / Đặt lại).
+- **Terminology** re-checked against the committed file after the edits: prompt = câu lệnh (11 keys, no collision elsewhere); keyword = Từ khóa; Provider = Nhà cung cấp; translation service = dịch vụ dịch thuật; the *gỡ* (remove a service) / *xóa* (delete an entry or model) split holds, including inside `tr_service_remove_message` which carries both; Clear = "Xóa toàn bộ lịch sử" vs delete-one = "Xóa mục này?"; captured = chụp; overlay = Lớp phủ; metered = kết nối có đo lượng dữ liệu; LLM kept as the initialism; `ocr_source_label` "Nhận dạng bởi %1$s" still mirrors the committed `translation_source_label` "Dịch bởi %1$s".
+- **Settled decisions honoured** — AOSP share-button wording, the Latin "Japanese"/"English" in `llm_prompt_kw_source_desc`/`_target_desc`, `llm_status_low_memory_badge`'s dash, and the `misc_*` no-truncation rule were all left alone.
+- **Known code defects, not locale bugs** (reported separately, mentioned once as required): `game_audio_trim_duration` will render "Đã chọn **2.4** giây" rather than "2,4" because `GameAudioTrimActivity` formats seconds with `Locale.US`; `update_dialog_size_note` / `update_error_no_space` will show "128 MB" rather than a localized unit because `humanSize()` hardcodes English units. The Vietnamese strings themselves are correct.
+
+## Verdict
+
+**FIX FIRST.** One ❌ — the trim editor's action row overflows every phone width and shears the primary confirm `game_audio_trim_save` off the right edge (33 % visible at 360 dp, 62 % at 411 dp); the layout is the root cause but Vietnamese is the locale that makes it unusable, and the three-string shortening above is needed regardless. Then the two ⚠️ round-1 regressions: `error_capture_blocked_secure` (garden path + "chụp…chụp" stutter) and `llm_prompt_kw_count_desc` ("loạt dịch" coinage, built on a consistency premise that does not hold across parts of speech). Everything else in the delta is right. The NBSP edit is **correct, verified at the compiled-byte level, and introduced no regression** — the `\n` survived, the NBSP is interior where Kotlin's `trim()` cannot reach it, and `fitLabel` now measures "màn hình" as the single unbreakable run it always was.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "Nhanh ngay cả với màn hình nhiều chữ" | "Vẫn mượt dù màn hình nhiều chữ" | The English comment forbids reusing the literal Fast tier label; the first pass reused «Nhanh», the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+
+### Clean areas (delta) — checked, no findings
+
+Diacritics complete and syllable spacing preserved on every new string. **Hỗ trợ tiếp cận** for accessibility across all three `a11y_stuck_*` strings — never Trợ năng. **Máy ảnh** was adopted for the camera tool and every camera permission string, matching Android's own Vietnamese for the CAMERA permission group, so `camera_permission_denied` points at a label the user can actually find in system settings. **trình nhận dạng** was chosen for *engine* precisely so **công cụ** stays free for *tool*: the two meet in `settings_ocr_delete_camera_import_note`, and reusing công cụ for both would have read as a tautology. It also echoes the file's existing «Nhận dạng bởi %1$s» (`ocr_source_label`). ảnh tĩnh for the camera freeze-frame stays distinct from ảnh chụp màn hình (`anki_group_screenshot`). bạn throughout. Plurals `other` only. `settings_support_check_updates_title_available` byte-matches `update_dialog_title` (Có bản cập nhật).
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ found and fixed, no ❌.
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Scope: the eight keys added by `84d28c88` (card-mode memory: `anki_added_sentence_success`,
+`anki_added_word_success`), `51536300` (first-field guard: `anki_first_field_unmapped`,
+`anki_first_field_empty`, and the sentence-card back header `card_words_in_sentence`), the
+in-card trim waveform caption (`game_audio_zoom_hint`), and the History display toggle
+(`history_hide_translations_toggle_title` / `_subtitle`). Reviewed independently against the
+English source and its per-string comments; the translations were not written by this reviewer.
+
+Mechanical layer verified programmatically over the delta: all eight keys present and no extras
+anywhere in the file; every `<xliff:g>` span (4 `brand_anki`, 2 `field_name`) byte-identical to EN
+including `id` and `example`; placeholder multisets identical (`%1$s` x2, none elsewhere);
+`<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` and `“ ”` counts match EN; no unescaped `'` or `"` in any
+string body; `name="…"` untouched; no plurals in the delta. Text is NFC throughout with no
+combining-mark sequences, no NBSP, no double spaces, and no merged or ASCII-stripped syllables.
+`./gradlew :app:processDebugResources` is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `anki_added_word_success` | ⚠️ | "Đã thêm thẻ từ vào <xliff:g>Anki</xliff:g>" | "Đã thêm thẻ **từ vựng** vào <xliff:g>Anki</xliff:g>" | **thẻ từ** is a fixed Vietnamese collocation for a magnetic-stripe card (*khóa thẻ từ*), and **từ** is equally the preposition *from* — so "thẻ từ vào Anki" garden-paths as "the card **from** … into Anki" before context rescues it. This toast has exactly one job (EN comment: one-tap "routes by the remembered Sentence/Word default with no UI showing it, so the toast names the card shape created"), and it is read in a glance while the sheet is closing — the mode word has to land on first parse. **thẻ từ vựng** is what Vietnamese Anki users say, cannot be misparsed, and leaves its pair `anki_added_sentence_success` ("thẻ câu", unambiguous) untouched. If byte-linking to the toggle labels is preferred over naturalness, the alternative is "thẻ Từ" / "thẻ Câu", quoting `anki_mode_word` (Từ) and `anki_mode_sentence` (Câu) as mode names. |
+| `game_audio_zoom_hint` | ⚠️ | "Chụm hai ngón để hiện thêm hoặc bớt âm thanh" | "Chụm hai ngón để xem nhiều hoặc ít âm thanh hơn" | The coordination breaks: **hiện** cannot govern **bớt**, so the second conjunct stands alone as **bớt âm thanh** — the everyday Vietnamese for *turn the sound down*. Under a waveform whose sibling row chip plays the clip, a volume reading is a live misreading of what the gesture does, not a theoretical one. The suggestion keeps EN's own noun and holds the current one-line footprint (46 vs 44 chars; the TextView is `wrap_content` with no `maxLines` at 11 sp inside the panel's 24 dp padding, so nothing clips either way — this is about the reading, not the width). Shorter, more Android-idiomatic alternative: "Chụm hai ngón để thu phóng dạng sóng" (**thu phóng** is Android's own Vietnamese for *zoom* and cannot mean volume); ja/ko/th all took this extent/range route. Separately, **chụm** names only the inward pinch while the gesture is bidirectional — matching EN's bare "Pinch" is defensible (es/fr/pt do the same) and is not counted as a defect here. |
+| `anki_first_field_unmapped` | 💬 | "Hãy ánh xạ **một** giá trị cho “%1$s” để Anki **có thể** nhận diện ghi chú." | "Hãy ánh xạ giá trị cho “%1$s” để Anki nhận diện ghi chú." | Faithful and correct, but 1.29x EN on the one string whose comment says "Kept short: Android 12+ clamps toasts to two lines". **một** and **có thể** are article/modal calques Vietnamese does not need after **để**. Arithmetic: a system toast gives roughly 264 dp of text at 14 sp on a 360 dp screen, about 37 characters a line, so two lines is about 74 characters; EN's 48-character frame survives field names up to about 26 characters, the current Vietnamese 63-character frame only up to about 11, and the trim buys back roughly 11. Word order is already right — the imperative leads, so a clip costs the reason and not the instruction (better than ja/ko, which put the reason first). If clarity is judged worth the headroom instead, add the head noun the way th/zh/ko/pt did: "cho trường “%1$s”" (+7). |
+
+### Clean areas (delta) — checked, no findings
+
+**Diacritics and orthography** read character by character on all eight strings: Chụm / ngón / để / hiện / hoặc / bớt / âm; Hãy / ánh xạ / giá trị / có thể / nhận diện / ghi chú; đang trống / trường đầu tiên / mọi thẻ; Ẩn / Chỉ hiển thị / đã chụp / Nhấn / dòng / bản dịch. All correct, all NFC precomposed, syllables space-separated, nothing stripped.
+
+**`card_words_in_sentence` = "Từ trong câu" is right, and the obvious objection does not hold.** The bare **Từ** invites the same *word*-vs-*from* ambiguity flagged in the toast above, and "Các từ trong câu" would kill it — but the committed `anki_group_words_count` is already **"Từ trên thẻ"** (EN "Words on card"), the identical *Từ + location phrase* frame, and breaking the parallel for one of the two would be worse than the residual ambiguity. Unlike the toast, **Từ** is here in head position, where the noun reading is the default and there is no competing fixed collocation. Render checked: the header goes through `.gl-section` (`font-size:0.55em; font-weight:500; letter-spacing:0.12em; text-transform:uppercase`) in `PtCardTemplates`/`AnkiHtmlStylers`, so the card shows "TỪ TRONG CÂU" — Chromium uppercases precomposed Vietnamese correctly and the string is NFC, so no tone mark is lost; at 12 characters it is shorter than EN's 17 even with the letter-spacing. It is baked at send time (`AnkiSendPipeline`), so no runtime locale drift.
+
+**Toast pattern.** `anki_added_sentence_success` reuses the committed `anki_added_no_audio` frame exactly — **Đã thêm … vào Anki** — keeping the completive **Đã**, the `vào` complement and the brand span at the tail, so the three Anki success toasts read as one family. Both new toasts are shorter than EN (0.89x, 1.00x), so the two-line clamp is not in play for them.
+
+**Anki terminology.** **ánh xạ** for *map* matches every committed sibling — `anki_content_source_pick_title` ("Ánh xạ \"%1$s\""), `anki_card_type_edit_mapping_row_label` ("Chỉnh sửa ánh xạ trường"), `anki_card_type_basic_no_mapping` ("không cần ánh xạ trường") — and the dialog it announces opens immediately after the toast, so the user meets the same verb twice in two seconds. **trường** = field is the file-wide term (12+ hits). The **Hãy** imperative is the file's toast register, not verbosity: `anki_field_mapping_unconfigured` ("Hãy cấu hình các trường…"), `anki_models_unavailable` ("Hãy thử lại…"), `audio_source_game_enable_hint` ("hãy bật…").
+
+**ghi chú for Anki's *note* — correct, and consistent across both strings.** This is the one surface where AnkiDroid's own data model leaks through PlayTranslate's friendlier vocabulary, and English does the same thing (it says "card type" in `anki_card_type_*`, then "the note" here). **ghi chú** is AnkiDroid's own Vietnamese term, so the word the user meets in the error is the word AnkiDroid shows them — which is the point of naming the note at all. **loại thẻ** stays correct where EN says *card type*, and the two do not fight. Both first-field strings use **ghi chú** with the same verb **nhận diện**, so the pair reads as one story rather than two unrelated errors; **nhận diện** also stays clear of the file's OCR verb **nhận dạng** (`ocr_source_label` "Nhận dạng bởi %1$s"), which would otherwise have implied recognition of an image.
+
+**`anki_first_field_empty` prepositions and pronoun resolution.** "đang trống **trên** thẻ này" / "trên mọi thẻ" is not a clash with `anki_words_helper`'s "trong thẻ / khỏi thẻ" — those encode membership, this encodes location on the card, and the file's own **"Từ trên thẻ"** (`anki_group_words_count`) is the precedent. The second sentence resolves English's dangling *it* ("so it needs a value") explicitly to **trường này**, which is an improvement on the source and removes the only ambiguity in the sentence. It renders in a full alert, so its 1.10x ratio costs nothing.
+
+**History terminology.** English has now used three nouns for one thing — *line* (`history_empty_none`, `history_clear_confirm_message`, `history_line_count`), *entry* (`history_delete_confirm_title`), and now *row*. Vietnamese correctly collapses *row* into **dòng**, the unit the file already uses ("Các dòng sẽ xuất hiện…", "Mọi dòng đã lưu…", plural "%d dòng"), instead of minting a fourth word; **mục** stays reserved for the delete-one dialog ("Xóa mục này?") exactly as EN reserves *entry*. **văn bản đã chụp** is already the file's rendering of *captured text* (`tr_service_order_footer`), and sits comfortably beside "các câu đã chụp" (`history_toggle_subtitle`) since this string is about text, not sentences. **Ẩn bản dịch** is the exact antonym of the committed `hotkey_show_translations_dialog_title` ("Hiện bản dịch") and matches `translate_button_subtitle_hold_to_hide_translations`. The classifier **một dòng** and the "Nhấn vào một X để…" frame both match `anki_words_helper` ("Nhấn vào một từ để…"). Render: `TranslationHistoryActivity.bindHideTranslationsToggle` uses the standard `tvRowTitle` / `tvRowSubtitle` row; the subtitle is within one character of the shipped sibling `history_capture_image_toggle_subtitle` (64 vs 63), so no new wrap behaviour.
+
+**Register and punctuation.** Polite **bạn**-level throughout, with the subject correctly dropped in all eight (no `bạn` is needed in any of them, and none was forced in). Sentence-final periods match EN string for string — present on both first-field strings and the History subtitle, absent on the toasts, the header and the caption. **“ ”** curly quotes per the Vietnamese parameter row and byte-matching EN in both first-field strings; the escaped straight `\"` in `anki_content_source_pick_title` is English's own inconsistency and out of scope here. Brand **Anki** untranslated inside all four spans.
+
+### Verdict
+
+**PASS with polish.** No 🛑, no ❌. Two ⚠️ worth fixing before the device pass — `anki_added_word_success` ("thẻ từ" reads as *magnetic card* / *card from*, and this toast exists solely to make the card shape legible at a glance) and `game_audio_zoom_hint` ("bớt âm thanh" reads as *turn the volume down* under a control that does not change volume) — plus one 💬 trim on `anki_first_field_unmapped` that buys back toast-clamp headroom the English comment explicitly budgets for. Everything else in the delta is correct, consistent with the committed file, and lands its render surface.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_styling_subtitle | ⚠️ | «…tắt để luôn dùng **văn bản thuần**» | «…tắt để luôn dùng **văn bản thuần túy**» | «thuần» alone is a bound morpheme here and reads as clipped; the established Vietnamese for "plain text" is «văn bản thuần túy». The file had no prior instance of the term (its five «văn bản thành …» hits are a different construction), so this one sets the precedent and should set it correctly. |
+
+### Clean areas (delta) — checked, no findings
+
+**The "translation session" trap was handled deliberately.** `yomitan_update_busy_message`
+says «Một phiên dịch thuật đang diễn ra», **not** «một phiên dịch» — which is the obvious
+literal rendering and is also the ordinary Vietnamese word for *an interpreter*. Splitting
+the compound as phiên + dịch thuật keeps the "session of translation" reading, and the
+frame «Một … đang diễn ra» forces «phiên» to be read as the head noun. This is the single
+highest-risk string in the Vietnamese delta and it is worth leaving the reasoning on the
+record: the app already calls a session «phiên» (`history_live_session_title` «Phiên trực
+tiếp»), so the collision is structural and will recur any time "translation session" is
+translated afresh.
+
+**Diacritics and syllable spacing.** Every syllable carries its tone marks and stands
+separate — «Kiểm tra bản cập nhật», «Ngưỡng góc kiểu cũ», «đang ở phiên bản mới nhất».
+Nothing merged, nothing stripped to ASCII.
+
+**Update vocabulary reused.** «Có bản cập nhật» and «Không thể kiểm tra bản cập nhật» are
+byte-identical to `update_dialog_title` / `update_check_failed_title`;
+`yomitan_update_check_failed_message` follows `yomitan_download_error_message`'s «Hãy kiểm
+tra kết nối và thử lại»; `yomitan_update_scan_active_message` closes with
+`anki_models_unavailable`'s «Hãy thử lại sau giây lát»; «Đang kiểm tra bản cập nhật»
+extends `update_progress_verifying` «Đang xác minh…»; «trong nền» matches
+`onboarding_notif_row_silent_sub`'s «khi chạy nền».
+
+**«%1$s đang ở phiên bản mới nhất» avoids a literal trap.** The app's own
+`update_none_message` reads «PlayTranslate %1$s là phiên bản mới nhất», but there the
+placeholder *is* a version number. Here it is a dictionary name, so «là phiên bản mới nhất»
+would assert the dictionary *is* a version. «đang ở» states what EN means ("is **on** the
+latest version"), and `yomitan_update_done_message`'s «hiện đã ở» carries EN's "now".
+
+**«Ngôn ngữ nguồn» is the file's term**, from `llm_prompt_kw_source_desc` («của ngôn ngữ
+nguồn»), and distinct from «Ngôn ngữ trò chơi» (`pack_upgrade_label_source`).
+
+**Register.** Polite, user addressed as bạn via «Hãy …» imperatives throughout.
+
+### Verdict
+
+**PASS after fix.** One ⚠️, no ❌, no 🛑. The delta's real hazard was the phiên dịch
+homograph, and it was avoided rather than stumbled into.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+One 💬, applied.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| anki_added_simplified | 💬 | 「(đã rút gọn định nghĩa cho vừa)」 | 「(đã rút gọn định nghĩa để vừa kích thước)」 | «cho vừa» ends the clause on a bare adjective and reads as though a word were missing — fit *what*? Naming kích thước closes it. The toast stays comfortably inside the family's length. |
+
+### Clean areas (delta) — checked, no findings
+
+**Diacritics and syllable spacing.** Every syllable is separately spaced and fully marked
+(rút gọn, định nghĩa, thuần túy, ngoại tuyến, trọng số, thiết bị). No stripped ASCII
+anywhere in the delta.
+
+**The failure body reuses the sibling's verb.** «để AnkiDroid chấp nhận» takes chấp nhận
+straight from `anki_send_failed_message`'s «AnkiDroid không chấp nhận thẻ», so the two
+failure messages describe the same refusal with the same word.
+
+**Terminology.** thẻ (card), định nghĩa (definitions), từ điển (dictionary),
+«văn bản thuần túy» for plain text — the last from `yomitan_styling_subtitle`'s
+«luôn dùng văn bản thuần túy». từ and câu in the advice match `anki_mode_word` «Từ» and
+`anki_mode_sentence` «Câu». «trên thiết bị» for on-device comes from
+`llm_prompt_advisory_too_long` «Các mô hình trên thiết bị».
+
+**Register.** Polite bạn-level; the advice opens «Hãy thử…» as `anki_send_failed_message`
+opens «Hãy đảm bảo…». The bare-verb question «Lưu thẻ rút gọn…?» matches
+`bergamot_disable_title` «Tắt Firefox Translations?».
+
+**Debug rows.** «Định tuyến» is the standard Vietnamese technical term for routing;
+«Buộc…» matches `settings_debug_force_single_screen` «Buộc một màn hình» and
+`settings_debug_force_crash_title` «Buộc gặp sự cố». «trọng số» is the established ML term
+for weights.
+
+### Verdict
+
+**PASS after fix.** One 💬, applied. rút gọn is one root across all four oversize
+strings.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** «Bật/tắt pinyin nội dòng» mirrors «Bật/tắt furigana nội
+dòng».
+
+**The ⋯.** «Thao tác khác»: thao tác is the file's word for actions
+(`settings_show_overlay_icon` «Thao tác biểu tượng nổi»).
+
+**Row names.** «Đọc to» and «Chỉnh sửa văn bản» come from `cd_read_original_aloud` /
+`cd_edit_original`; diacritics intact, syllables unmerged.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| icon_gestures_no_menu_title | ⚠️ | Không có thao tác nào mở menu nhanh | Không có cử chỉ nào mở menu nhanh | Android's Vietnamese for gestures is Cử chỉ; thao tác means an operation. |
+
+### Clean areas (delta) — checked, no findings
+
+**Terms.** menu nhanh is the removed tap hint's (not onboarding's menu chọn nhanh). Nhấn giữ
+names the touch gesture; the hotkey's Giữ is a key hold. Reused: Đổi ngôn ngữ trò chơi,
+Chụp màn hình, Bật/tắt Tự động dịch, Không thể dịch, khóa API không hợp lệ, hạn mức,
+tín dụng, THỬ NGHIỆM., lớp phủ, Bỏ …?.
+
+**Form.** bạn register; diacritics intact; “ ” quotes as `overlay_hide_controls_message`.
+The pill shows Tiếng Nhật capitalized because `displayName()` capitalizes, the same as
+`status_no_text`.
+
+### Verdict (round 1)
+
+1 ⚠️, to apply.
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fix present: «Không có cử chỉ nào mở menu nhanh». Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| settings_edge_indicator_subtitle | 💬 | Hiện một vầng sáng dịu quanh màn hình khi lớp phủ đang hiển thị. | Hiện một vầng sáng dịu quanh viền màn hình khi có lớp phủ. | Hiện … hiển thị, the repetition round 1 fixed in zh/ko/th/de/fr; missed there. Applied at the user's request. |
+
+**Verdict (round 2):** **PASS.** The one 💬 was applied at the user's request; mechanical layer, analyzer and `:app:processDebugResources` re-run clean after it.
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `mech_check.py keys.txt vi` reports `checked 1 locales x 41 keys; problems: 0` (every key present; `<xliff:g>` spans and placeholders byte-identical to EN; `\n` count 4 = 4 in the email body; no unescaped quote, stray tag, double space or edge space); `scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync" (also with `--english-base en-base.xml`), so both orphans `settings_debug_export_logs_title` / `_subtitle` are gone and the file parses as XML. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice` (l. 2235-2263): exactly one body per exit kind; `kill_notice_restored` is appended as `append(' ')` plus the sentence, and only when a floating icon is actually on screen (`hasAnyFloatingIcon == true`); then See options (accent) and Not now (cancel).
+- `layout/settings_row_hub.xml`: `hubRowSummary` is `singleLine` + `ellipsize="end"`. `KeepRunningActivity.bindReportBugRow` puts the same `settings_support_report_bug_title` / `_subtitle` on the page's row (wrapping there), and `lineOf` gives the Xiaomi battery card `keep_running_battery_line` and the stuck accessibility card `a11y_stuck_title` + `keep_running_accessibility_restart_line`.
+- `diagnostics/LogExporter.kt` l. 113-119: `email_no_app_fallback` is a `LENGTH_LONG` toast filled with `SUPPORT_EMAIL`, followed by `shareFiles`, whose chooser is `share_chooser_share_logs` ("Chia sẻ nhật ký").
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_xiaomi_lock_title, keep_running_xiaomi_lock_line | ⚠️ | `Khóa <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> trong Gần đây`<br>`Mở Gần đây, nhấn giữ thẻ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> rồi nhấn biểu tượng khóa. Tác vụ dọn bộ nhớ sẽ bỏ qua các ứng dụng đã khóa.` | `Khóa <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> trên màn hình ứng dụng gần đây`<br>`Mở màn hình ứng dụng gần đây, nhấn giữ thẻ <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> rồi nhấn biểu tượng khóa. Tác vụ dọn bộ nhớ sẽ bỏ qua các ứng dụng đã khóa.` | “gần đây” is an adverb, so bare after “Mở” / “trong” it reads “open recently” / “in recently”, and Xiaomi's Recents shows no title that would make it a label. Android vi calls the screen “Ứng dụng gần đây” (`accessibility_system_action_recents_label`; bare “Gần đây” is only the old recents dialog's title), Huawei VN “màn hình Tác vụ gần đây”; Xiaomi's vi is unverified, so describe it. “trên màn hình” as in `translate_button_subtitle_*`. |
+| keep_running_oppo_auto_launch_line, keep_running_vivo_autostart_line | 💬 | `Nếu không, điện thoại sẽ đóng <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> ngay sau khi bạn rời khỏi ứng dụng.` | `Nếu không, điện thoại sẽ đóng <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> không lâu sau khi bạn rời khỏi ứng dụng.` | “ngay sau khi” is “right after”; English says “soon after”, and a ROM that waits a few minutes would contradict “ngay”. Same value in both keys, which stay byte-identical. |
+| settings_support_report_bug_email_body | 💬 | `Đã xảy ra chuyện gì?\n\n(Mô tả những gì bạn đang làm và điều gì đã gặp trục trặc.)\n\nThông tin thiết bị và nhật ký gần đây đã được đính kèm.` | `Đã xảy ra chuyện gì?\n\n(Mô tả những gì bạn đang làm và lỗi bạn gặp phải.)\n\nThông tin thiết bị và nhật ký gần đây đã được đính kèm.` | “gặp trục trặc” takes a concrete subject (máy / ứng dụng gặp trục trặc); “điều gì đã gặp trục trặc” is “what went wrong” word for word. “lỗi bạn gặp phải” is the usual bug-report phrasing; “sự cố” stays out because the file uses it for crash. |
+| keep_running_huawei_close_after_lock_line | 💬 | `Nằm trong Cài đặt pin → Cài đặt pin khác. Nếu không tắt, <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> sẽ bị đóng mỗi khi khóa màn hình.` | `Nằm trong Cài đặt → Pin → Cài đặt pin khác. Nếu không tắt, <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> sẽ bị đóng mỗi khi khóa màn hình.` | Huawei VN's own page (consumer.huawei.com/vn/support/content/vi-vn00428704/, fetched 2026-10-07) prints “Cài đặt > Pin > Cài đặt pin khác”: “Cài đặt pin khác” (a GUESS in oem-labels.md) is official, but no screen is called “Cài đặt pin”. Arrow paths in this file list on-screen labels, as the Samsung line does. Known issue 1 stands. |
+
+### Clean areas (delta) — checked, no findings
+
+**Kill notice, read as the user meets it.** Title, then each body followed by one space and `kill_notice_restored`. “Hiện ứng dụng đã được bật lại.” names its own subject (ứng dụng), so nothing has to bind back across the sentence before it, whether that ends “…biểu tượng nổi biến mất.” or “…để tiết kiệm pin.”; the code shows it only with the icon on screen, so it is true when read. “bộ nhớ” means RAM throughout this file (“Cần bộ nhớ %s, lưu trữ %s”, `llm_low_memory_title`), so “sắp hết bộ nhớ” does not read as storage. `_stopped` leaves the attribution to the user (“Nếu bạn không tự dừng ứng dụng, có thể … đã làm việc này”). “Xem cách khắc phục” says what the page is for, better than a literal “Xem tùy chọn”; “Để sau” = `btn_not_now`.
+
+**Support card, five rows in order.** Kiểm tra bản cập nhật · Tham gia Discord · Sửa lỗi mất biểu tượng · Báo cáo lỗi · Ủng hộ PlayTranslate, all verb-first. Widths re-measured with the packet's tool: `settings_support_keep_running_subtitle` 207 dp, whole even at 216 dp; `settings_support_report_bug_subtitle` 329 dp, its first sentence (the tap action) 240 dp, inside 249 dp. The excess over English's 256 dp is all in that sentence (Vietnamese has no verb “email”, hence “Gửi … qua email”); the hold hint is already shorter than English (no “instead”) and wraps in full on the Fix page. At 216 dp (360 dp phone) the row clips right after “bộ phận”, so the tap action still reads; “cho đội hỗ trợ” would measure 211 dp if the developer wants it whole there, an option, not a finding. “Giữ để chia sẻ.” follows the subtitle hold hints (`translate_button_subtitle_hold_to_*`, the floating icon's touch hold); the Xiaomi line's “nhấn giữ” is the gesture verb (`icon_gesture_hold`).
+
+**Fix disappearing icon page.** Toolbar title 222 dp of about 272, byte-identical to the Support row; “Sửa lỗi mất …” is the stock Vietnamese help-topic pattern. Intro and `keep_running_empty` natural; the empty label's “báo cáo lỗi” is the “Báo cáo lỗi” row under it. Battery card AOSP-exact (“mức sử dụng pin” from “Mức sử dụng pin của ứng dụng”, “Không hạn chế”), and its line reads right under both the generic and the Xiaomi battery card. Accessibility: Hỗ trợ tiếp cận (never Trợ năng), capitalized as the feature and lowercase in “dịch vụ / cài đặt hỗ trợ tiếp cận” as in `a11y_stuck_message`, whose wording the restart line reuses under `a11y_stuck_title`. Tile card = `quick_tile_add_row_title`. Samsung: all five labels match Samsung VN (official). Huawei: Khởi chạy ứng dụng, Tự động khởi chạy, Khởi chạy thứ cấp, Chạy dưới nền hệ thống match the official cells; “thủ công” (Manage manually) stays unverified (one fetch and one search found no vi page), and “Quản lý … thủ công” is ordinary verb, object, manner order. Xiaomi: Tự khởi động, trình tiết kiệm pin and “Không hạn chế” are `a11y_stuck_message_xiaomi`'s, all UNVERIFIED; Xiaomi VN's own FAQ titles use “Trình tiết kiệm pin” for the phone-wide saver mode, but the card opens the per-app screen and names the “Không hạn chế” target, so it cannot strand the user there. OPPO and vivo titles are lowercase descriptions, not claimed labels (every vi cell is a guess; one search found no Vietnamese ColorOS page). “tự khởi động” (Xiaomi and vivo autostart) vs “tự động khởi chạy” (OPPO and Huawei auto-launch) mirrors English's two terms.
+
+**Email flow.** Chooser titles keep sự cố (crash) and lỗi (bug) apart as the file does; the subject mirrors `crash_email_subject` with the same U+2013 dash and “v” (“Báo cáo lỗi PlayTranslate – v3.3.0”); the body reuses `crash_email_body`'s “Mô tả những gì bạn đang làm”. The toast's “Không có ứng dụng email.” departs from the file's “Không tìm thấy …” (all seven other “No … found” keys) for a measured reason: with “Không tìm thấy” the toast wraps to 3 lines at 296 dp and loses “khác.”; as written it is 2 lines at 296 and 320 dp with the address whole on line 2, and the share sheet that follows is “Chia sẻ nhật ký”.
+
+**Form.** bạn register with “Hãy” imperatives; diacritics present; all 41 values NFC with no invisible characters; tone marks in the new style (Khóa) like the rest of the file; “ ” around “Không hạn chế” and the quoted Huawei label; banners KILL NOTICE and KEEP RUNNING PAGE in the file's style. Web: 6 of 8 lookups (Huawei VN vi-vn00428704 fetched; AdGuard vi 404; Huawei vi-vn15848660 not served; three searches inconclusive for OPPO, Xiaomi's per-app entry and Huawei's “Manage manually”).
+
+### Verdict (round 1)
+
+0 🛑, 0 ❌, 1 ⚠️ (2 keys), 3 💬 (4 keys). Apply the ⚠️: `keep_running_xiaomi_lock_title`, `keep_running_xiaomi_lock_line`. The 💬 are optional: `keep_running_oppo_auto_launch_line` + `keep_running_vivo_autostart_line`, `settings_support_report_bug_email_body`, `keep_running_huawei_close_after_lock_line`. The other 35 keys pass as written.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite, plus the final review of the first pass's 41 keys)
+
+Mechanical layer: `python3 TOOLS/mech_check.py F2/keys2.txt vi` reports `checked 1 locales x 15 keys; problems: 0`; `python3 TOOLS/mech_check.py …/scratchpad/keys.txt vi` reports `checked 1 locales x 39 keys; problems: 0` (the 41 less the two Huawei close-after-lock keys English removed; 10 of the 39 are also follow-up keys, so 44 distinct keys in all); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync". So every span (both `app_name` and `app_name2` in the three two-span lines) is byte-identical to English, and `restricted_settings_title` / `_message` and `keep_running_huawei_close_after_lock_title` / `_line` are gone. The file parses as XML; all 44 values are NFC with no invisible or odd-width spaces; the only non-Vietnamese characters are “ ”, the email subject's U+2013 and the addendum's ⋮. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `ui/AccessibilityHelp.withRestrictedSettingsStep`: on API 33+ the addendum is appended as `message + "\n\n" + step` by `MainActivity.showAccessibilityDialog` and `SettingsRenderer.showOverlayIconA11yAlert` (system AlertDialogs), `AccessibilityAlert` (the three `a11y_required_*_message`, an OverlayAlert whose text sits in a ScrollView) and `KeepRunningActivity.lineOf` (the accessibility card, only while the service still has to be enabled); `SettingsRenderer.showA11yStuckAlert` appends `a11y_stuck_message_xiaomi` with `"\n\n"` when `Build.MANUFACTURER` is Xiaomi, and never the addendum.
+- `KeepRunningActivity.openFirst`: when no candidate intent launches, `keep_running_screen_unavailable` shows as a `LENGTH_LONG` toast and App info (`ACTION_APPLICATION_DETAILS_SETTINGS`) opens at once, so the toast's “mục cài đặt đó” can only mean the card just tapped. `titleOf` / `lineOf` pair each card's title and line as read below; the Xiaomi battery card now has its own line, and the Xiaomi lock card has no action.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_oppo_auto_launch_line | ⚠️ | `Trong Cài đặt, hãy tìm “tự khởi chạy” rồi bật cho <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>, sau đó vào cài đặt pin của ứng dụng và cho phép hoạt động trong nền. Nếu không, điện thoại có thể dừng <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> khi đang chạy trong nền hoặc ngăn ứng dụng khởi động lại.` | `Trong Cài đặt, hãy tìm “khởi chạy” rồi cho phép <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> tự động khởi chạy, sau đó vào cài đặt pin của ứng dụng và cho phép hoạt động trong nền. Nếu không, điện thoại có thể dừng <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> khi đang chạy trong nền hoặc ngăn ứng dụng khởi động lại.` | One card, two names for one switch: the title says “tự động khởi chạy”, the search word “tự khởi chạy”, and AOSP's Settings search matches a query only as one contiguous string, so “tự khởi chạy” misses a “Tự động khởi chạy” or “Khởi chạy tự động” entry. No vi ColorOS label is verified: the translator's “tự khởi chạy” is secondary, and three lookups found no OPPO or realme VN page naming the switch (realme VN's FAQ, fetched, names only the Recents lock). The Xiaomi and vivo lines already search the shared word “khởi động” so that every label form matches; the same rule here gives “khởi chạy”, and the step then takes the title's words, as theirs do (“rồi cho phép … tự khởi động”). The title stays: “tự động khởi chạy” is also Huawei VN's official Auto-launch. If the secondary “Tự khởi chạy” is trusted instead, the alternative is to change the title to match it. |
+| keep_running_xiaomi_autostart_title | ⚠️ | `Cho phép Tự khởi động` | `Cho phép tự khởi động` | The capital still presents “Tự khởi động” as Xiaomi's label, which the rewrite stopped doing: the English comment now gives “Background autostart” (HyperOS) and “Autostart” (MIUI) and the line searches a key word instead, and the Xiaomi VN FAQ title the translator found says “Tự động khởi động nền”. The card's own line (“cho phép … tự khởi động”), the stuck alert's Xiaomi paragraph, which English words after this title, and the vivo title are all lowercase now, so this is the one capital left. A first-pass key outside the follow-up, so the follow-up translator could not change it. |
+
+### Clean areas — checked, no findings
+
+**Round-1 fixes, verified in the file.** `keep_running_xiaomi_lock_title` and the first sentence of `keep_running_xiaomi_lock_line` are the round-1 suggestion byte for byte (the second sentence is now the rewrite's), and `settings_support_report_bug_email_body` carries “lỗi bạn gặp phải”. The two optional fixes whose sentences no longer exist are moot: the OPPO/vivo “không lâu sau khi” sentence was replaced by the rewrite, and `keep_running_huawei_close_after_lock_line` is deleted along with its title.
+
+**The addendum, read after each message it closes.** AOSP-exact: “Thông tin ứng dụng” (`application_info_label`, also the framework's `app_info`) and “Cho phép các chế độ cài đặt bị hạn chế” (`app_restricted_settings_lockscreen_title`), which rightly replaces the deleted string's “Cho phép cài đặt bị hạn chế”; “Android 13 trở lên” as in `requires_android_11_message`. After `accessibility_dialog_message` and `overlay_icon_a11y_required_message` the path ends “→ Bật.”, so “nút chuyển … nút đó” is the switch that step names; after the three `a11y_required_*_message` and under the accessibility card it is the switch behind “Mở Cài đặt Hỗ trợ tiếp cận” or the card's tap, exactly as in English. The page name is capitalized and the item to choose is quoted, the file's pattern for “Không hạn chế”. It is one sentence whose clauses (nếu …, hãy …, sau đó …, rồi …) follow the steps in order, and the OverlayAlert scrolls, so length is no risk.
+
+**Stuck alert.** `a11y_stuck_message` lost exactly the cause sentence and nothing else. The Xiaomi paragraph follows each English move: “cho phép tự khởi động” lowercase (no label), “đặt mức sử dụng pin thành “Không hạn chế”” byte-identical to the Xiaomi battery card's title, “có thể” for “may”. “cho phép tự khởi động cho …” doubles “cho”, but it closes the first action before “và đặt …”; “cho phép PlayTranslate tự khởi động và đặt …” would let the second verb attach to the app, so it stays.
+
+**Cards, title + line.** Battery: the title is AOSP's `high_power_prompt_title` (“Cho phép ứng dụng luôn chạy trong nền?”) with the app name, and the line names its subject (“cài đặt này”). Tile: “Ô này” ties the line to its title; the tap count is gone, as in English. Xiaomi: “khởi động” covers both “Tự khởi động” and “Tự động khởi động nền”, quoted because a bare “tìm tự khởi động” misparses; the battery line lists the three version labels in parentheses as English does (all unverified for vi: Trình tiết kiệm pin, Pin, Điện năng) and quotes the one constant, “Không hạn chế”; the lock line's “thay vì nhấn giữ” leaves “nhấn biểu tượng khóa” in force whichever gesture shows the lock. Huawei: “Khởi chạy ứng dụng”, “Quản lý tự động”, “Tự động khởi chạy”, “Khởi chạy thứ cấp”, “Chạy dưới nền hệ thống” all match Huawei VN's official cells. vivo: “khởi động”, “cài đặt Pin” capitalized as the Battery entry, “tiêu thụ điện năng cao trong nền” unquoted as English leaves it (vivo's vi labels are unverified; one lookup on vivo.com found no vi page). Samsung: “Pin”, “Giới hạn sử dụng dưới nền” and “Ứng dụng không bao giờ tự nghỉ” are Samsung VN's official labels, and “trạng thái nghỉ” keeps Samsung's “nghỉ”. Both two-span lines read naturally with both spans (“sau khi đóng PlayTranslate, Xiaomi có thể ngăn ứng dụng khởi động lại”, “dừng PlayTranslate khi đang chạy trong nền”), and the OPPO and vivo effect sentences are byte-identical, as in English.
+
+**Toast, measured.** `keep_running_screen_unavailable` is 2 lines at 296 dp (“Điện thoại này không có màn hình đó. Hãy tìm | mục cài đặt đó trong Cài đặt của điện thoại.”) and at 320 dp, where English needs 3 at 296. Dropping “instead” is right: App info opens at once, and “mục cài đặt đó” can only mean the card just tapped.
+
+**The first pass's other keys, final read.** Kill notice: each body plus one space plus “Hiện ứng dụng đã được bật lại.” reads whole, since that sentence names its own subject; Xem cách khắc phục / Để sau. Re-measured: `settings_support_keep_running_subtitle` 207 dp (fits 216), `settings_support_report_bug_subtitle` 329 dp with its tap sentence at 240 dp (whole at 249), `keep_running_title` 222 dp of about 272 and byte-identical to the Support row, `email_no_app_fallback` 2 lines at 296 and 320 dp with the address whole on line 2. `keep_running_tile_title` = `quick_tile_add_row_title`; the restart line reuses `a11y_stuck_message`'s wording; the email subject, body and choosers keep sự cố (crash) and lỗi (bug) apart.
+
+**Form.** bạn register with “Hãy” imperatives; diacritics complete; tone marks in the new style (khóa, tùy) like the rest of the file, which has no old-style forms; “ ” quotes with no stray spaces. The three new keys sit at English's positions, and the working-tree diff of the vi file against HEAD touches only these 44 keys, the two banners and the six deleted strings. Web: 5 of 6 lookups (three searches for OPPO's vi label, the realme VN FAQ fetched, one vivo search); none found a Vietnamese OPPO or vivo label.
+
+### Verdict (round 1)
+
+0 🛑, 0 ❌, 2 ⚠️ (2 keys), 0 💬. Apply both: `keep_running_oppo_auto_launch_line` (search word “khởi chạy”, step in the title's words) and `keep_running_xiaomi_autostart_title` (lowercase “tự khởi động”). The round-1 fixes all landed. The other 42 keys pass as written (14 of the 15 follow-up keys, 28 of the 29 first-pass keys outside the follow-up).
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 TOOLS/mech_check.py F2/keys2.txt vi` reports `checked 1 locales x 15 keys; problems: 0`, and the same check over the first pass's keys (`…/scratchpad/keys.txt`, the 41 less the two removed Huawei close-after-lock keys) reports `checked 1 locales x 39 keys; problems: 0`, so every `<xliff:g>` span (both `app_name` and `app_name2` in the three two-span lines) and placeholder is byte-identical to English, with no unescaped quote, stray tag, double space or edge space; `python3 scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync".
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `keep_running_oppo_auto_launch_line`: applied as suggested, byte for byte. Only the first clause moved (`hãy tìm “tự khởi chạy” rồi bật cho …` became `hãy tìm “khởi chạy” rồi cho phép … tự động khởi chạy`), so the step now uses the card title's words (“Cho phép tự động khởi chạy và hoạt động trong nền”). Both spans are intact, and the effect sentence is still byte-identical to vivo's.
+- `keep_running_xiaomi_autostart_title`: applied as suggested (“Cho phép tự khởi động”; the only changed byte is T → t). It now matches its own line, the stuck alert's Xiaomi paragraph and the vivo title, all lowercase.
+- The first-pass fixes that round 1 confirmed are still in the file: `keep_running_xiaomi_lock_title` and the lock line's “màn hình ứng dụng gần đây”, and “lỗi bạn gặp phải” in `settings_support_report_bug_email_body`.
+
+#### Findings (round 2)
+
+No new findings.
+
+**Fresh read: checked, no finding.**
+- **Addendum after its six hosts** (the two system dialogs, whose path ends “→ Bật.”, the three OverlayAlert messages and the accessibility card line). It reads as its own closing paragraph each time. Its clauses (nếu …, hãy …, sau đó …, rồi …) follow the steps in order, and “nút chuyển … nút đó” is the switch the path or the card leads to. Both labels are AOSP's: “Thông tin ứng dụng” and “Cho phép các chế độ cài đặt bị hạn chế”.
+- **Stuck alert.** The body is HEAD minus exactly the cause sentence (checked by script diff). The Xiaomi paragraph repeats both Xiaomi card titles' wording, with autostart in lowercase, and “có thể” follows English's new “may”.
+- **Cards, title + line.** Each instruction line repeats its title's wording: cho phép … tự khởi động / tự động khởi chạy / tiêu thụ điện năng, thêm … vào, đặt … thành “Không hạn chế”, khóa. The two benefit lines name their own subject (“cài đặt này”, “Ô này”). With “PlayTranslate” dropped in, every sentence reads whole. Vietnamese needs no agreement here, and the second mentions are “ứng dụng”.
+- **Labels and search words.** The generic battery title is AOSP's `high_power_prompt_title`. Huawei's five labels (including the search word “Khởi chạy ứng dụng”) and Samsung's three are official. The Xiaomi, OPPO and vivo words stay unverified (known issue 2).
+- **Toast.** Re-measured with the packet's wrap tool (14 sp Roboto): 2 lines at both 296 dp and 320 dp. English needs 3 and 2, as the packet states, so the tool agrees with it.
+- **Form.** All 140 distinct syllables in the 16 values carry full diacritics. Every value is NFC, with no invisible or odd-width characters. Tone marks use the new style (khóa, tùy), and there is no old-style form anywhere in the file. Every quoted label and search word uses “ ”, with no straight quotes. The accessibility term is Hỗ trợ tiếp cận throughout, and “Trợ năng” appears nowhere in the file. Register is bạn with “hãy” imperatives.
+- **Web, 4 of 4 lookups.** Three searches looked for OPPO's Vietnamese auto-launch label: on the open web, on the OPPO/realme/OnePlus domains, and in Vietnamese retailer guides. None found an OEM page in Vietnamese. The retailer search's summary named two labels I could not read at the source:
+  - FPT Shop's OPPO guide gives the old Phone Manager path as “Trình quản lý điện thoại → Quyền bảo mật → Quản lý khởi động”.
+  - A CellphoneS page reportedly names a Xiaomi option “Tự khởi chạy”.
+
+  The fetch of the FPT Shop page returned 403. Since neither page was read, neither lead is a finding. Neither undoes round 1's OPPO fix either: “khởi chạy” matches everything “tự khởi chạy” did, and more.
+
+#### Verdict (round 2)
+
+**PASS.** Both round-1 fixes landed byte for byte and broke nothing around them. There are no new findings: 0 🛑, 0 ❌, 0 ⚠️, 0 💬. Carried over, not blocking (device checks under known issue 2):
+1. On a Xiaomi set to Vietnamese, check that a Settings search for “khởi động” finds the autostart switch. If the switch reads “Tự khởi chạy” (the unread CellphoneS lead, and VnReview's “Tự khởi chạy nền” in `oem-labels.md`), `keep_running_xiaomi_autostart_line` needs “khởi chạy” as well.
+2. On an OPPO, realme or OnePlus phone in Vietnamese, run the same check for “khởi chạy”. If the entry reads “Quản lý khởi động” (the unread FPT Shop lead, an old Phone Manager screen), the OPPO line needs “khởi động” as well. On a vivo phone, run the same check for “khởi động”.
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `values-vi missing=0 orphan=0 modified=0`, "in sync". The three new names are each present once and are the file's only change (`git diff`). The delta has no `<xliff:g>`, placeholders or markup, no unescaped `'`/`"`, no dashes, no odd or double spaces, and is NFC with full diacritics. **No 🛑 build-breaking issues.**
+
+No findings.
+
+Clean areas: Render code read first. The note is `tvProviderNote` (13 sp, no line cap), shown where the key section would be. The picker and the remove alert switch to `_keyless` when `account.requiresKey` is false (Lingva, Index-Translate). **`llm_backend_index_translate_note`** has all four English facts. 「không công bố giới hạn sử dụng」 keeps "publishes no usage limits" and does not say there are none. giới hạn is the error pill's word (`translation_error_daily_quota` đã đạt giới hạn hằng ngày), and khóa API is `llm_backend_api_key_label`. 「Văn bản đã chụp」 is `tr_service_order_footer`'s own phrase, and 「do Bilibili vận hành」 is the natural "run by". In 「Dịch vụ do Bilibili vận hành và không công bố…」 the service is the grammatical subject of không công bố, where the English makes Bilibili the publisher. The reader gets the same fact either way (no published limits), so it is not a finding. Register is neutral bạn-level with no pronoun needed. **`llm_model_picker_fetch_failed_keyless`** matches its sibling except for the middle clause: the same unquoted Tùy chỉnh…, lowercase id, closing "…." and Tùy spelling. 「Hãy thử lại sau」 renders "later" and differs, correctly, from `anki_models_unavailable`'s sau giây lát ("in a moment"). **`tr_service_remove_message_keyless`** is its sibling without the key clause. Read with the title 「Gỡ Bilibili Index-Translate?」 and the Gỡ button, the alert uses one verb, and remove (gỡ) stays distinct from delete (xóa), as in the sibling.
+
+### Disposition (2026-10-14)
+
+No findings; nothing to apply.
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for values-vi (all 39 names present; every `<xliff:g>` span byte-identical to EN; placeholder multiset, `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no raw `'`/`"`; no stray or double space; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `values-vi missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- Error pill (`TranslationErrorPills`): 14 sp, `maxLines=2`, ellipsized; `TranslationErrorMessages` maps `NOT_RUNNING` to `translation_error_not_running` with the service name.
+- PlayTranslate Cloud page (`PtCloudSettingsActivity`, `activity_pt_cloud_settings.xml`): two `settings_row_switch` rows (title 15 sp, subtitle 13 sp, no line cap), disabled at half alpha while no key is saved. The key label sits above a single-line 13 sp monospace field (about 278 dp of text on a 360 dp phone). The status row is `pt_cloud_status_title` (weight 1) beside a wrap-content value, set to `pt_cloud_status_checking` on every resume.
+- Settings hub (`RootSettingsViewModel.cloudDigest`): `singleLine` + `ellipsize="end"`, 13 sp, 216 dp on a 360 dp phone and 249 dp on a wider one. The pitch shows with no key and again with both switches on.
+- Capture & overlay (`bindCloudOcrRow`): a switch row whose subtitle wraps, above the engine rows and their notes.
+- Translation services (`PtCloudBackend.status`): an Info line in `tvRowSubtitle2`, which wraps.
+- Floating menu (`FloatingIconMenu.updateCloudHeader`): both strings are only the strip's `contentDescription`. The visible text is the brand.
+- `KeepRunningActivity.openFirst`: a `LENGTH_LONG` toast, then App info.
+- Part B: `addGroupHeader` uppercases with `Locale.ROOT`. The level segments are `buildPillToggle` labels: 13 sp, autosized to 10 sp before they ellipsize, about 56 dp each with four segments. The crop pill (`RegionEditorControls.pill`) is 14 sp, single line and ellipsized, with about 270 dp of text in the floating workspace on a 360 dp phone (the narrowest host) and 294 dp in the review sheets' dialog. The load-more row is 13 sp with `maxLines=1`.
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| pt_cloud_translate_toggle_subtitle | 💬 | Đã bao gồm các mô hình dịch trả phí, tự chọn mô hình tốt nhất cho từng việc. | Đã bao gồm các mô hình dịch trả phí, tự động chọn mô hình tốt nhất cho từng việc. | The line has no subject, so "tự chọn" can also be read as "choose it yourself" (as in "gói tự chọn", pick-your-own). That is the opposite of the English, where the server picks. "tự động chọn" leaves only the server reading, at the cost of one syllable. The line wraps and has no cap. |
+
+### Clean areas (checked, no findings)
+
+**Error pill.** «PlayTranslate Cloud: đã dừng» has the family's shape (the name, a colon, then a lowercase status, as in «không thể kết nối» and «lỗi máy chủ»). It measures 173 dp, one line. đã dừng pairs with the status row: «Đang chạy» / «Đã dừng».
+
+**PlayTranslate Cloud page.**
+- **The two switch rows** read as a verb-first pair: «Nhận dạng chữ trên màn hình» / «Dịch văn bản».
+  - A literal «Đọc màn hình» would recall the screen reader («Trình đọc màn hình», from memory) in an app with an accessibility service. chữ is the file's word for on-screen text in the OCR notes («chữ nhỏ», «màn hình nhiều chữ»).
+  - The OCR subtitle keeps both English sentences in natural order. «Toàn bộ sức mạnh của thiết bị dành cho trò chơi.» echoes «mạnh hơn», as English echoes "Stronger … power".
+  - The translation subtitle's first clause and the services row's no-key line share «Đã bao gồm các mô hình dịch trả phí».
+- **Key.** «Khóa ứng dụng khách» / «Dán khóa bạn đã nhận được» use the file's key noun (Khóa API in `llm_backend_api_key_label`, «Khóa ••••…» in `tr_service_key_tail_fmt`) and its paste verb («Dán khóa API DeepL của bạn vào đây» in `hint_deepl_key`).
+  - ứng dụng khách is the common Vietnamese for a software "client" (from memory: Google's consoles use it for an OAuth client).
+  - The hint under the label settles any "khóa = lock" reading.
+  - The hint is 196 dp in monospace, inside about 278 dp.
+- **Status row.** «Dịch vụ» beside Đang chạy (AOSP's `app_running_notification_title`), Đang khởi động, Đã dừng, Đang kiểm tra (AOSP's `ext_media_status_checking` without the ellipsis, as English has none) and Chưa kiểm tra. Each value matches its pill counterpart:
+  - `pt_cloud_status_unreachable` = `translation_error_unreachable` (không thể kết nối);
+  - `pt_cloud_status_other` = `translation_error_bad_response` (phản hồi không mong đợi) plus « (500)»;
+  - `pt_cloud_status_not_running` = `translation_error_not_running` (đã dừng).
+  Values are capitalized when they stand alone and lowercase after a colon, as the file does.
+
+**Settings hub.** The three digests read as one set: «OCR và dịch trên máy chủ mạnh» (189 dp), «Chỉ OCR trên máy chủ mạnh» (167 dp) and «Chỉ dịch» (47 dp), all whole at 216 dp. trên máy chủ mạnh carries both senses of "Server-grade" that the comment asks for: on the server, and a strong one. «Tắt» is the Off of `settings_cell_history_summary_off` (Tắt · …) and of AOSP.
+
+**Capture & overlay.** «OCR trên máy chủ mạnh, không tốn tài nguyên thiết bị» has the engine notes' shape (two phrases and a comma, as in «Đọc được chữ nhỏ, nhưng chậm hơn»). At 314 dp it wraps to 2 lines, as the vi Meiki note does (246 dp). The row has no line cap.
+
+**Translation services and floating menu.** The no-key line stands where other rows read «Cần tài khoản», and it wraps freely. The screen-reader labels use AOSP's «Khả dụng» / «Không khả dụng» (`media_route_status_available` / `_not_available`), lowercased after the colon, as the pill family is. Standing alone, `backend_status_unavailable_default` is «Không khả dụng».
+
+**Toast.** «Không thể mở màn hình đó. Hãy tìm mục cài đặt đó trong Cài đặt của điện thoại.» says the app could not open the screen, as the new English does. The second sentence is the reviewed one, with the cards' verb tìm («Trong Cài đặt, hãy tìm “…”») and Cài đặt capitalized as the Settings app. At 14 sp it takes 2 lines at both 296 and 320 dp (500 dp in all, English 491). The break at 296 falls between cài and đặt, which is ordinary Vietnamese line breaking.
+
+**Part B.**
+- **Thinking titles.** Both titles use suy luận, as the comments require: «Chế độ suy luận» / «Mức suy luận». Vietnamese tech writing calls reasoning models mô hình suy luận. Chế độ … follows «Chế độ lớp phủ».
+- **Subtitles.** Both reuse mô hình (`llm_backend_model_label`) and token (`tr_service_status_usage_today_fmt`). «Càng cao càng chậm» is idiomatic. «Mức độ mô hình suy luận …» is the ordinary "mức độ + clause" pattern, and it follows the file's noun-phrase handling of "How often…" (`settings_capture_interval_hint`, «Tần suất chụp …»).
+- **Level segments.** «Tắt / Tối thiểu / Thấp / Vừa / Cao», measured in bold at 13 sp: 20, 54, 31, 25 and 25 dp against about 56, so none shrinks. Vừa is the right call: «Trung bình», the stock middle of thấp/cao, measures 68 dp and would shrink to about 11 sp. Beside Thấp and Cao, vừa reads as "moderate".
+- **Group headers.** «Chia động từ», «Biến cách» and «Dạng từ» are the standard Vietnamese grammar terms. chia động từ and dạng từ are what learner materials call conjugation and word-form exercises (from memory), and biến cách is declension. Uppercased with `Locale.ROOT` they render «CHIA ĐỘNG TỪ», «BIẾN CÁCH», «DẠNG TỪ» beside «ĐỊNH NGHĨA», with every tone mark kept (đ→Đ, ộ→Ộ, ừ→Ừ).
+- **Crop.** «Cắt ảnh chụp màn hình» pairs with the neighbouring «Xóa ảnh chụp màn hình». «Kéo các cạnh để cắt ảnh chụp màn hình» has the shape of «Kéo các cạnh để giới hạn việc chụp màn hình trong vùng này». At 251 dp in Arial it fits the narrowest host's 270 dp, and Roboto runs narrower.
+- **Load more.** «Tải thêm (2)» uses the file's tải («Đang tải ví dụ…»). It is 70 dp and becomes «Đang tra…» while loading.
+
+**Considered and left.**
+- «Phản hồi không mong đợi (500)»: phản hồi bất thường would be more idiomatic, but the status row has to match the reviewed pill string.
+- «Chậm hơn, và …» keeps English's fragment and its comma. Both are acceptable in Vietnamese UI copy.
+- «Khóa ứng dụng khách» is technical, but so is "Client key", and the field's hint explains it.
+
+### Vietnamese appendix: diacritics, syllables, terms
+
+**Diacritics and syllables.** A script split the 39 values into syllables: 124 distinct tokens. Every Vietnamese syllable carries its full tone and vowel marks. The ASCII-only tokens are all real syllables (bao, cho, khi, mong, ra, suy, tra, trong, Cao, Chia) or Latin terms (OCR, GPU, token). Nothing is stripped or merged. Every value is NFC, with no double, edge or odd-width spaces, and every character is either ASCII or a Vietnamese letter. Tone marks use the new style (khóa), which is the file's style.
+
+**Register.** bạn appears where a pronoun is needed («khóa bạn đã nhận được»). Elsewhere the lines need no pronoun, as in the rest of the file, and the toast's «Hãy tìm …» is the file's imperative.
+
+**Terms, one translation each, checked against the file:**
+
+| English | Vietnamese | precedent |
+|---|---|---|
+| server | máy chủ | `translation_error_server`, `llm_backend_base_url_custom_hint` |
+| device | thiết bị | 21 strings |
+| key | khóa | `llm_backend_api_key_label`, `tr_service_key_tail_fmt` |
+| paste | Dán | `hint_deepl_key` |
+| OCR | OCR | `ocr_picker_title` (Chọn công cụ OCR) |
+| model | mô hình | `llm_backend_model_label` |
+| token | token | `tr_service_status_usage_today_fmt` |
+| Off | Tắt | `settings_cell_history_summary_off`, AOSP |
+| available / unavailable | khả dụng / không khả dụng | AOSP, `backend_status_unavailable_default` |
+| screenshot | ảnh chụp màn hình | `anki_screenshot_remove_content_description` |
+| game | trò chơi | file-wide |
+| Settings (the phone's) | Cài đặt | the keep-running cards |
+
+Hỗ trợ tiếp cận does not occur in this delta, and Trợ năng appears nowhere in the file.
+
+### Verdict
+
+0 🛑, 0 ❌, 0 ⚠️, 1 💬 (`pt_cloud_translate_toggle_subtitle`, optional). The other 38 keys pass as written.
+
+### Disposition (2026-10-27)
+
+The one 💬 is applied: `pt_cloud_translate_toggle_subtitle` «…, tự động chọn mô hình tốt nhất cho từng việc.», which leaves only the reading where the server picks.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports `39 keys x 13 locales: 0 problems`, with no line for values-vi (all 39 names present; every `<xliff:g>` span byte-identical to EN; placeholder multiset and `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no raw `'`/`"`; no edge or double spaces; the file parses as XML); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-vi/strings.xml` reports `values-vi missing=0 orphan=0 modified=0`, "in sync". **No 🛑 build-breaking issues.**
+
+Round-1 changes checked:
+- `pt_cloud_translate_toggle_subtitle` «tự chọn» → «tự động chọn» («Đã bao gồm các mô hình dịch trả phí, tự động chọn mô hình tốt nhất cho từng việc.»): confirmed, byte-identical to the round-1 suggestion and the applied-fix list.
+  - Only the reading where the service picks remains.
+  - The first clause still matches the services row's «Đã bao gồm các mô hình dịch trả phí tốt nhất».
+  - The subtitle wraps with no `maxLines`.
+- Nothing else moved. Part A equals the sync's drafts except this key, and `git diff` shows no Part B change.
+
+#### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_reasoning_subtitle | 💬 | Mức độ mô hình suy luận trước khi trả lời. Càng cao càng chậm, và phần suy luận được tính phí như token đầu ra. | Mức độ suy luận của mô hình trước khi trả lời. Càng cao càng chậm, và phần suy luận được tính phí như token đầu ra. | After «Mức độ», the words «mô hình suy luận» first read as the compound "reasoning model". Round 1 itself notes that Vietnamese tech writing uses mô hình suy luận for reasoning models. So the line starts as "the level of the reasoning model before answering", and the reader has to re-parse it as a clause. «Mức độ suy luận của mô hình» ("the model's degree of reasoning") has only one reading and echoes the title «Mức suy luận». It also matches the shape of the precedent round 1 cited, «Tần suất chụp màn hình…» (noun + verb phrase, with no subject between them). It adds one syllable, and the line wraps freely: 3 lines at 298 dp either way. Optional. |
+
+**Fresh read of the other 38 keys: checked, no finding.**
+- **Register and orthography.**
+  - bạn appears only where a pronoun is needed (the hint), and the toast's «Hãy tìm» is the file's imperative.
+  - All 39 values are NFC, with no odd spaces. A script split them into 126 tokens. The ones without diacritics are real syllables (bao, cho, khi, mong, ra, suy, tra, trong, Cao, Chia) or Latin terms (OCR, GPU, token, the brand).
+  - Uppercased with `Locale.ROOT`, the headers keep every mark: CHIA ĐỘNG TỪ, BIẾN CÁCH, DẠNG TỪ.
+- **Pill family and status row.**
+  - Each status matches its pill counterpart: «đã dừng» / «Đã dừng», «không thể kết nối» / «Không thể kết nối», «phản hồi không mong đợi» / «Phản hồi không mong đợi (500)».
+  - Each is lowercase after a colon and capitalized when it stands alone, as the file does.
+  - «Đang chạy», «Đang kiểm tra» and «khả dụng / không khả dụng» are AOSP's words (android-36 vi).
+- **Terms against the file.** máy chủ, thiết bị, khóa, Dán, mô hình, token, Tắt, trò chơi, ảnh chụp màn hình and Cài đặt each match the precedent round 1 tabled. Both thinking titles use suy luận.
+- **Neighbours.**
+  - The two switch titles are verb-first, and the OCR row has the engine notes' "phrase, phrase" shape.
+  - The crop instruction has `region_overlay_drag_instruction`'s «Kéo các cạnh để …» shape, and the crop button pairs with «Xóa ảnh chụp màn hình».
+  - In code, CONJUGATION tables are always a verb's and DECLENSION tables a German noun's, which is what Chia động từ / Biến cách say.
+- **Widths, re-measured in Arial** (a few percent wider than Roboto).
+  - **Hub summaries:** 19 to 189 dp, against 216 dp. On a 320 dp phone (178 dp) the pitch ellipsizes, as the English (197 dp) does.
+  - **Toast:** 500 dp, which takes 2 lines at 264, 296 and 320 dp.
+  - **Crop pill:** 251 dp of the 270 dp available.
+  - **Level segments:** 20 to 54 dp in bold, against about 57 dp.
+  - **Key hint:** 196 dp of about 278 dp.
+  - **Load more:** 70 dp.
+- **A correction to the round-1 record, not a finding.** The pill measures 186 dp here (round 1 had 173 dp). On a 360 dp portrait phone its text gets about 174 dp: the 328 dp pill, less the logo, the paddings and two 48 dp buttons. So it wraps as "PlayTranslate Cloud: đã | dừng" and stays within `maxLines=2`, as the English wraps after "Not". In landscape it is one line.
+
+#### Verdict (round 2)
+
+**PASS.** The one round-1 change landed as the Disposition says. The fresh read finds one optional 💬, `llm_backend_reasoning_subtitle` (a clearer word order), and no 🛑, ❌ or ⚠️. Nothing blocks the commit.

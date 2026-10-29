@@ -1,0 +1,1127 @@
+# Turkish (values-tr) localization review
+
+Mechanical layer verified programmatically: all string/plurals names present, no extras; every `%n$s`/`%d` placeholder present; all `<xliff:g>` inner contents byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; every literal apostrophe is `\'`-escaped (all 16 brand-suffix sites); no raw `"` in text. **No 🛑 build-breaking issues.**
+
+## Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| hymt_legal_message | ❌ | "Kabul Et düğmesine dokunarak" | "Kabul Ediyorum düğmesine dokunarak" | In-text button reference must match the actual `hymt_legal_agree` label ("Kabul Ediyorum — Hunyuan\'ı Etkinleştir"). Same failure as 5 of 6 other languages. |
+| hymt_legal_message | ❌ | "ikamet etmiyor ya da bulunmuyorsunuz" | "ikamet etmiyor ve bulunmuyorsunuz" | Two negated verbs joined by "ya da" = "not residing OR not located" — logically weaker than EN's "not (residing or located)". The attestation must negate both conjuncts; "ve" fixes it. |
+| hymt_legal_message | ⚠️ | "AB, BK veya Güney Kore" | "AB, Birleşik Krallık veya Güney Kore" | "BK" is not an established Turkish abbreviation for the UK (unlike "AB" for the EU); in a legal attestation, spell it out. |
+| onboarding_notif_body | ❌ | "uyarı, ses veya başlık göndermez" | "uyarı, ses veya banner bildirimi göndermez" | "başlık" = "title/heading" — mistranslation of "banners" (pop-up notifications); users will not understand what is being promised. |
+| crash_dialog_message | ⚠️ | "Bir yığın izi, son uygulama günlükleri ve … metinleri içerir." | "Rapor; bir yığın izini, son uygulama günlüklerini ve … metinleri içerir." | Subjectless sentence garden-paths: sentence-initial nominative "Bir yığın izi" reads as the subject ("a stack trace contains the logs and texts…"). Mixed case-marking on the conjuncts compounds it. |
+| settings_header_ocr | ⚠️ | "Görüntüden metne (OCR)" | "Metin tanıma (OCR)" | "Image-to-text" calque; "metin tanıma" is the standard Turkish term and matches `status_ocr` ("Metin tanınıyor…"). |
+| qwen_mnn_metered_warning_title / _message, qwen35_2b_mnn_metered_warning_title / _message, gemma_e2b_mnn_metered_warning_title / _message, hymt_metered_warning_title / _message | ⚠️ | "Ölçülü ağda indirilsin mi?" / "Bu ağ ölçülü olarak işaretlenmiş." | "Sayaçlı ağda indirilsin mi?" / "Bu ağ sayaçlı olarak işaretlenmiş." | Android's Turkish UI uses "sayaçlı" for metered (Data Saver / Wi-Fi "Sayaçlı"); "ölçülü" primarily means "moderate/restrained" and doesn't match the system toggle the user knows. 8 strings, one fix. |
+| anki_sort_field_empty | ⚠️ | "yinelenen kaydı reddetme hatalarına neden olur" | "gönderim sırasında kartın yinelenen (kopya) olarak reddedilmesine neden olur" | "duplicate rejection errors" calque — parses as "errors of rejecting the duplicate record"; restructure around what actually happens. |
+| pack_upgrade_mandatory_message | ⚠️ | "veya başka bir dil seçmek için silin" | "veya başka bir dil seçmek için paketi silin" | "silin" has no object; nearest noun is "yüklü sürüm". Add "paketi" so the delete target is unambiguous. |
+| accessibility_dialog_message, overlay_icon_a11y_required_message | ⚠️ | "Erişilebilirlik → Yüklü uygulamalar" | "Erişilebilirlik → İndirilen uygulamalar" | Faithful to the EN source ("Installed apps", known upstream drift), but stock Android Turkish labels the accessibility app-list section "İndirilen uygulamalar" — users follow this path literally. |
+| settings_anki_get_app_summary | ⚠️ | "ücretsiz indir" | "ücretsiz indirin" | Sen-register in a sentence-style digest; the sister row `anki_settings_get_ankidroid_title` says "ücretsiz edin" (siz) for the same content. |
+| settings_anki_grant_summary | ⚠️ | "AnkiDroid kullanmak için izin ver" | "AnkiDroid kullanmak için izin verin" | Same register slip as above; all other digest/subtitle prose uses siz. |
+| translate_button_prefix_translate, translate_button_prefix_reload | ⚠️ | "Çevir" / "Yenile" | "Çevir:" / "Yenile:" | Code composes prefix + space + region name → "Çevir Tam ekran" is verb-object inversion in Turkish. A trailing colon ("Çevir: Tam ekran") reads naturally without code changes. |
+| tr_service_offline_footer | ⚠️ | "çok yavaş ve yorucu olabilir" | "çok yavaş olabilir ve cihazı zorlayabilir" | "taxing" means resource-heavy on the device; "yorucu" means tiring for a person. |
+| anki_content_part_of_speech, anki_content_part_of_speech_desc | ⚠️ | "Söz türü" / "söz türü etiketi" | "Sözcük türü" / "sözcük türü etiketi" | "Sözcük türü" is the standard Turkish grammar term for part of speech; the file otherwise consistently uses "sözcük". |
+| dialog_hotkey_setup_countdown | 💬 | "Basılı tutun 1.4" | "Basılı tutun: %1$s" | Verb-first then a bare number reads like a stray digit; a colon makes the countdown read as a value. |
+| crash_dialog_discard | 💬 | "Sil" | "Raporu Sil" | Bare "Sil" next to "Gönder"/"Sonra" doesn't say what gets deleted; naming the report removes the destructive ambiguity. (It correctly does not read as "Cancel".) |
+| settings_anki_digest | 💬 | "Deste %1$s · Kart türü %2$s" | "Deste: %1$s · Kart türü: %2$s" | `anki_deck_label_format` already uses "Deste: %1$s"; colons also read better with arbitrary deck names. |
+| bergamot_warmup_downloading_multi | 💬 | "Çevrimdışı model indiriliyor %1$d/%2$d…" | "Çevrimdışı model %1$d/%2$d indiriliyor…" | The count reads tacked-on after the verb; "model 1/2 indiriliyor" is the natural order (placeholders are positional, reordering is safe). |
+| anki_content_words_table_desc | 💬 | "her sözcüğün; okunuşları ve tanımlarıyla birlikte" | "her sözcüğün, okunuşları ve tanımlarıyla birlikte" | Semicolon splits the genitive from its head noun; comma (or nothing) is correct. |
+
+Clean areas (checked, no findings): all three `<plurals>` (anlam/karakter/sonuç — singular noun after numeral in both `one` and `other`, correct Turkish); bottom-bar labels ("Ayarlar" 7, "Bölgeler" 8, "Otomatik" 8, "Duraklat" 8) and "Yakalama\nBölgesi" — comparable to EN lengths, low truncation risk; i/İ casing ("İndir", "İptal", "İzin Ver", "İPUCU", "SESLERİ", "ÇİZ" all correct, no dotless-I errors found by scan or read); hotlist items `live_mode_auto_with_hint` ("Otomatik Furigana" — correct order), `status_idle`/`status_hold_hint` (button names anchored by "düğmesine", no garden path), `label_region_drag_hint` ("tüm kutuyu taşımak için" correctly scoped to the middle-drag only), `settings_capture_interval_hint` ("En az 1 saniye" — correct), `anki_permission_rationale_message`/`anki_settings_grant_access_subtitle` (no brand adjacency; "Devam Et" matches `btn_continue` exactly), `backend_cooldown_*` ("Yeniden deneme saati: 15:42" — natural colon construction), Quick Settings terminology ("Hızlı Ayarlar", "kutucuk" — matches Android TR), `btn_clear` ("Temizle" — correct, not "Sil"), `restricted_settings_message` ("Kısıtlı ayarlara izin ver" matches the Android 13 TR label), `overlay_hide_controls_message` (quoted "Şimdilik Gizle"/"Kapat" exactly match their button strings).
+
+## Suffix coverage appendix
+
+Every site where a runtime placeholder meets Turkish grammar — all use a head noun, postposition, or colon, so no suffix ever attaches directly to a placeholder; vowel harmony cannot break:
+
+- status_no_text — %1$s + "metni"; %2$s + "içinde" ✓
+- lang_setup_requires_64bit_msg — %1$s + "metnini" ✓
+- anki_section_description — %1$s + "dilinde" ✓
+- lang_section_offline_models_subtitle — %1$s → %2$s + "için" ✓
+- anki_field_mapping_title — %1$s + "öğesini" ✓
+- anki_sort_field_empty — %1$s + "alanına" ✓ (separate finding is about a later clause)
+- anki_content_source_pick_title — %1$s + "alanını" ✓
+- custom_region_edit_title — %1$s + "öğesini" ✓
+- settings_ocr_delete_cd / _msg — %1$s + "modelini" ✓; settings_ocr_delete_title — %1$s + separate word "silinsin mi" ✓; settings_ocr_delete_shared_msg / _downloading_title — no suffix ✓
+- llm_backend_get_key_title_fmt — %1$s + "API anahtarı" ✓
+- llm_backend_invalid_key_alert_message_fmt — %1$s + verb phrase; %2$s + "adresinden" ✓
+- llm_low_memory_message — %1$s + "çalışmak için"; %2$s/%3$s + "boş bellek"/"boş" ✓
+- qwen_mnn / qwen35_2b / gemma_e2b / hymt disable_message — %1$s + "boyutundaki" ✓; metered_warning_message — %1$s + "boyutundadır" ✓; status lines — %1$s + "bellek", %2$s + "disk alanı", "(diskte %1$s)" ✓
+- tts_language_unsupported_with_engine_message — %1$s + comma clause; %2$s + "dilini" ✓
+- tts_language_unsupported_unknown_engine_message — %1$s + "dilini" ✓
+- tts_voices_section_header — %1$s + "SESLERİ" (suffix on SESLER, not the placeholder) ✓
+- tts_voice_region_numbered / tts_voice_numbered — bare juxtaposition ✓
+- target_pack_migration_title / _message — %1$s + "tanımları"/"tanım paketi"; %2$s + "dilinde" ✓
+- overlay_turn_off_title — %1$s + "kapatılsın mı" (separate word) ✓; overlay_turn_off_message — %1$s + "uygulamasından" ✓; overlay_hide_controls_title/_message — %1$s + "oyun ekranı kontrolleri"/"uygulamasını" ✓
+- notif_text, status_accessibility_needed, quick_tile_add_row_subtitle, crash_dialog_message, settings_capture_display_footer, anki_permission_rationale_message, anki_settings_grant_access_subtitle, anki_not_installed_message, anki_models_unavailable, a11y_required_*, mp_overlay_permission_message — app/brand + "uygulaması…" head noun ✓
+- pack_upgrade_progress_format(_with_bytes), install/bergamot/OCR download lines — placeholder + "indiriliyor" or "/" ✓
+- tr_service_status_quota_fmt / _with_reset_fmt — "karakter kullanıldı"; "· sıfırlanma: %2$s" colon ✓
+- backend_cooldown_status_fmt — "%1$s · %2$s %3$s" with colon-bearing connectors ✓
+- word_detail_not_found — %1$s + "için" ✓; word_anki_deck_badge_cd — colon ✓; word_anki_in_decks — "%1$d Anki destesi" ✓
+- status_error / settings_debug_export_logs_failed — colon ✓; settings_footer_version / crash_email_subject — "v" prefix ✓
+- hotkey_show_hint_title / _dialog_title, live_mode_auto_with_hint, translate_button_subtitle_* — placeholder + bare verb phrase or "yerine" postposition ✓
+- Fixed-text suffixes after xliff brand blocks (harmony decidable, all correct, all `\'`-escaped): Anki\'ye ×4, Anki\'de, AnkiDroid\'e ×3, AnkiDroid\'i ×3, Hunyuan\'ı, GitHub\'da, Discord\'a, PlayTranslate\'i, Google Play\'den ×2, TTS\'yi, Migaku\'nun ✓
+
+## Verdicts
+
+- Register consistency: good — siz throughout prose, platform-conventional short imperatives on buttons; two digest slips (`settings_anki_get_app_summary`, `settings_anki_grant_summary`).
+- Terminology consistency: good — deste/kart/bilgi kartı/dil paketi/kısayol tuşu/yer paylaşımı/sözcük all consistent; fix "ölçülü ağ", "Görüntüden metne", "söz türü".
+- Android-settings wording: mostly matches (Erişilebilirlik, "Diğer uygulamaların üzerinde göster", "Kısıtlı ayarlara izin ver", Hızlı Ayarlar/kutucuk); misses on metered ("sayaçlı") and the a11y nav-path section name.
+- Vowel harmony at placeholders: clean — head-noun strategy applied at every site; zero direct-suffix-on-placeholder cases.
+- i/İ casing: clean.
+- Plurals: correct (singular noun in both categories).
+- Truncation risk: low; no changes needed.
+- Legal text: structure, §5(b), and country list preserved, but two ❌ fixes required (button-name mismatch, "ya da"→"ve" negation scope) plus the "BK" spelling-out.
+- Overall: **fix-then-ship** — three ❌ items (two in the legal attestation) and the metered/OCR-header terminology before release; the rest are polish.
+
+---
+
+# Delta review — 2026-06-23 sync (+29 keys)
+Scope: Anki pitch/frequency content options, OpenAI custom base URL, Yomitan multi-file import + auto-update, Anki audio picker. Mechanical layer re-verified programmatically (analyzer 0/0; placeholder parity; plural CLDR sets; processDebugResources BUILD SUCCESSFUL) — no 🛑.
+
+## Findings (delta)
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_auto_update_subtitle | ⚠️ | "Bu sözlüğün yeni sürümlerini otomatik olarak indir ve yükle" | "Bu sözlüğün yeni sürümlerini otomatik olarak indirir ve yükler" | Bare **sen**-imperative ("indir ve yükle") in a toggle-caption — both a register slip (file uses siz, e.g. `quick_tile_add_row_subtitle` "açıp kapatın", and `settings_anki_get_app_summary` was corrected to "indirin") and a mood mismatch: EN is a *descriptive caption* of what the switch does, not a command. Sibling toggle subtitles describe behavior in 3rd person (`settings_overlay_mode_subtitle` "…gösterileceği", `settings_vertical_grow_subtitle` "…genişletir"); the descriptive "indirir ve yükler" matches that pattern and sidesteps the imperative entirely. |
+
+## Clean areas (delta)
+Suffix-on-placeholder — clean at every contact point; the two highest-risk Turkish sites are correct:
+- `yomitan_importing_progress` — "%2$d dosyadan %1$d. içe aktarılıyor…": the ablative case suffix ("-dan") attaches to the **fixed head noun** "dosya", not to %2$d; the "." after %1$d is an ordinal marker valid for any value. EN deliberately omits the noun; TR adds "dosya" (more natural than a bare ordinal in Turkish) — placeholder reorder is allowed and harmony cannot break. ✓
+- `yomitan_import_summary_count` (one/other) — "%2$d sözlükten %1$d tanesi içe aktarıldı.": ablative "-ten" on fixed "sözlük", partitive "tanesi" on %1$d; no suffix on either placeholder. ✓
+- `yomitan_import_summary_more` (one/other) — "+%1$d tane daha": classifier "tane" follows the count as a separate word; no suffix glued on. ✓
+- Summary list lines (`_duplicates` "Zaten içe aktarılmış:", `_invalid` "Okunamadı:", `_no_space` "Yeterli alan yok:", `_failed` "Başarısız:") all use the **colon construction** before the `%1$s` file-name list — never a possessive/case suffix on the placeholder. ✓
+- `anki_content_*_desc` brand refs use the colon-free **head-noun "alanı için"** after each `<xliff:g>` brand span; the brand suffixes themselves attach to fixed names and are all `\'`-escaped: Lapis\'in ×3, JPMN\'in ×3, Migaku\'nun ×1 (neighbor). ✓
+
+i/İ casing — clean; no dotless-I errors (scan + read). Sentence-initial dotted-İ correct in "İçe aktarma tamamlandı", "İçe aktarılamadı", "Sözlük içe aktarılıyor"; mid-word "içe" stays dotted-lowercase. None pre-uppercased (the app uppercases labels at runtime), so labels like "Gelişmiş", "Özel URL", "Otomatik güncelle", "Metin okuma", "Ses" carry correct lowercase spelling. ✓
+
+Terminology reuse — consistent with the file and the parameters: **sıklık** (frequency, matching `anki_content_frequency` "Sıklık yıldızları"), **perde vurgusu** (pitch accent, matching `yomitan_category_pitch_accent`), **sözlük** (dictionary), **içe aktar** (import, matching the whole Yomitan block), **alan(ı)** (field, matching `anki_content_source_pick_title`/`anki_sort_field_empty`), **metin okuma** (TTS — `audio_source_tts_name` "Metin okuma" matches `settings_header_text_to_speech`/`settings_cell_tts` 3×), **Ses** (`audio_source_picker_title` matches `anki_group_audio`/`tts_voice_picker_title`), **Sonuç yok** (`audio_no_results` matches `lang_search_no_results`/`dictionary_status_no_results`), **Yükleniyor…** (`audio_loading` matches `settings_ocr_installing`), **Gelişmiş** (standard Android "Advanced"). ✓
+
+Register — siz throughout the new prose: `llm_backend_base_url_invalid` "https:// kullanın…" (siz-imperative), `anki_content_frequency_stylized_desc` "…kullanın" (siz). Toggle/label titles use the noun/infinitive form per convention ("Otomatik güncelle", "İçe aktarma tamamlandı"). Sole exception is the `yomitan_auto_update_subtitle` slip above. ✓
+
+Plurals — both `<plurals>` correct: `yomitan_import_summary_count` keeps the singular noun "sözlük" after the numeral in **both** one/other (correct Turkish, not a copied EN split); `yomitan_import_summary_more` keeps singular "tane …daha" in both. ✓
+
+Short-label truncation — low risk: "Ses", "Gelişmiş", "Özel URL", "Metin okuma", "Sonuç yok", "Yükleniyor…", "Yüklenemedi", "Bilinmeyen dosya" are all comparable to or shorter than typical row/label space; the only multi-word title ("İçe aktarma tamamlandı") is an alert title with room. ✓
+
+`Example:` rule — `anki_content_pitch_position_desc` correctly leaves "Örnek: 0,2" as-is (sample not localized); the quoted field names ("PitchPosition", "PAOverride", "Frequency", "FrequenciesStylized", "FreqSort", "FrequencySort") are kept verbatim inside curly typographic quotes. ✓
+
+Delta verdict: **ship after the one ⚠️** — `yomitan_auto_update_subtitle` (sen→descriptive). No ❌, no 🛑. The two Turkish-critical mechanics (no suffix on a bare placeholder; i/İ casing) are clean across all 29 keys.
+
+---
+
+## Delta review — 2026-07-14 sync
+
+Scope: the 174 delta keys (170 new + 4 changed English) — game-audio recording & trim editor, translation History, Advanced LLM prompt editor, in-app updater, translation-service cells, single-app capture, the 38 `misc_*` dictionary chips.
+
+Mechanical layer re-verified programmatically across all 174 keys: every key present, no extras; every `%1$s`/`%2$s`/`%d` present and matching EN; every `<xliff:g>` span byte-identical to EN (inner content, `id`, `example`); `\n` preserved in `floating_menu_capture_screen` ("Ekranı\nYakala"); every bare keyword literal (`{text}` `{strings}` `{N}` `{source}` `{source_code}` `{target}` `{target_code}`) byte-identical Latin and **unsuffixed**; every apostrophe `\'`-escaped (`Anki\'ye`, `GitHub\'dan` ×4, `URL\'sini`), no raw `'`; `<plurals>` = one/other. The `&amp;` absent from `update_dialog_download` is correct — TR uses "ve", not "&". **No 🛑 build-breaking issues. No ❌.**
+
+**The two Turkish-critical mechanics are clean across all 174 keys** — see the Suffix coverage appendix below. This is why nothing reached ❌.
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_prompt_row_translation_subtitle, llm_prompt_row_batch_subtitle | ⚠️ | "…çevresini saran **metin**." / "…kullandığı **metin**." | "…çevresini saran **istem**." / "…kullandığı **istem**." | **Binding-glossary violation.** The glossary requires *one noun across all `llm_prompt_*`* for "prompt". The file uses **istem** in the other 8 (`Sistem istemi`, `Çeviri istemi`, `Toplu istem`, `İstem boş olamaz`, `Bu istem çok uzun`…) and drops to **metin** ("text") in exactly the two strings that *explain what a prompt row is* — so the row titled "Çeviri istemi" is glossed as a "metin", and the user never learns the two are the same object. TR is the outlier: de/fr/es/ru all keep one terminological noun in these subtitles (Anfrage / requête / petición / Запрос). "istem" is the only choice that satisfies the glossary (which also forbids "request" → so **not** "istek"). |
+| llm_prompt_fatal_missing_text, llm_prompt_fatal_missing_strings | ⚠️ | "…içermelidir — **o olmadan çevrilecek ifade** modele hiç gönderilmez." | "…içermelidir — **aksi takdirde** çevrilecek ifade modele hiç gönderilmez." | Garden path. `olmadan` is a converb and readily attaches to the following participle, so "o olmadan çevrilecek ifade" first parses as *"the phrase that will be translated **without it**"* — the opposite of a warning. The intended reading needs "o olmadan" to be a sentence adverbial. `aksi takdirde` ("otherwise") can only be sentence-level, so the ambiguity disappears; the em dash is kept. (Same class as the `crash_dialog_message` garden path in the base review.) 2 strings, one fix. |
+| llm_prompt_discard_title, llm_prompt_discard_confirm | ⚠️ | "Değişiklikler **sil**insin mi?" / "Değişiklikleri **sil**" | "Değişiklikler **at**ılsın mı?" / "Değişiklikleri **at**" | **sil** is the app's committed *Delete* verb — `history_action_delete` "Sil", `pack_upgrade_button_delete` "Sil", `settings_ocr_disable_delete` "Modeli sil", `cd_delete_region`, `cd_yomitan_delete`. Nothing is *deleted* here: an unsaved edit buffer is abandoned. Reusing "sil" both collides with the glossary's Remove/Delete pair and misstates the action ("silmek" implies something persisted is destroyed). "atmak" is the idiomatic Turkish discard verb and is unused elsewhere in the file. (Avoid "Vazgeç" — it sits next to `btn_cancel` "İptal" and the two would read as the same button.) |
+| tr_service_status_invalid_key | ⚠️ | "Geçersiz API **A**nahtarı" | "Geçersiz API **a**nahtarı" | Title-cases a common noun in a body-text status line. Turkish does not title-case, and the committed file already writes it lowercase everywhere in prose: `llm_backend_invalid_key_alert_title` "API anahtarı doğrulanamadı", `llm_backend_get_key_title_fmt` "…API anahtarı edinin", `llm_model_picker_fetch_failed` "API anahtarını kontrol edin", and its own delta sibling `tr_service_remove_message` "…API anahtarını siler". (Title Case is reserved in this file for *field labels* — `llm_backend_api_key_label`, `deepl_api_key_field_label` — which this is not.) Its four sibling status lines are all sentence case. |
+| add_online_service_title | ⚠️ | "Çeviri **H**izmeti **E**kle" | "Çeviri hizmeti ekle" | The row `tr_service_add_online` ("Çevrimiçi çeviri hizmeti ekle") *opens the screen* whose toolbar this is — the same phrase, two capitalizations, on two surfaces the user sees back-to-back. The file's toolbar/picker titles are sentence case (`ocr_picker_title` "OCR aracını seçin", `pack_upgrade_progress_title` "Dil paketleri güncelleniyor", `lang_section_offline_models_title` "Çevrimdışı modelleri indir"); Title Case is the button/dialog family (`btn_continue`, `pack_upgrade_button_now`). Align the toolbar to the row. |
+| game_audio_trim_duration | ⚠️ | "%1$s sn **seçildi** · %2$s sn **kaydedildi**" | "%1$s sn **seçili** · %2$s sn **kayıtlı**" | A status readout, not an event. `-di` announces something that *just happened* ("2,4 seconds got selected"), but this line renders continuously above the waveform **and** as the sentence-audio row title in the card editor. EN's "selected"/"recorded" are stative participles; Turkish's stative equivalents are `seçili` / `kayıtlı`. Also 4 chars shorter, which helps the row title. ("sn" itself is correct — matches the committed `settings_capture_interval_seconds_suffix`.) |
+| game_audio_trim_no_audio | ⚠️ | "Ses yok" | "Ses olmadan devam et" | The only one of the trim editor's four buttons that doesn't read as an action — and **"X yok" is this file's status-line idiom**: `tr_service_status_no_internet` "İnternet yok", `tr_service_status_no_usage_today` "Bugün kullanım yok", `audio_no_results` "Sonuç yok". Beside "Seçimi kullan" / "Seçimi oynat" / "Bunun yerine metin okuma kullan", "Ses yok" reads as *"there is no sound"* (i.e. playback is broken), not as *"send the card silent"*. Avoid "Ses ekleme"/"Ses kullanma" — the negative imperative `-ma` is homographic with the verbal noun and stays ambiguous. |
+| **(code, not strings)** `GameAudioTrimActivity.kt:207`, `SentenceAnkiContentFragment.kt:294` | ⚠️ | `String.format(Locale.US, "%.1f", seconds)` | `Locale.getDefault()` | Hard-codes a **period** decimal separator into the `game_audio_trim_duration` seconds value, so Turkish renders "2**.**4 sn seçildi" where it must read "2**,**4". The app's own Turkish text already uses comma decimals (`anki_content_pitch_position_desc` "Örnek: 0,2"). Cannot be fixed in `values-tr`. Affects every comma-decimal locale (tr, de, fr, es, pt-BR, ru, ar, vi) — flagging here because the value is only observable through this string. |
+| misc_endearing | 💬 | "Sevecen" | "Sevgi sözü" | "Sevecen" describes a *person's disposition* (an affectionate person); the chip labels what a **word** does. "Sevgi sözü" (term of endearment) reads as a lexicographic label. |
+| misc_polite | 💬 | "Kibar" | "Nezaket dili" | Breaks the parallelism of its own cluster — `misc_honorific` "Saygı dili" and `misc_humble` "Tevazu dili" are both `X dili`; "Kibar" is a bare adjective. The three render side by side on one word (JA sonkeigo/kenjougo/teineigo), where the shared shape is what makes them read as a set. |
+| misc_idiomatic | 💬 | "Deyimsel" | "Deyim" | **Deyim** is the actual TDK label and is free — no `pos_*` collision (`pos_expression` "İfade", `pos_phrase` "Öbek", `pos_proverb` "Atasözü"). Also 3 chars shorter on a width-constrained chip. "Deyimsel" is a coined adjective. |
+| misc_dated | 💬 | "Modası geçmiş" | "Demode" (only if truncation bites) | Largest EN→TR growth in the chip family (13 chars vs "Dated" 5) and the longest non-`yojijukugo` chip. "Modası geçmiş" is the more precise label, so keep it unless the chips actually clip — noted for the truncation ledger, not as a defect. |
+| game_audio_trim_title | 💬 | "Oyun Sesini Kırp" | "Oyun sesini kırp" | Same toolbar-title casing question as `add_online_service_title`, but with no conflicting sibling to force it. Defensible either way; listed for consistency if the casing fix is applied. |
+
+### Clean areas (delta)
+
+**Suffix-on-placeholder — clean at all 30 contact points, zero exceptions** (see appendix). This is the finding I went looking hardest for and did not find: **no case/possessive suffix is glued to a variable placeholder anywhere in the delta.** Every `%1$s` / `%2$s` / `%d` is followed by a space and a head noun (`%1$s uygulamasını`, `%1$s modunu`, `%1$s güncellemesi`, `%d sözlük`, `%1$s sn`, `%1$s token`), a postposition (`%1$s tarafından`), a separate verb (`%1$s kaldırılsın mı`, `%1$s göstermek için`), or punctuation (`İndirme boyutu: %1$s`, `(%1$s)`). Vowel harmony cannot break for any runtime value.
+
+**Brand suffixes on fixed spans — harmonized and escaped.** `Anki\'ye` (last vowel *i* → front → `-e`; vowel-final → buffer *y*) ✓. `GitHub\'dan` ×4 (pronounced final vowel *a* → back → `-dan`; voiced final *b* → `-dan`, not `-tan`) ✓ — the standard form in Turkish tech writing. `URL\'sini` (abbreviation takes its suffix behind an apostrophe per TDK; `sunucunuzun URL'si` + acc. `-ni`) ✓. The head-noun compounds correctly take **no** apostrophe: `PlayTranslate güncellemesi`, `PlayTranslate uygulamasının / uygulamasına` ✓ (TDK: the compound marker on the second element is not an inflectional suffix).
+
+**`settings_yomitan_count_summary`** — correct. one/other (Turkish CLDR set), and the noun stays **singular after the numeral in both** ("1 sözlük içe aktarıldı" / "3 sözlük içe aktarıldı"). The two forms being *identical* is the correct Turkish outcome, not a copy-paste — and it matches the committed `yomitan_import_summary_count` precedent. ✓
+
+**The 38 `misc_*` chips — the strongest part of this delta.** All four near-synonym clusters are internally distinguishable, with four (three) separate lexemes each:
+- offensiveness: **Aşağılayıcı** / **Kırıcı** / **Kaba** / **Hakaret** ✓
+- obsolescence: **Arkaik** / **Eskimiş** / **Modası geçmiş** / **Tarihsel** ✓
+- informality: **Konuşma dili** / **Teklifsiz** / **Senli benli** / **Argo** ✓
+- honorifics: **Saygı dili** / **Tevazu dili** / **Kibar** ✓
+
+They are genuine **TDK dictionary labels**, not glosses of English — *Argo, Kaba, Mecaz, Örtmece, Yansıma, Teklifsiz, Eskimiş, Şaka yollu, Alay yollu, Çocuk dili* are all real TDK register marks. `misc_kana_only`/`misc_kanji_only` keep **kana**/**kanji** as loanwords per the glossary ✓. `misc_yojijukugo` correctly **describes** it ("Dört karakterli deyim") rather than romanizing ✓. Circumflexes are right where TDK wants them (**Resmî**, **Edebî**) — a careful-translator tell. Register and brevity match the committed `pos_*` family (single-word Turkish grammatical terms, sentence-cap); the noun/adjective mix mirrors TDK's own labels. Casing is uniformly sentence-case across all 38.
+
+**Hard constraints, both verified against the committed file:**
+- `ocr_source_label` — **mirrors `translation_source_label` exactly**. Committed: `%1$s tarafından çevrildi`. Delta: `%1$s tarafından tanındı` ✓ — identical structure, and `tanı-` ties to the app's OCR term "metin tanıma".
+- **"Captured" is one verb** — `yakala-` throughout: `settings_cell_history_summary_*` "Yakalanan cümlelerin kaydı", `history_toggle_subtitle` "Yakalanan cümleleri", `history_empty_off` "…yakaladığı cümleleri", `audio_source_game_enable_hint` "…yakalamak için", `error_capture_blocked_secure` "ekran yakalamayı", matching the committed `floating_menu_capture_screen` / "Yakalama Bölgesi". No second verb introduced ✓.
+
+**Terminology** — consistent with the committed file and the glossary: **istem** (prompt, 8/10 — see finding), **anahtar sözcük** (keyword), **Sağlayıcı** (Provider), **çeviri hizmeti** (matching the committed page title `settings_cell_translation_services` "Çeviri hizmetleri"), **kaldır/sil/temizle** correctly kept apart for Remove/Delete/Clear, **Geçmiş** (History, one noun), **kırp** + **seçim** (Trim + selection), **Oyun sesi** (reads as a noun phrase on both the pill and the section header), **LLM** kept as the Latin initialism, **güncelleme** (update) vs the committed pack **güncelleme**… — and critically, **sayaçlı** for metered (`update_dialog_metered_note`), which matches the corrected committed value in all 8 `*_metered_warning_*` strings. No `ölçülü` drift survives. **yedek** for fallback (`llm_status_low_memory_badge`) matches the committed `tr_service_offline_footer` "…yedek olarak kullanılır" ✓.
+
+**Register** — siz throughout prose ("Tekrar deneyin", "açın", "izin verin", "girin", "gözden geçirin", "…oynadığınız"); buttons and toggle titles use the file's established bare imperative ("Kaldır", "Sıfırla", "Durdur", "Kopyala", "Tekrar dene", "Modeli sil", "Oyun sesini kaydet"); subtitles are descriptive 3rd person ("saklar", "kaydeder", "verir"). **No repeat of the `yomitan_auto_update_subtitle` sen-imperative slip** from the last delta ✓.
+
+**i/İ casing — clean.** Sentence-initial dotted İ correct throughout (İzin, İndir, İndirme, İndirilen, İstem, İnternet argosu); dotless ı correct in Yalnızca, Başlatılıyor, Sıfırla, Kırıcı, Yansıma, Aşağılayıcı, Standart dışı, Modası geçmiş, Şaka yollu, Alay yollu. The one pre-uppercased string is correct ("UYARI:" ← uyarı, ı→I ✓), and the two runtime-uppercased headers spell correctly for the transform ("Gelişmiş LLM yapılandırması" → GELİŞMİŞ LLM YAPILANDIRMASI ✓, "Anahtar sözcükler" → ANAHTAR SÖZCÜKLER ✓). No dotless-I errors found by scan or read.
+
+**Truncation** — low risk. `service_llm_badge` "LLM" (3) ✓; `probe_initializing` "Başlatılıyor…" (13 = EN's 13) ✓; `floating_menu_capture_screen` "Ekranı\nYakala" — `\n` intact, 6/6 balanced across two lines, and correctly inverted to object-then-verb for Turkish ✓. Longest `misc_*` chip is "Dört karakterli deyim" (21) vs EN's "Four-character compound" (22) ✓; only `misc_dated` grows materially (💬 above).
+
+**`ör.`** is *not* a drift — the committed `hint_region_name` already uses "ör. Diyalog kutusu", and the full "Örnek:" form is reserved for the Anki `*_desc` strings that mirror EN's "Example:" ✓. Checked and dismissed.
+
+**Naturalness** — no calques found in the new prose. `audio_source_game_ready` "Yakın zamanda oynadığınız oyundan" (avoids a stiff "son oyununuzdan"), `history_empty_none` "Satırlar çevrildikçe burada görünür" (`-dikçe` is exactly right for "as they translate"), `stream_kind_prompt_message` (correct `X için Y'den farklı çalışır` comparative), `settings_ocr_use_manga_subtitle` (semicolon improves on EN's comma splice), `update_error_signature` / `_downgrade` / `_no_space` all read natively.
+
+**Verification note (not a finding):** `stream_kind_share_one_app` "Tek bir uygulamayı paylaş" / `stream_kind_share_entire_screen` "Tüm ekranı paylaş" are exempt per the review brief (AOSP SystemUI wording, deliberate) and are **not** flagged. Worth one device check nonetheless: Android 14's Turkish MediaProjection chooser may label the options "Tek bir uygulama" / "Ekranın tamamı" (noun phrases, no verb). If so, matching them exactly would strengthen the "name the option you just tapped" contract. I could not verify AOSP's `values-tr` from here, so no fix is proposed.
+
+### Suffix coverage appendix (delta) — all 30 contact points
+
+Every site in the 174 delta keys where a runtime value meets Turkish grammar. **Zero suffixes attached directly to a placeholder.**
+
+*Head noun after the placeholder (harmony resolves on the fixed noun):*
+- `floating_menu_panel_open_app` — %1$s + **uygulamasını** ✓
+- `history_empty_off` — PlayTranslate + **uygulamasının** ✓
+- `update_unknown_sources_message` — PlayTranslate + **uygulamasına** ✓
+- `update_error_wrong_package` — PlayTranslate + **güncellemesi** ✓ (compound; correctly no apostrophe)
+- `hotkey_auto_hint_title` — %1$s + **modunu** ✓ (parallel to `hotkey_auto_translation_title`)
+- `game_audio_trim_duration` — %1$s + **sn**, %2$s + **sn** ✓
+- `tr_service_status_usage_today_fmt` — %1$s + **token** ✓ (singular after a numeral — correct Turkish)
+- `settings_yomitan_count_summary` — %d + **sözlük** in both one/other ✓
+
+*Postposition:*
+- `ocr_source_label` — %1$s + **tarafından** ✓ (mirrors `translation_source_label`)
+- `llm_prompt_advisory_foreign_token` — %1$s + **bu istem tarafından** ✓ (nominative subject position)
+
+*Separate word / verb phrase — no suffix:*
+- `tr_service_remove_title_fmt` — %1$s + **kaldırılsın mı?** ✓
+- `hotkey_show_hint_title` — %1$s + **göstermek için** ✓ (bare indefinite object; harmony cannot arise)
+- `update_progress_title` — PlayTranslate + **güncelleniyor** ✓
+- `update_error_no_space` — %1$s + **gerekiyor)** ✓
+- `hotkey_auto_hint_dialog_title` — %1$s at end ✓ · `tr_service_key_tail_fmt` — %1$s at end ✓
+
+*Colon / parentheses construction:*
+- `update_dialog_size_note` — **İndirme boyutu:** %1$s ✓
+- `settings_ocr_disable_manga_msg` — **(**%1$s**)** ✓
+
+*Bare `{keyword}` literals in running prose — all followed by a space, never suffixed:*
+- `llm_prompt_fatal_missing_text` **{text}** + içermelidir ✓ · `llm_prompt_fatal_missing_strings` **{strings}** + içermelidir ✓
+- `llm_prompt_advisory_missing_count` **{N}** + eksik ✓ · `_missing_source` **{source}** / **{source_code}** + veya/eksik ✓ · `_missing_target` **{target}** / **{target_code}** + veya/eksik ✓
+
+*Fixed-span brand suffixes (harmony decidable, all correct, all `\'`-escaped):*
+- **Anki\'ye** (cd_add_to_anki, history_action_anki) ✓ · **GitHub\'dan** ×4 (update_error_incomplete / _signature / _verification / _wrong_package) ✓ · **URL\'sini** (llm_backend_base_url_custom_hint) ✓
+
+### Delta verdict
+
+**Ship after the ⚠️ set.** No 🛑, no ❌. The four Turkish-critical mechanics — suffix-on-placeholder, brand-suffix harmony, singular-noun-after-numeral plurals, i/İ casing — are clean across all 174 keys, and the `misc_*` chip family (the highest-risk group) is the best work in this delta: real TDK labels, four distinguishable clusters. The eight ⚠️ are one binding-glossary term drift (`istem` → `metin` in two subtitles), one garden-path (2 keys), one Delete/Discard verb collision (2 keys), two casing slips, two register/idiom slips in the trim editor, and one **code-side** decimal-separator bug that no locale file can fix.
+
+---
+
+## Delta review round 2 — 2026-07-14
+
+Fresh independent re-derivation of the 174 delta keys after round 1's 15 corrections. Primary target: regressions introduced by the fixes.
+
+Mechanical layer re-verified across all 174 keys: placeholder parity with EN (`%1$s`/`%2$s`/`%d`), `{keyword}` literal parity, `<xliff:g>` inner content + `id` + `example` byte-identical, every apostrophe `\'`-escaped, `\n` intact, plurals = one/other. **No 🛑.**
+
+**Suffix audit — the primary job — PASSES.** All 20 placeholder/keyword contact points re-scanned mechanically (regex: placeholder immediately followed by a letter or apostrophe). **Zero hits.** None of the 15 edits glued a suffix to a variable. The two edits that touch a placeholder-bearing string are both safe: `game_audio_trim_duration` keeps the fixed head noun (`%1$s` + **sn** + `seçili`), and `llm_prompt_fatal_missing_text`/`_strings` keep `{text}`/`{strings}` followed by a space + `içermelidir` (bare indefinite object — the only suffix-safe construction, and correct Turkish SOV). Vowel harmony cannot break anywhere in the delta.
+
+### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| game_audio_trim_use_tts, game_audio_trim_no_audio | ❌ | "Bunun yerine metin okuma kullan" / "Ses olmadan devam et" | "TTS kullan" / "Ses olmasın" | **Round 1 pushed the trim editor's primary button off-screen.** `activity_game_audio_trim.xml:80-116` is a fixed **horizontal LinearLayout** — `[TextButton use_tts][4dp][TextButton no_audio][Space weight=1][Button save]` — with `wrap_content` buttons, **no weights, no ellipsize, no wrap, no scroll**. AOSP `LinearLayout.measureHorizontal` gives the buttons their full desired widths, the `Space` absorbs the negative delta and clamps to 0, and everything past the parent edge is simply **clipped**. Modelled at 14sp/411dp (Pixel-class): EN row = **372dp** (fits, 39dp slack). TR row = **564dp** → `game_audio_trim_save` ("Seçimi kullan", 131dp) starts at **x=421dp on a 411dp screen: 0 of 131dp visible.** The user cannot confirm a trim. Round 1 did not cause this alone — `use_tts` at 31 chars (2× EN) was already over budget (pre-round-1 row = 468dp, save button 86/131dp visible: **clipped but still tappable**) — but the `no_audio` expansion (7→20 chars, +96dp) took it from *degraded* to *unusable*. Round 1's semantic objection to "Ses yok" was sound (it is this file's status-line idiom: `tr_service_status_no_internet` "İnternet yok", `audio_no_results` "Sonuç yok"); the replacement just cost 13 characters on the one row in the entire delta that cannot afford them. **"Ses olmasın"** (11 ch) keeps the fix — the optative `-sın` marks a *choice*, not an existential status, so it cannot read as "playback is broken" — at 9 chars less. **"TTS kullan"** mirrors pt-BR's already-sanctioned width exception ("Usar TTS"), and the TTS initialism is already committed in this file (`tts_no_engine_get_google` "Google TTS\'yi Edin", `tts_no_engine_open_settings` "TTS ayarlarını aç"). Result: **353dp — fits even a 360dp phone, and is narrower than English.** |
+| misc_yojijukugo | 💬 | "Dört karakterli deyim" | "Dört karakterli kalıp" | Round 1's `misc_idiomatic` "Deyimsel" → **"Deyim"** was right (real TDK label; independently re-verified free of any `pos_*` collision — `pos_expression` "İfade", `pos_phrase` "Öbek", `pos_proverb` "Atasözü", `pos_counter` "Sayma sözcüğü"), but it made `misc_idiomatic` a **substring of `misc_yojijukugo`**. The two tags co-occur on JMdict senses (a yojijukugo is routinely also `id`), and `renderMisc` joins with " · " → "**Deyim · Dört karakterli deyim**". `.distinct()` does not catch it (the strings differ), so the echo renders. EN has no echo because it says "compound", not "idiom". **kalıp** (set phrase) is the faithful rendering of "compound", is a real lexicographic term, and breaks the repetition. Cosmetic and rare — not a blocker. |
+| llm_prompt_discard_message | 💬 | "Bu istemde yaptığınız **değişiklikler** kaydedilmedi." | "Bu istemde yaptığınız **düzenlemeler** kaydedilmedi." | After round 1's sil→at fix, the discard dialog reads title "Değişiklik**ler** atılsın mı?" / message "…değişiklik**ler** kaydedilmedi." / button "Değişiklik**leri** at" — **"değişiklik" three times in one small dialog.** EN deliberately varies: *changes* / *edits* / *Discard*. "düzenleme" is already this file's word for edit (`floating_menu_edit_region` "Bölgeyi düzenle"), so this both restores EN's variation and removes the echo. No width cost — `OverlayAlert` stacks its buttons vertically (`OverlayAlert.kt:204` `orientation = VERTICAL`), so "Değişiklikleri at" (17 ch) is safe on its own full-width button. |
+
+### The 15 round-1 edits, re-derived from scratch
+
+**14 of 15 are correct and integrate cleanly.** Verified individually:
+
+- **`llm_prompt_row_translation_subtitle` / `_batch_subtitle` (metin → istem)** — correct, and it **resolved a collision rather than creating one.** "metin" is this file's word for *text*, and `llm_prompt_kw_text_desc` ("Çevrilecek metin" = EN "The text to translate") uses it that way. Before the fix, the same noun named both *prompt* and *text* inside one screen. Post-fix the glossary is airtight: **"istem" = prompt in 12/12 sites** (`Sistem istemi`, `Çeviri istemi`, `Toplu istem`, `İstem boş olamaz`, `İstem {text} içermelidir` ×2, `Bu istem çok uzun`, `Bu istem kaydedilemiyor`, `Bu istemi gözden geçirin`, `Bu istemde…`, `bu istem tarafından`, + the 2 fixed subtitles), **"metin" = text in 1/1**. Zero leaks. Both new subtitles are grammatical (`-an` and `-dığı` participles with correct genitive subjects).
+- **`llm_prompt_fatal_missing_text` / `_strings` (→ aksi takdirde)** — correct. `aksi takdirde` can only be sentence-level, so the `o olmadan` converb garden path is gone. `{text}`/`{strings}` remain unsuffixed and sit in canonical SOV object position; the em dash is kept (locale-exempt).
+- **`llm_prompt_discard_title` / `_confirm` (sil → at)** — correct, and **the `at-` / `kapat-` collision check passes.** Swept the whole file: `at-` (discard) appears at exactly two sites (lines 776, 780); `kapat-` (turn off) at ten (`overlay_turn_off_title`, `bergamot_disable_title`, `settings_ocr_disable_manga_title`, `menu_close`, `cd_close`, …). Distinct stems, distinct surface forms (**atılsın** vs **kapatılsın**), never co-resident on a screen. Better still, the fix *inherited* the file's confirm-title grammar: `X kapatılsın mı?` / `Bu kayıt silinsin mi?` / `Tüm geçmiş temizlensin mi?` / `%1$s kaldırılsın mı?` / **`Değişiklikler atılsın mı?`** — one shared "-Ilsın mı?" template signalling *confirm dialog*, five distinct verbs signalling five distinct actions. **temizle (Clear) / sil (Delete) / kaldır (Remove) / at (Discard) / kapat (Turn off) are now cleanly separated.** Plural inanimate subject + singular verb ("Değişiklikler atılsın") is correct Turkish. "Değişiklikleri at" correctly carries its object — bare "At" would read as the noun *horse*.
+- **`tr_service_status_invalid_key` / `add_online_service_title` (casing)** — both correct. `tr_service_status_invalid_key` "Geçersiz API anahtarı" now matches all four sibling status lines (sentence case). `add_online_service_title` "Çeviri hizmeti ekle" is confirmed a **MaterialToolbar title** (`activity_add_online_service.xml:21`) opened by the row `tr_service_add_online` "Çevrimiçi çeviri hizmeti ekle" (`settings_row_add.xml:36`) — same phrase, now one casing, and TR drops "Çevrimiçi" in the toolbar exactly as EN drops "Online". No ellipsis risk (19 chars on a match_parent toolbar).
+- **`game_audio_trim_title` (sentence case)** — correct, and the resulting register split is **principled, not a slip**: toolbar titles name a screen with a bare imperative ("Oyun sesini kırp", "Çeviri hizmeti ekle"), while dialog/picker titles prompt the user with siz ("OCR aracını seçin"). Both conventions are internally consistent.
+- **`game_audio_trim_duration` (→ seçili / kayıtlı)** — correct. The stative participles are right for a continuously-rendered readout, and safe in **both** render sites: `tvTrimDuration` in the editor and the sentence-audio row title in the card editor (`SentenceAnkiContentFragment.kt:292`). `Text.PT.RowTitle` (`styles.xml:228`) sets **no `maxLines` and no `ellipsize`**, so it wraps — and the TR string is 30 chars, identical to EN's 30. No truncation. The `%1$s` head-noun **sn** is intact.
+- **`error_capture_blocked_secure` (→ yakalanan uygulama)** — correct, and the **referent is right**: `ReconcilerLiveMode.kt:354-361` fires this only after a sustained all-black frame in the single-app capture path, i.e. the app *being captured* holds `FLAG_SECURE`. EN's "this app" is genuinely ambiguous; "yakalanan uygulama" resolves it and matches its sibling `error_single_app_not_fullscreen` ("yakalanan uygulama ekranı kaplamıyor") word for word. The "yakalanan … yakalamayı" root echo is the price of the committed capture glossary (`yakala-` is the one verb, per `floating_menu_capture_screen`); considered and **dismissed** — swapping to "ekran görüntüsü" to gain euphony would fracture the glossary. No change recommended.
+- **`misc_polite` (→ Nezaket dili)** — correct and an improvement. The honorific triad is now parallel — **Saygı dili / Tevazu dili / Nezaket dili** — which is what makes the three read as a set when JA sonkeigo/kenjougo/teineigo land on one word. It joins a coherent 7-member "X dili" register frame (+ Konuşma / Çocuk / Kadın / Erkek dili); all seven are distinct and each genuinely names a speech register.
+- **`misc_idiomatic` (→ Deyim)** — correct (see 💬 above for the one side effect).
+- **`misc_endearing` (→ Sevgi sözcüğü)** — correct. Note this **deviates from round 1's written suggestion** ("Sevgi sözü"); the applied form is the more standard collocation and is equally free of collisions. No width cost (chips wrap). Accepted as-is.
+
+### Clean areas (round 2)
+
+**`misc_*` — all 38 labels mutually distinct, mechanically verified.** `renderMisc` (`MiscLabels.kt:31`) calls `.distinct()`, so an accidental duplicate would silently collapse two tags into one. None do. All six near-synonym clusters remain internally separable after round 1's three edits: offensiveness (Aşağılayıcı / Kırıcı / Kaba / Hakaret / Hassas), obsolescence (Arkaik / Eskimiş / Modası geçmiş / Tarihsel), informality (Konuşma dili / Teklifsiz / Senli benli / Argo / İnternet argosu / Manga argosu), honorifics (Saygı dili / Tevazu dili / Nezaket dili / Resmî), figurative (Deyim / Mecaz / Dört karakterli deyim / Örtmece), affect (Sevgi sözcüğü / Şaka yollu / Alay yollu / Çocuk dili). The only substring overlaps are `Argo` ⊂ `İnternet argosu` / `Manga argosu` — **intentional and correct** (EN does the same), since these are specializations of slang.
+
+**Width sweep — the whole delta, not just the chips.** Every delta string referenced from a layout was checked against its container. `activity_game_audio_trim.xml`'s action bar is the **only** hard-clip site: everything else is a `match_parent` toolbar (ellipsizes, but 16-19 chars on a full-width bar), a wrapping `TextView`, an icon `FrameLayout`/`ImageView` carrying only a content description (`history_action_*`, `tr_service_delete_cd`, `cd_choose_ocr`), or the 3-char `service_llm_badge`. Round 1 checked the `misc_*` chips for truncation and declared "low risk" — that was right for the chips and wrong for the one row that matters.
+
+**Plurals.** `settings_yomitan_count_summary` is the delta's only `<plurals>`: one/other both "%d sözlük içe aktarıldı". Read at every band (0 / 1 / 3), the singular noun after the numeral is correct Turkish; the two forms being identical is the right outcome, not a copy-paste. `settings_yomitan_empty_summary` covers the zero case separately.
+
+**Register / i-İ casing / brand suffixes** — re-checked, unchanged and clean. siz throughout prose; bare imperatives on buttons and toggle titles; descriptive 3rd person on subtitles. No dotless-I errors. `Anki\'ye`, `GitHub\'dan` ×4, `URL\'sini` all harmonized and escaped; head-noun compounds (`PlayTranslate güncellemesi`, `PlayTranslate uygulamasının`) correctly take no apostrophe.
+
+**Known code defects, not re-filed** (per brief): `SentenceAnkiContentFragment.kt:294` and `GameAudioTrimActivity.kt` format seconds with `Locale.US`, so `game_audio_trim_duration` renders "2**.**4 sn seçili" where Turkish requires "2**,**4". Unfixable in `values-tr`.
+
+### Round-2 verdict
+
+**FIX FIRST** — one ❌. The Turkish trim editor's confirm button ("Seçimi kullan") is laid out entirely off-screen; shortening `game_audio_trim_use_tts` → "TTS kullan" and `game_audio_trim_no_audio` → "Ses olmasın" brings the row to 353dp (narrower than English) and restores it. Everything else round 1 touched is correct: the suffix audit passes with zero hits, the `at-`/`kapat-` verbs do not collide, and all 38 `misc_*` labels remain distinct. The two 💬 are polish.
+
+**Cross-locale escalation (not a TR finding).** The same row overflows a 411dp screen in **de (572dp), fr (524dp), ru (521dp), es (469dp)** as well as tr (564dp). Only EN (372dp) and pt-BR (336dp) fit — and pt-BR fits *because* it was measured and cut. The root cause is the layout, not the translations: a fixed horizontal `LinearLayout` of `wrap_content` buttons with no weight, ellipsize, wrap, or scroll will clip its last child in any locale that runs long. Shortening strings is a mitigation; giving the row a wrapping/`FlexboxLayout`/stacked-button treatment is the cure.
+
+## Delta review — 2026-07-25 sync (95 keys)
+
+Scope: the 89 keys `scripts/l10n_diff.py` reported MISSING and the 6 it reported
+MODIFIED against the `l10n-sync` baseline (`54809b6c`) — the camera tool, the file-import
+tool, the slow-OCR rescue prompt, the PaddleOCR accurate/fast tier split, the manual
+update check, the History capture + live-session cards, the accessibility-stuck alert,
+the audio-recording row, and the capture standby state. Two orphans
+(`settings_footer_version`, `settings_ocr_footer`) were deleted.
+
+Two of the six MODIFIED keys — `capture_lifecycle_on_subtitle` and
+`capture_lifecycle_off_subtitle` — were already carrying the current English meaning in
+every locale; they flag only because the baseline tag has not advanced since 2026-07-14.
+No change was needed. The other four (`game_screen_controls_title`,
+`settings_ocr_use_manga_subtitle`, `yomitan_page_description`, `yomitan_importing_message`)
+were genuinely stale and were re-translated.
+
+Mechanical layer verified programmatically over the delta: every translatable EN key
+present and no extras; placeholder multisets identical to EN; all `<xliff:g>` spans
+byte-identical to EN; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped
+quotes; `<plurals>` categories exactly one/other. `./gradlew :app:processDebugResources`
+is green. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | was | now | why |
+|---|---|---|---|---|
+| `settings_ocr_note_mlkit` | ⚠️ | "Metni yoğun ekranlarda bile hızlı" | "Metni yoğun ekranlarda bile yavaşlamaz" | The English comment forbids reusing the literal Fast tier label; the first pass reused «hızlı», the same word as `ocr_label_paddle_fast`, so the two rows read as the same tier sitting side by side in one list. |
+
+### Clean areas (delta) — checked, no findings
+
+**No suffix is attached to any placeholder** anywhere in the delta — vowel harmony is never guessed. `settings_ocr_footer_guidance` uses a free-standing head word (“`%1$s`” etiketli motor), `image_import_no_text` and `camera_snapshot_no_text` suffix the head noun instead (`%1$s` metni algılanmadı, mirroring the committed `status_no_text`), `settings_support_check_updates_subtitle` uses a colon frame, and `update_none_message` leaves both spans bare. i/ı are spelled for runtime uppercasing (`capture_show_on_screen` → EKRANDA GÖSTER carries no dotted-i hazard). Both plural categories take the singular noun after the numeral, which is correct Turkish, matching `yomitan_import_summary_count`. **motor** for engine matches Android's Turkish for a pluggable engine and stays clear of **araç** (tool) and **model** — all three meet in `settings_ocr_delete_camera_import_note`. anlık görüntü for the camera freeze-frame stays distinct from ekran görüntüsü (`anki_group_screenshot`). `hotkey_capture_screen_dialog_title` (Ekranı Yakala) matches `floating_menu_capture_screen`'s wording. siz-level imperatives throughout.
+
+**Render constraints read, not guessed.** `capture_show_on_screen` renders through
+`Text.PT.GroupHeader` (`textAllCaps`, `letterSpacing` 0.12) at 9sp in
+`section_target.xml`, but the view is `wrap_content` in a row whose sibling label carries
+`layout_weight="1"` — the label squeezes, this button never clips, so no accuracy was
+traded for brevity. `capture_sliver_expand_hint` is `isSingleLine` but sits `WRAP` and
+centred in a screen-wide sheet strip. `camera_region_remove` measures itself
+`UNSPECIFIED` before placement (`CameraRegionUi`), so the pill grows to its text.
+`image_import_no_text` / `camera_snapshot_no_text` locate the tappable language span by
+the invisible FSI/PDI sentinels `markNoTextLanguage` injects, not by substring search, so
+word order and a tight prefix are both safe.
+
+### Verdict
+
+**PASS.** One ⚠️ found and fixed, no ❌.
+
+## Delta review 2026-08-04 (8 keys: one-tap card toasts, first-field guard, hide-translations toggle, waveform zoom hint)
+
+Scope: the eight keys added since the 2026-07-25 sync — `card_words_in_sentence`,
+`anki_added_sentence_success`, `anki_added_word_success`, `game_audio_zoom_hint`,
+`anki_first_field_unmapped`, `anki_first_field_empty`,
+`history_hide_translations_toggle_title`, `history_hide_translations_toggle_subtitle`.
+Reviewed independently of the translator, against `values/strings.xml` and its
+per-string comments, plus the surrounding Turkish for terminology and register.
+
+Mechanical layer verified programmatically over the eight keys: each name present
+exactly once and matching EN; placeholder multisets identical (`%1$s` in the two
+first-field strings, none elsewhere); every `<xliff:g>` span byte-identical to EN
+including `id` and `example` (`brand_anki`/`Anki`, `field_name`/`Key`); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; the “ ” pairs in both first-field strings
+preserved 1:1; every apostrophe escaped (`Anki\'ye` ×2, `Anki\'nin`) with no raw `'`
+or `"` outside markup; brand name untranslated and untouched inside its span.
+**No 🛑 build-breaking issues.**
+
+### Findings (delta)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| `game_audio_zoom_hint` | ⚠️ | "Daha fazla veya daha az ses görmek için iki parmağınızla sıkıştırın" | "Daha fazla veya daha az ses görmek için parmaklarınızı yaklaştırıp uzaklaştırın" | **sıkıştır-** is not how Android speaks about pinch in Turkish (Google's TR describes the finger movement — *parmaklarınızı yaklaştırın / uzaklaştırın* — rather than naming the gesture), and it re-opens the misreading the translator worked to close: **ses sıkıştırma** is the standard Turkish term for *audio compression*, so a caption that already contains «ses» and ends in «sıkıştırın» offers "compress the audio" as a live parse. The suggestion also restores EN's two-way gesture ("more **or less**"), which a bare *sıkıştırın* (squeeze inward) drops. Length 79 vs 67 — still inside the shipped band for this caption (ru 68, de 82). |
+| `anki_first_field_unmapped` | 💬 | "Anki\'nin notu tanımlayabilmesi için “%1$s” alanına bir değer eşleyin." | "Anki\'nin notu tanıması için “%1$s” alanına bir değer eşleyin." | This is the one string in the delta with a hard render budget: it is a `Toast.LENGTH_LONG` (`AnkiSendDispatch.kt:218`) and Android 12+ clamps toasts to two lines, which is why EN is deliberately terse. With the `example` value it is 68 chars — the longest of all twelve locales (pt-BR 66, es 64, de 62, EN 51) — and `%1$s` is a user-defined field name that can be far longer than "Key". Dropping the ability suffix (`tanıması` for `tanımlayabilmesi`) buys 8 chars with no loss of meaning. Optional: the current text is only 2 chars over pt-BR, which shipped. |
+| `anki_first_field_empty` | 💬 | "…Anki, notu tanımlamak için ilk alanı kullanır; bu nedenle **bu alanın** her kartta bir değeri olmalıdır." | "…Anki, notu tanımlamak için ilk alanı kullanır; bu nedenle her kartta bir değeri olmalıdır." | The sentence already opens with «Bu kartta»; «bu nedenle bu alanın» stacks two more demonstratives into one clause. Dropping «bu alanın» leaves `değeri` bound to «ilk alanı» — the only candidate antecedent — so nothing becomes ambiguous, and the alert reads less legalistic. Pure polish; the current text is correct. |
+
+### Clean areas (delta) — checked, no findings
+
+**`card_words_in_sentence` — the dotted-i claim holds, character by character.**
+"Cümlede geçen sözcükler" is `C ü m l e d e / g e ç e n / s ö z c ü k l e r`: no `i`,
+no `ı`, and the three non-ASCII letters it does carry (ü, ç, ö) case identically under
+Turkish and locale-blind rules, so the CSS produces **CÜMLEDE GEÇEN SÖZCÜKLER** either
+way. The hazard is real, not theoretical: the header is emitted into
+`<div class="gl-section">` (`PtNoteBuilder.kt:138`) and both stylers give that class
+`text-transform:uppercase` (`PtCardTemplates.kt:132`, `AnkiHtmlStylers.kt:164`), with
+no Kotlin-side uppercasing anywhere (asserted in `SentenceAnkiHtmlBuilderTest.kt:683`).
+The obvious sibling-shaped rendering — *Cümledeki sözcükler*, patterned on
+`anki_group_words_count` "Karttaki sözcükler" — would have come out **CÜMLEDEKI**, so
+the departure from the `-deki` pattern is the correct call, not drift. It also costs
+nothing in naturalness: *cümlede geçen* is ordinary Turkish for "occurring in the
+sentence" and reads better as a card header than the flat locative would. Worth noting
+that `anki_group_words_count` is an in-app Compose label, not card HTML, so it is under
+no such constraint and the two strings are free to diverge.
+
+**One-tap toasts.** `anki_added_sentence_success` / `anki_added_word_success` keep the
+committed toast frame from `anki_added_no_audio` (`Anki\'ye eklendi`) and simply front
+the card shape, exactly as EN does. The shape names are the file's own:
+**Cümle kartı** / **Sözcük kartı** reuse `anki_mode_sentence` (Cümle) and
+`anki_mode_word` (Sözcük) verbatim, so the toast names the silently-applied mode in the
+same words the picker uses — which is the whole point of these two strings. Both land at
+27 chars, identical to EN, so the two-line toast clamp is not in play. **sözcük** (never
+*kelime*) is consistent with `section_words`, `anki_group_words_count` and
+`anki_words_helper`.
+
+**"not" for Anki's *note* — correct and consistently applied.** *Not* is Anki's and
+AnkiDroid's own Turkish term for a note, so a user who reads the toast and then opens
+AnkiDroid sees the same word. The generic-Turkish ambiguity (grade / memo) is defused by
+grammar in both strings: *Anki* is the genitive subject in `anki_first_field_unmapped`
+("**Anki\'nin** notu tanımlayabilmesi için") and the sentence subject in
+`anki_first_field_empty` ("**Anki**, notu tanımlamak için…"), so *not* never appears
+un-anchored. Both use the identical accusative *notu*. The apparent split with the app's
+**kart türü** (`anki_card_type_*`, `anki_field_mapping_unconfigured`) is inherited from
+English, which likewise says "card type" in the picker and "note" only here — TR mirrors
+the source rather than inventing a divergence.
+
+**tanımla- for "identify"** was checked rather than assumed: *tanımlamak* carries the
+"identify" sense in Turkish technical writing (whence **tanımlayıcı** = identifier), so
+"Anki\'nin notu tanımlayabilmesi" is not the "define the note" misreading it might look
+like at first glance. Left as-is. Likewise **eşle-** for *map* matches the file's
+established `anki_card_type_edit_mapping_row_label` ("Alan eşlemesini düzenle").
+
+**Surfaces read before judging length.** `anki_first_field_unmapped` is a toast
+(clamped — see the finding); `anki_first_field_empty` is the body of an
+`AnkiSendResult.Failed` alert (`AnkiSendDispatch.kt:270`, `:303`), where 127 chars is
+comfortably fine and the fuller explanation is appropriate. `game_audio_zoom_hint` is a
+wrapping caption, so its 67 chars are a wording question, not a truncation one.
+
+**History toggle — register matches the file's actual split.**
+`history_hide_translations_toggle_title` "Çevirileri gizle" uses the bare-stem verbal
+title that every sibling toggle uses (`history_toggle_title` "Metin geçmişini tut",
+`history_capture_image_toggle_title` "Yakalama görüntülerini kaydet",
+`anki_game_audio_row_title` "Oyun sesini kaydet"), so it is consistent, not an
+informal-imperative slip. The subtitle's two halves are deliberately different moods and
+both are right: descriptive 3rd-person **gösterir** for what the setting does, matching
+`history_toggle_subtitle` (kaydeder) and `history_capture_image_toggle_subtitle`
+(saklar); polite siz **dokunun** for the instruction, matching `anki_words_helper`
+("bir sözcüğe dokunun") and `overlay_icon_gesture_drag`. Terminology is on-file:
+**satır** for row (`history_empty_none`, `history_clear_confirm_message`), **yakalanan
+metin** carrying over `history_toggle_subtitle`'s *Yakalanan cümleleri*. The cataphoric
+possessive ("Çevirisini görmek için bir satıra dokunun") is standard Turkish UI phrasing
+— purpose clause first, referent after — not a dangling reference. EN's promise that
+nothing is lost survives intact, and at 77 chars it sits mid-pack (fr 78, ru 78, de 87).
+
+**`game_audio_zoom_hint`'s "görmek" is the right instinct and the suggested fix keeps
+it.** Without it, "daha fazla veya daha az ses" reads as *more or less volume*, which is
+the one wrong idea this caption must not plant; *ses görmek* is mildly odd literally, but
+EN's "show more or less audio" is equally odd literally, and the odd reading here is
+harmless while the volume reading is not. Only the gesture verb is at issue.
+**parmağınızla / parmaklarınızı** are correctly siz-level possessive.
+
+**Out of scope, flagged not filed:** the same card CSS that uppercases
+`card_words_in_sentence` also uppercases the POS headers (`gl-pos-h`,
+`AnkiHtmlStylers.kt:156`/`PtCardTemplates.kt:126`), and production passes
+`Context::localizePos` into the builder — so `pos_noun` "İsim" and `pos_verb` "Fiil"
+would render **İSIM** and **FIIL** under the same locale-blind rule that this delta was
+careful about. That is a pre-existing condition of keys outside these eight (and the
+export-vs-preview path was not traced here), so it is recorded, not filed as a finding
+against this delta.
+
+### Suffix coverage appendix — the eight keys
+
+Every suffix contact point, with real runtime values substituted. **No suffix in this
+delta attaches to a free-form placeholder.**
+
+| key | contact point | resolution |
+|---|---|---|
+| `card_words_in_sentence` | none (no placeholder) | Locative `Cümle+de` on a fixed noun. Front-unrounded harmony from *e* → `-de`, unvoiced-consonant rule not triggered. ✓ |
+| `anki_added_sentence_success` | `</xliff:g>\'ye` | Dative on the **brand**, whose value is the literal string "Anki" and never runtime-variable, so harmony is knowable. Final vowel *i* (front, unrounded) → `-e`; vowel-final stem → buffer *y*: **Anki\'ye**. Suffix sits outside the span; span inner text untouched. Matches `anki_added_no_audio`, `history_action_anki`. ✓ |
+| `anki_added_word_success` | `</xliff:g>\'ye` | Identical to the above. ✓ |
+| `game_audio_zoom_hint` | none (no placeholder) | `parmak+ınız+la` — 2pl possessive + instrumental on a fixed noun, back harmony throughout. ✓ |
+| `anki_first_field_unmapped` | `%1$s` → `” alanına` | The placeholder is closed by `”` and every suffix lands on the head noun **alan**: `alan + ı + na` → **alanına** (back harmony from *a*; possessive *-ı* then dative *-na*). Substituting real field names changes nothing: “Key” alanına ✓, “Kelime” alanına ✓, “Word Audio” alanına ✓, “語彙” alanına ✓. |
+| `anki_first_field_unmapped` | `</xliff:g>\'nin` | Genitive on the brand: vowel-final → *-nin*, front-unrounded harmony from *i* → **Anki\'nin**. ✓ |
+| `anki_first_field_empty` | `%1$s` → `” alanı boş` | Same head-noun strategy in the nominative: `alan + ı` → **alanı**. “Key” alanı boş ✓, “Kelime” alanı boş ✓. Later in the same string `ilk alanı` (accusative) and `bu alanın … değeri` (genitive + 3sg possessive) are both on fixed nouns. ✓ |
+| `history_hide_translations_toggle_title` | none | `Çeviri+ler+i` accusative plural on a fixed noun, front harmony. ✓ |
+| `history_hide_translations_toggle_subtitle` | none | `metn+i` (accusative with regular vowel drop — *metin* → *metni*, correct), `satır+a` (dative, back harmony), `Çeviri+si+ni` (3sg possessive + accusative). ✓ |
+
+### Verdict
+
+**PASS with one ⚠️.** The mechanical layer is clean. The dotted-i avoidance in
+`card_words_in_sentence` is verified and well-judged, the brand suffixes are correctly
+harmonized and escaped, no suffix touches a free-form placeholder anywhere in the delta,
+and the register split across the History toggle matches the file's own precedent. The
+single ⚠️ is `game_audio_zoom_hint`'s pinch verb; the two 💬 are optional polish.
+
+## Delta review 2026-08-19 (25 keys: language wildcard, Bergamot device gate, dictionary-styling toggle, Source Language row, manual dictionary-update flow, debug angle rollback)
+
+Mechanical layer verified programmatically across all 12 locales: all 25 delta names
+present, no extras, no duplicate `name=`; every `%n$s` present and matching EN; all
+`<xliff:g>` spans byte-identical to EN (`id`, `example`, inner placeholder); `<b>`, `\n`,
+`\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+### Findings (delta) — all applied
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| yomitan_update_repair_message | 💬 | «… uygulamanın bu sürümüyle **çalışmak için** yeniden indirilmelidir.» | «… uygulamanın bu sürümüyle **çalışabilmesi için** yeniden indirilmelidir.» | The bare -mak için infinitive requires the purpose clause to share the main clause's subject, which technically holds (veriler … çalışmak) but reads as a stated intention rather than a capability. EN is "**to work with** this version", i.e. so that it *can* work; the -Abilme + possessive gerund is the idiomatic Turkish for that, and it also removes the momentary garden-path where «uygulamanın» looks like the subject of çalışmak. |
+
+### Clean areas (delta) — checked, no findings
+
+**No suffix is ever attached to a placeholder.** This is the file's hard Turkish rule, and
+the delta respects it everywhere: «%1$s sözlüğü», «%1$s sözlüğünün verileri», «%1$s sözlüğü
+en son sürümde», «%1$s sözlüğü artık güncel» all hang the case and possessive marking on
+the head noun *sözlük*, whose vowel harmony is known. «%2$s sürümüne» likewise suffixes
+*sürüm*, not the revision string. A dictionary title can be «JMdict», «Jitendex.org» or
+«JMnedict [2026-08-13]» — none of those has predictable harmony, and none has to.
+
+**i / İ casing.** «Klasik», «İndir»-family forms and «denetle» are spelled with the correct
+dotted/dotless letters; nothing in the delta is pre-uppercased, so the runtime uppercasing
+in label views cannot produce an İSIM/FIIL-class defect here.
+
+**Update vocabulary reused from the app updater.** «Güncelleme mevcut» and «Güncellemeler
+denetlenemedi» are byte-identical to `update_dialog_title` / `update_check_failed_title`,
+and the whole family stays on **denetle** rather than mixing in kontrol et;
+`yomitan_update_check_failed_message` follows `yomitan_download_error_message`'s
+«Bağlantınızı kontrol edip tekrar deneyin»; `yomitan_update_scan_active_message` closes
+with `anki_models_unavailable`'s «Birazdan tekrar deneyin»; «Güncellemeler denetleniyor»
+matches `update_progress_verifying` «Doğrulanıyor…»; «arka planda» matches
+`onboarding_notif_row_silent_sub`.
+
+**«Kaynak dil» is the file's own term**, from `llm_prompt_kw_source_desc` («Kaynak dilin
+İngilizce adı»), and distinct from «Oyun Dili» (`pack_upgrade_label_source`).
+
+**Register.** siz-level imperatives throughout («deneyin», «kapatın», «kontrol edip»); the
+row and button labels take the short imperative/noun form («Güncelle», «Yeniden indir»,
+«Güncellemeleri denetle»), matching the file.
+
+**«artık güncel» carries EN's "now"**, keeping the success alert distinct from the
+no-update alert.
+
+### Verdict
+
+**PASS after fix.** One 💬, no ⚠️/❌/🛑. The usual Turkish failure mode in this app — a
+case suffix landing on a runtime value — does not occur anywhere in the delta.
+
+### Delta review round 2 — 2026-08-19 (`lang_pick_any` read against the render code)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| lang_pick_any | ⚠️ | «Tüm diller» | «Herhangi bir dil» | The pinned wildcard row shared its root with `lang_section_all`: «Tüm diller» sat two rows above a header reading «Tümü», so it read as a shortcut into the full list rather than "no language restriction". «Herhangi bir dil» is the ordinary Turkish wildcard and is lexically distinct in both slots. No suffix contact with any placeholder, so the change is free of harmony risk. |
+
+**Why round 1 missed it.** The string was reviewed against its English source and its two
+slots in isolation. It only fails when read against its *neighbours on screen*:
+`LanguageSetupActivity` passes the Any row as `leadingRows` (:282) and heads the list
+below it with `lang_section_suggested` then `lang_section_all` (:544, :550), so the pinned
+row and the "All" header are two rows apart. This is the doc's own lesson — read the render
+code, not the string — arriving from the other direction: not a truncation constraint, but
+an adjacency one.
+
+**Cross-locale shape.** Twelve independent renderings split into two camps: five chose an
+*any*-flavoured word (zh-rCN 任意语言, ru «Любой язык», ar «أي لغة», es «Cualquier idioma»,
+pt-BR «Qualquer idioma») and seven an *all*-flavoured one. Only the *all* camp can collide,
+and only where the pinned row repeats the header's own word — ja, tr, de and fr, now fixed.
+ko (모든 언어 / 전체), th (ทุกภาษา / ทั้งหมด) and vi (Mọi ngôn ngữ / Tất cả) use lexically
+distinct words in the two slots and were left alone. The fix also moves these four closer
+to the English, which deliberately says "Any" rather than "All" (and was itself renamed
+from "None" — the row means *no restriction*, not *unset*, and not *the whole list*).
+
+### Verdict (revised after round 2)
+
+**PASS after fixes.** One ⚠️ (round 2) and one 💬 (round 1). The Turkish-specific hazard —
+a case suffix landing on a runtime value — remains absent from the whole delta.
+
+## Delta review 2026-09-08 (7 keys: oversize-card guard + two debug rows)
+
+Mechanical layer verified programmatically across all 12 locales: all 7 delta names
+present, no extras, no duplicate `name=`; every `<xliff:g>` span byte-identical to EN
+(`id`, `example`, inner brand text); no `%n$s` in this delta; `<b>`, `\n`, `\{ \}`,
+`&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; no em/en dashes. Analyzer reports
+`missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. No
+`<plurals>` in this delta. **No 🛑 build-breaking issues.**
+
+**Render code read before reviewing** (per the 2026-07-14 lesson): the prompt is an
+`OverlayAlert` capped at 280 dp with **full-width, vertically stacked** buttons
+(`OverlayAlert.kt` :306-341) and the debug rows are `settings_row_switch.xml` →
+`Text.PT.RowTitle`, 15 sp, **no `maxLines`, no `ellipsize`**. Nothing in this delta
+clips; long labels wrap. Accuracy was preferred over brevity throughout.
+
+**Source-side finding (EN, applies to all 12 locales) — ❌ fixed in this pass.** The
+comment on `anki_card_too_large_title` claimed the title serves "the oversize-card prompt
+AND the too-large failure alert". It does not: every failure path shows
+`anki_card_too_large_failed` either under `anki_send_failed_title` (`AnkiUiHelper.kt`
+:1060, `TranslationResultFragment.kt` :967, `WordDetailBinder.kt` :691) or with **no title
+at all** as a `LENGTH_LONG` Toast (`AnkiOneTapDispatch.kt` :162,
+`TranslationResultFragment.kt` :1082). The failure string therefore has to name its own
+subject, and was reviewed on that basis in every locale. The EN comment now says so.
+
+### Findings (delta)
+
+One ⚠️, applied.
+
+| name | severity | current (was) | applied | note |
+|---|---|---|---|---|
+| settings_debug_force_mmap_weights | ⚠️ | 「mmap ile ağırlık yüklemeyi zorla…」 | 「Ağırlık yüklemeyi mmap ile zorla…」 | The row title opened on a lowercase Latin literal. Capitalising it to *Mmap* would be wrong — it is a C function name — so the fix reorders instead, putting the object first and leaving mmap mid-sentence where its case is unremarkable. Turkish word order (object · instrument · verb) is unchanged and idiomatic. |
+
+### Clean areas (delta) — checked, no findings
+
+**No suffix is attached to a placeholder.** Both AnkiDroid references take the head-noun
+construction — «AnkiDroid uygulamasına gönderilemeyecek», «AnkiDroid uygulamasının kabul
+edemeyeceği» — which is exactly what the committed `anki_send_failed_message` already does
+(«AnkiDroid uygulamasının çalıştığından emin olun»). The one brand suffix in the delta is
+on the fixed name in the toast and uses the escaped apostrophe: «Anki\'ye eklendi», byte-
+identical to `anki_added_no_audio`'s opening.
+
+**Passive confirm question.** «…kaydedilsin mi?» matches `llm_prompt_discard_title`
+«Değişiklikler atılsın mı?» and `bergamot_disable_title` «Firefox Translations kapatılsın
+mı?» — the file's established shape for a yes/no dialog.
+
+**Terminology.** kart (card), tanım (definitions), sözlük (dictionary), «düz metin» for
+plain text — the last from `yomitan_styling_subtitle`'s «her zaman düz metin kullanmak
+için». sözcük and cümle in the advice match `anki_mode_word` «Sözcük» and
+`anki_mode_sentence` «Cümle». «cihaz üzerindeki» for on-device comes from
+`llm_prompt_row_system_subtitle` «Bulut ve cihaz üzerindeki LLM çevirmenlerine».
+
+**Casing.** No word is pre-uppercased; ı/i are spelled correctly throughout (kısaltmayı,
+sığsın, Ağırlık, Kısa metinler). sadeleştir- is one stem across all four oversize strings.
+
+**Register.** siz-level imperatives in the advice («…deneyin»), matching
+`anki_send_failed_message` «…emin olun, ardından tekrar deneyin».
+
+### Verdict
+
+**PASS after fix.** One ⚠️, corrected. The locale's two standing hazards — suffixes on
+placeholders and i/İ casing — were both checked string by string and neither is
+present.
+
+## Delta review 2026-09-23 (6 keys: the results headers' ⋯ overflow menu)
+
+Mechanical layer verified programmatically across all 12 locales: all 6 delta names
+present once, no extras; no `<xliff:g>`, placeholders, `<plurals>`, quotes or
+apostrophes, and no em/en dashes in this delta. The two orphans `cd_copy_original` /
+`cd_copy_translation` (the headers' copy buttons, removed with this change) are deleted.
+For this delta's keys the analyzer reports nothing missing and nothing orphaned; the
+remaining `missing=14 orphan=1` belong to other, not-yet-synced features (icon gestures,
+edge indicator, the Anki words helper). `:app:processDebugResources` BUILD SUCCESSFUL.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.** The four `header_action_*` names, like the reused
+`cd_add_to_anki`, `cd_text_size` and `capture_show_on_screen`, are the rows of
+`ActionOverflowMenu`: 15 sp medium, `maxLines=1` + `ellipsize=end`, in a card 160 to 280
+dp wide less 72 dp of icon and padding, so up to about 208 dp of label. `cd_more_actions`
+is spoken only (the ⋯ button's description and the menu's pane title);
+`cd_toggle_inline_pinyin` is the furigana button's spoken name when the source is Chinese
+(it replaces a hardcoded English "Toggle inline pinyin").
+
+### Findings (delta)
+
+None.
+
+### Clean areas (delta) — checked, no findings
+
+**Siblings, one term swapped.** «Satır içi pinyini aç/kapat» mirrors «Satır içi
+furiganayı aç/kapat», the accusative -i by harmony on pinyin (no placeholder to suffix).
+
+**The ⋯.** «Diğer işlemler»: işlem is the file's word (`tr_service_remove_message` «Bu
+işlem…»).
+
+**Row names.** «Sesli oku» and «Metni düzenle» keep the plain-imperative button form of
+`label_edit` «Düzenle» and `cd_read_original_aloud`. No pre-uppercased ı/i.
+
+### Verdict
+
+**PASS.** Every delta string reuses the locale's own committed wording for its sibling
+(the furigana toggle, the read-aloud and edit descriptions, the parked sheet's "more"
+hint), so the menu reads in the same voice as the buttons it replaces.
+
+## Delta review 2026-09-29 (39 keys + 1 orphan: floating-icon gestures and the no-menu alert, "Change game language", the translation error pill and its discard confirm, the hold failure pill, the Overlay card rows, the Anki words helper)
+
+Mechanical layer verified programmatically across all 12 locales: all 39 delta names
+present once, the orphan `anki_words_helper` deleted (its replacement
+`anki_words_helper_hide` was translated afresh, as its commit asked), no duplicate `name=`;
+every `<xliff:g>` span byte-identical to EN (`id`, `example`, inner text); `%1$s`/`%2$s`
+parity; `<b>`, `\n`, `\{ \}`, `&lt;/&gt;/&amp;` counts match; no unescaped `'`/`"`; each file
+parses. Analyzer reports `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD
+SUCCESSFUL. No `<plurals>` in this delta. `settings_filter_furigana_title` (already
+translated) was moved from its old Debug position to its English position between the new
+Overlay rows, text unchanged, so the file stays diffable against English. **No 🛑
+build-breaking issues.**
+
+**Render code read before reviewing.**
+- `icon_gesture_*` are bold 15 sp in the Settings cell's `TableLayout`; only the action
+  column shrinks (`shrinkColumns="2"`), so the longest gesture word sets the width left for
+  all three action titles. They are also the picker page's section headers
+  (`Text.PT.GroupHeader`, ALL CAPS, 11 sp). Action titles wrap freely in the cell and in the
+  picker's `settings_row_choice` rows (no `maxLines`).
+- `icon_action_translating_from` and `hold_translation_failed` are drawn by
+  `OverlayUiController.showNoTextPill` as ONE line of `Canvas.drawText` in a window sized to
+  the text: no wrapping, so both must stay short. `%1$s` is `SourceLangId.displayName()`,
+  the language name in the UI locale with its first letter capitalized.
+- The error pill (`TranslationErrorPills`) is a 14 sp TextView, `maxLines=2`, ellipsized,
+  spanning most of the display width; every message but the connection one leads with the
+  service name.
+- The no-menu alert and the discard confirm are `OverlayAlert`s with full-width stacked
+  buttons (the confirm in the danger colour, then `btn_cancel`).
+- `anki_words_helper_hide`'s `%1$s` becomes an ImageSpan of the eye glyph
+  (`inlineIconString`).
+- The Overlay card on screen: Overlay Mode, Minimum text size (title, subtitle, warning,
+  value + slider, example), Filter furigana (Japanese only), Widen vertical text, Edge
+  indicator.
+
+**Source-side observations (EN; reported, not changed):**
+1. `settings_overlay_min_text_warning` ends without a period after two sentences; every
+   locale mirrors that.
+2. The comments on `icon_action_translating_from` and `hold_translation_failed` do not say
+   the pill is a single canvas-drawn line that never wraps. A translator who writes a long
+   sentence there gets it drawn past the pill's edge.
+3. The error-pill banner asks every message to start with the service name. In an RTL
+   locale that makes the first strong character Latin, so the pill's TextView resolves an
+   LTR paragraph (see the ar report).
+4. `icon_gesture_*` asks for "short imperative verbs". Several locales label gestures with
+   an infinitive or a noun instead (see each report); the binding constraint is the width
+   one above.
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| translation_error_discard_card_message | 💬 | …bu kartı kaybedersiniz ve kartı yeni bir… | …bu kartı kaybedersiniz ve onu yeni bir… | kartı twice. |
+
+### Clean areas (delta) — checked, no findings
+
+**No suffix on a placeholder.** The pill is «Oyun dili: %1$s» (colon); service names end
+at a colon; the helper says «%1$s simgesine», so the suffix sits on the head noun.
+
+**Gestures.** Verbal nouns (Sürükleme / Basılı tutma / Dokunma), so the alert can say
+«basılı tutma veya dokunma hareketine atayın». The ALL CAPS headers rely on Android's
+locale-aware uppercasing (BASILI TUTMA).
+
+**Terms.** Reused: Hızlı menü, Oyun dilini değiştir, Ekranı yakala, otomatik çeviri,
+Çevrilemedi, geçersiz API anahtarı, kota doldu, bakiye, DENEYSEL., atılsın mı?, Yer
+paylaşımı. siz register.
+
+### Verdict (round 1)
+
+1 💬, to apply.
+
+### Round 2 (2026-09-29), after applying round 1
+
+Round-1 fix present: «…bu kartı kaybedersiniz ve onu yeni bir…». Mechanical layer re-run after the fixes: 0 problems; analyzer `missing=0 orphan=0 modified=0`; `:app:processDebugResources` BUILD SUCCESSFUL. Every screen of the delta was re-read in full, not only the changed keys.
+
+No new findings.
+
+**Verdict (round 2):** **PASS.**
+
+## Delta review 2026-10-07 (41 keys + 2 orphans: bug-report email, Support rows, kill notice, Fix disappearing icon page)
+
+Mechanical layer verified: `python3 PKT/../tools/mech_check.py PKT/../keys.txt tr` reports
+`checked 1 locales x 41 keys; problems: 0` (every key present; `<xliff:g>` spans and
+`%1$s` byte-identical to EN; `\n` count matches in the email body; no unescaped `'`/`"`, no
+stray tags, no double spaces). `python3 scripts/l10n_diff.py --locale
+app/src/main/res/values-tr/strings.xml` reports `values-tr missing=0 orphan=0 modified=0`,
+"in sync". The two orphans (`settings_debug_export_logs_title`, `_subtitle`) are gone,
+`settings_debug_export_logs_subject` stays; no duplicate `name=`; the file parses.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `MainActivity.maybeShowKillNotice`: the message is one of the three bodies, plus `' '` and
+  `kill_notice_restored` only when `activeOverlayUi?.hasAnyFloatingIcon` (an icon is on
+  screen). It is an `OverlayAlert` with See options (accent) above Not now.
+- `settings_row_hub.xml`: the summary is `singleLine` + `ellipsize="end"`, titles wrap.
+  `KeepRunningActivity` puts the same two Report a bug strings in a wrapping
+  `settings_row_link`, and sets each card's title and line with `setText` (no format
+  arguments; the app-name span renders its literal text). Xiaomi's battery card reuses
+  `keep_running_battery_line`; the stuck accessibility card pairs `a11y_stuck_title` with
+  the restart line.
+- `LogExporter.emailFiles`: when no email app resolves, it shows the LENGTH_LONG toast
+  `email_no_app_fallback` (with `SUPPORT_EMAIL`), then `shareFiles`, whose chooser is
+  `share_chooser_share_logs` («Günlükleri paylaş»).
+
+### Findings (delta, round 1)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| kill_notice_restored | ⚠️ | Şu anda yeniden açık. | Simge şu anda yeniden ekranda. | Turkish drops the subject, and a dropped subject continues the previous one. After `kill_notice_body_other` ends «Bazı telefonlar bunu pil tasarrufu için yapar.», this reads as "they (the phones) are on again"; English's singular "It" rules the phones out, and Turkish has no such cue. Naming the icon, which is what the code checks, reads right after all three bodies («Uygulama şu anda yeniden açık.» would also work). |
+| settings_support_keep_running_subtitle | 💬 | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulaması kapatılmasın | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> kapatılmasın | The jussive reads naturally as a subtitle: Turkish settings state a wanted state this way («… açık kalsın»), and it keeps the mechanism (being closed). But the negation comes at the end of the verb, and that is the part a 360 dp phone clips: at 216 dp the row shows «PlayTranslate uygulaması kapatılm…». A bare brand needs no head noun in the nominative (as in «PlayTranslate açıkken durduruldu»); at 157 dp it fits every width. |
+| keep_running_battery_line | 💬 | Bu ayar yapılmazsa telefonunuz, kullanırken <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasını kapatabilir. | Bu ayar yapılmazsa telefonunuz, siz kullanırken <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasını kapatabilir. | A -ken clause with no subject of its own takes the main clause's subject, so «telefonunuz, kullanırken» says the phone is the one using it (the textbook converb slip). Readers recover the meaning; «siz» removes the slip. This line also sits under the Xiaomi battery card. |
+| keep_running_oppo_auto_launch_line, keep_running_vivo_autostart_line | 💬 | Bunlara izin verilmezse telefon, <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasından çıktıktan kısa süre sonra uygulamayı kapatır. | Bunlara izin verilmezse telefon, siz <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasından çıktıktan kısa süre sonra uygulamayı kapatır. | The same slip: «telefon, … uygulamasından çıktıktan» means after the phone leaves the app. Keep the two lines byte-identical. |
+| keep_running_xiaomi_lock_line | 💬 | Son uygulamaları açın, <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> kartını basılı tutun ve kilide dokunun. Bellek temizliği kilitli uygulamaları atlar. | Son uygulamalar ekranını açın, <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> kartını basılı tutun ve kilide dokunun. Bellek temizliği kilitli uygulamaları atlar. | With the accusative on the label, «Son uygulamaları açın» reads as "open your recent apps", while the card's own title says «Son uygulamalar ekranında». This uses one name for Recents within the card. |
+| keep_running_huawei_close_after_lock_line | 💬 | Pil ayarları → Diğer pil ayarları bölümündedir. Kapatılmazsa <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> ekran her kilitlendiğinde kapanır. | Pil → Diğer pil ayarları bölümündedir. Bu seçenek devre dışı bırakılmazsa <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g>, ekran her kilitlendiğinde kapanır. | Huawei Turkey prints «Ayarlar > Pil > Diğer pil ayarları» (official, tr-tr00428704), so the path's first label is «Pil». «Kapatılmazsa … kapanır» puts "turn off" right beside "closes", although the title already chose «devre dışı bırak»; the comma stops «PlayTranslate ekran» reading as one noun. This is moot if the card is dropped (known issue 1). |
+
+### Clean areas (delta) — checked, no findings
+
+**The kill notice, read as a set.** The title «Android, PlayTranslate uygulamasını kapattı»
+has a comma after the subject, which keeps «Android PlayTranslate» from reading as one noun.
+All three bodies read naturally and keep the attribution where English puts it: «Belleği
+azalan telefonunuz» (memory), «Telefonunuz» (other), and «PlayTranslate açıkken durduruldu.
+Uygulamayı kendiniz durdurmadıysanız … durdurmuş olabilir.» (stopped), which leaves the
+attribution to the user. That body says «durduruldu», not AOSP's «Durmaya zorla», because
+English says "was stopped". «Kayan simgenin kaybolmasının nedeni budur» is a little formal
+but natural. I read the restored sentence after each body (finding above). The buttons are
+«Seçenekleri gör» and «Şimdi değil», the latter identical to `btn_not_now`.
+
+**The Support card in order.** The rows are «Güncellemeleri denetle / Geçerli sürüm: 3.3.0»,
+«Discord'a Katıl», «Kaybolan simgeyi düzelt / … kapatılmasın», «Hata bildir / Günlükleri
+desteğe e-postayla gönderin. Paylaşmak için basılı tutun.» and «PlayTranslate'i Destekle».
+The new titles use sentence case, like «Güncellemeleri denetle» and Android. The capitalized
+verbs in «Katıl» and «Destekle» predate this delta. In the Report a bug subtitle, the tap
+clause is 228 dp and fits 249. What the row shows: at 216 dp «Günlükleri desteğe e-postayla
+gönd…», at 249 dp «…gönderin. P…», at 267 dp «…gönderin. Payl…». The whole string is 388 dp
+against English's 256, for a reason: Turkish needs «e-postayla gönderin» for "email", and
+«Paylaşmak için basılı tutun» is the file's hold phrase. «destek ekibine» would push the tap
+clause past 249 dp, so «desteğe» is the right call. Dropping "instead" loses nothing.
+
+**The Fix disappearing icon page.** The toolbar title is 237 dp of about 272, and it is
+byte-identical to the Support row title. The intro is natural, and «oyun oynarken» needs no
+subject. Card titles are bare imperatives, like the file's «Hızlı Ayarlar kutucuğu ekle»;
+card lines use siz. The stuck card's restart line reuses `a11y_stuck_message` word for word
+under `a11y_stuck_title`. In the empty label, «hata bildirin» matches the row title «Hata
+bildir». «yeniden oluşturun» is the file's word for reproduce («Yeniden oluşturma adımları»
+in `crash_email_body`), and the «Sorun … sorunu» repetition is acceptable. The Report a bug
+row under it carries the same two strings, and here the subtitle wraps.
+
+**The email flow.** The chooser titles «Çökme raporunu gönder» and «Hata raporunu gönder» are
+parallel bare imperatives, like «Günlükleri paylaş». The subject mirrors
+`crash_email_subject`, and the body is natural («… ektedir»). The toast's «E-posta uygulaması
+yok.» departs from the file's «… bulunamadı», used in 7 strings. But at 296 dp «bulunamadı»
+pushes the address onto a third line, which the toast drops, so «yok» is the right trade. As
+written, the toast wraps to 2 lines at both 296 and 320 dp, with the address whole on line 2.
+The colon puts no suffix on the address. The share sheet «Günlükleri paylaş» follows.
+
+**Same words for the same thing.** The page title is the Support row title. «hata bildirin»
+matches «Hata bildir». The battery line («Bu ayar yapılmazsa …») works under both «Pil
+kullanımını “Kısıtlanmamış” olarak ayarla» and Xiaomi's «Pil tasarrufunu “Kısıtlama yok”
+olarak ayarla». The OPPO and vivo lines are byte-identical. «bellek temizliği» appears twice,
+the same both times. Xiaomi, OPPO and vivo all use «Otomatik başlatma», while Huawei keeps its
+own «Oto-başlatma». Reused precedents: günlük(ler), kayan simge, basılı tutun, açık(ken),
+«Hızlı Ayarlar kutucuğu ekle», «Şimdi değil», «hizmeti kapatıp yeniden açın», and «pil
+tasarrufunu “Kısıtlama yok” olarak ayarlayın».
+
+**Platform labels.** AOSP tr «Kısıtlanmamış» is exact. «Pil kullanımını» follows English's
+generic "battery usage"; the AOSP entry reads «Uygulamaların pil kullanımı», but the card
+opens the system dialog «Uygulama arka planda çalışmaya devam etsin mi?» directly. Samsung
+Turkey's official labels are all exact: Cihaz bakımı → Pil → Arka plan kullanım sınırları,
+“Hiç oto. uykuya geçirilmeyen uygulamalar” (with Samsung's own «oto.»), and uyku modundaki
+uygulamalar. Huawei Turkey's official labels are exact too: Uygulama başlatma, Oto-başlatma,
+İkincil başlatma, Arka planda çalışma. «Diğer pil ayarları» is now verified on Huawei
+Turkey's own page, which also has no close-after-lock option (known issue 1 holds in
+Turkish). «manuel olarak yönet» stays unverified: Huawei has no Turkish copy of the page
+that shows the Manage manually pop-up. Xiaomi has secondary sources only: HyperOS «Arka Plan
+Otomatik Başlatma», MIUI «Uygulama Pil Tasarrufu» and «Son uygulamalar»; «Kısıtlama yok» is
+unverified. The delta reuses the reviewed `a11y_stuck_message_xiaomi`, which is right until
+a device shows otherwise. I found no Turkish source for OPPO or vivo; their labels are
+literal renderings and unverified. The Huawei close-after-lock label is a translation, since
+no current Huawei label exists.
+
+**Suffix coverage, all 19 spans.** No suffix touches the app-name span, the version or the
+address. Most of the 17 app-name spans take the head noun «uygulaması / uygulamasını /
+uygulamasından» (subtitle, kill title, intro, battery, accessibility, tile, Xiaomi
+autostart, Xiaomi lock title, OPPO, vivo). The others: «kartını» in the Xiaomi lock line,
+the postposition «için» on the Huawei App launch line, and a bare nominative subject
+(«PlayTranslate açıkken» in the three bodies, and the Huawei close-after-lock line). In the
+subject line the name and version take no suffix («v» before the version), and the toast
+puts the address after a colon. «Android,» and «Xiaomi,» are bare subjects as well.
+
+**Casing, quotes, register.** «İkincil» and «Kısıtlanmamış» are spelled right, and nothing
+is pre-uppercased. Every quoted label uses “ ” (U+201C/U+201D). Every body uses siz; titles,
+buttons and chooser titles are bare imperatives, like their neighbours.
+
+### Verdict (round 1)
+
+1 ⚠️ and 5 💬 (6 keys); no ❌, no 🛑. To apply: `kill_notice_restored` (⚠️);
+`settings_support_keep_running_subtitle`, `keep_running_battery_line`,
+`keep_running_oppo_auto_launch_line` + `keep_running_vivo_autostart_line`,
+`keep_running_xiaomi_lock_line` and `keep_running_huawei_close_after_lock_line` (💬). The
+other 34 keys pass as they are.
+
+## Follow-up review 2026-10-07, round 1 (15 keys after the Fix disappearing icon rewrite, plus the final review of the first pass's 41 keys)
+
+Mechanical layer: `python3 TOOLS/mech_check.py F2/keys2.txt tr` reports `checked 1 locales x
+15 keys; problems: 0`, and `python3 TOOLS/mech_check.py …/scratchpad/keys.txt tr` reports
+`checked 1 locales x 39 keys; problems: 0` (every key present; `<xliff:g>` spans and
+placeholders byte-identical to EN, both `app_name` and `app_name2` in the three two-span lines;
+`\n` counts match; no unescaped `'`/`"`, no stray tags, no double spaces).
+`python3 scripts/l10n_diff.py --locale app/src/main/res/values-tr/strings.xml` reports
+`values-tr missing=0 orphan=0 modified=0`, "in sync". The four keys English removed
+(`restricted_settings_title`, `restricted_settings_message`,
+`keep_running_huawei_close_after_lock_title`, `_line`) are gone; no duplicate `name=`; the
+file parses.
+**No 🛑 build-breaking issues.**
+
+**Render code read before reviewing.**
+- `AccessibilityHelp.withRestrictedSettingsStep` appends the addendum as `message + "\n\n" +
+  step`, on Android 13+ only, in `MainActivity.showAccessibilityDialog`,
+  `SettingsRenderer.showOverlayIconA11yAlert` (both system AlertDialogs),
+  `showAccessibilityRequiredAlert` (the 280 dp OverlayAlert, three messages) and
+  `KeepRunningActivity.lineOf` for the accessibility card (not when the service is stuck).
+  `SettingsRenderer.showA11yStuckAlert` builds the stuck alert as `a11y_stuck_message` plus,
+  when `Build.MANUFACTURER` is Xiaomi, `"\n\n"` and `a11y_stuck_message_xiaomi`; no addendum.
+- `KeepRunningActivity.openFirst`: when no candidate screen launches, the LENGTH_LONG toast
+  `keep_running_screen_unavailable`, then `startActivity(appDetails)`, so App info is what
+  the user sees while the toast is up. Each card is `setText(title)` + `text = line`, with
+  no format arguments; the Xiaomi battery card now has its own line and opens
+  `HiddenAppsConfigActivity` (the per-app battery page) directly.
+- `KeepRunningItems.ids`: Xiaomi gets autostart, battery and lock, and no generic battery
+  card; Huawei gets App launch only; then battery (not on Xiaomi), accessibility (API 30+)
+  and tile (API 33+) on every ROM. `MainActivity.maybeShowKillNotice` is unchanged from the
+  first pass (body, then `' '` and `kill_notice_restored` while an icon is on screen).
+
+Scope: 44 keys in all, the 39 first-pass keys (10 of them rewritten in this follow-up) and the
+five follow-up keys outside them (`a11y_restricted_settings_addendum`, `a11y_stuck_message`,
+`a11y_stuck_message_xiaomi`, `keep_running_screen_unavailable`,
+`keep_running_xiaomi_battery_line`).
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| a11y_stuck_message | 💬 | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> için Erişilebilirlik açık, ancak Android hizmeti durdurdu ve kendiliğinden yeniden başlatmayacak. Cihazınız, erişilebilirlik ayarlarında uygulamanın düzgün çalışmadığını bildirebilir.\n\nDüzeltmek için erişilebilirlik ayarlarından hizmeti kapatıp yeniden açın. | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> için Erişilebilirlik açık, ancak Android, hizmeti durdurdu ve kendiliğinden yeniden başlatmayacak. Cihazınız, erişilebilirlik ayarlarında uygulamanın düzgün çalışmadığını bildirebilir.\n\nDüzeltmek için erişilebilirlik ayarlarından hizmeti kapatıp yeniden açın. | «Android hizmeti» first reads as the compound "the Android service" (like «sistem hizmeti»), which leaves «durdurdu» without an object until the reader backs up. This delta's Xiaomi paragraph writes «sistem, hizmeti» for exactly this reason, and on a Xiaomi phone both paragraphs sit in one dialog, one with the comma and one without. The kill notice title's «Android, PlayTranslate uygulamasını kapattı» follows the same rule. Only the comma changes; the rest stays the reviewed text. |
+| keep_running_accessibility_restart_line | 💬 | Android hizmeti durdurdu ve kendiliğinden yeniden başlatmayacak. Erişilebilirlik ayarlarından hizmeti kapatıp yeniden açın. | Android, hizmeti durdurdu ve kendiliğinden yeniden başlatmayacak. Erişilebilirlik ayarlarından hizmeti kapatıp yeniden açın. | The same fix. This line repeats the stuck message under `a11y_stuck_title`, and here «Android hizmeti» opens the sentence, where it reads most like a subject noun phrase. Keep the two in step. |
+| keep_running_xiaomi_battery_line | 💬 | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasının sistem ayarlarında pil ayarını (sürümünüze göre Pil tasarrufu, Pil veya Güç) açın ve “Kısıtlama yok” seçeneğini seçin. | <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasının sistem ayarlarında pil ayarına (sürümünüze göre Pil tasarrufu, Pil veya Güç) dokunun ve “Kısıtlama yok” seçeneğini seçin. | «X ayarını açın» is the everyday Turkish for "turn X on" (the file's own «… seçeneklerini açın» on the Huawei card means exactly that). With the parenthesis, the line can therefore read «Pil tasarrufunu açın», turn Battery saver on, the opposite of No restrictions, until «Kısıtlama yok» undoes it. «dokunun» is the file's tap verb («kilide dokunun», «⋮ menüsüne dokunun») and can only mean opening the entry; «pil bölümünü (…) açın» would also work. The three names remain unverified (see Clean areas). |
+
+### Clean areas — checked, no findings
+
+**The 15 follow-up keys against the English that moved.** A word-level diff against each
+key's previous value shows every small change tracking the English exactly.
+`a11y_stuck_message` lost the cause sentence and nothing else. `a11y_stuck_message_xiaomi`
+changed where the English did: «otomatik başlatmaya izin verin» for "allow autostart" (the
+Xiaomi autostart card's title), «pil kullanımını» for "its battery use" (the Xiaomi battery
+card's title) and «edebilir» for "may". It also gained the comma «sistem, hizmeti», which keeps
+«sistem hizmeti» from reading as "the system service". `keep_running_tile_line` lost «Tek bir
+kaydırma ve dokunuşla» and nothing else; `keep_running_xiaomi_lock_line` keeps round 1's first
+sentence; `keep_running_xiaomi_battery_title` changed one word. The seven rewritten lines
+translate the new English clause by clause, with nothing dropped or added, and each keeps the
+English hedge («başlayabilir», «engelleyebilir», «durdurabilir»).
+
+**The addendum, read after each of its six hosts.** After the two system dialogs (whose path
+ends «→ Etkinleştir yolunu izleyin»), the three OverlayAlert messages and the accessibility
+card's line, it reads as a closing paragraph of its own. «anahtar» is the usual Turkish name
+for a toggle. In every host the text before it is about enabling the service, so it cannot be
+taken for the «API anahtarı» sense of the LLM settings, and the hotkey message calls keys
+«tuşlar», so nothing clashes there either. «Uygulama bilgileri» is AOSP's
+`application_info_label`. «Kısıtlanmış ayarlara izin verme» is AOSP's
+`app_restricted_settings_lockscreen_title` (android16-qpr2), and the quotes earn their place.
+Of the 46 AOSP Turkish Settings strings that end «izin ver…», it is the only one ending «izin
+verme», and AOSP uses a bare «İzin verme» for "Don't allow"
+(`request_manage_credentials_dont_allow`), so unquoted it would read as a prohibition. Quoted
+and followed by «seçeneğini seçin», it reads as the item's name. It is what AOSP phones print,
+which per the brief beats the old reviewed «Kısıtlı ayarlara izin ver». The menu holds one
+such item, and Android confirms the tap with «… için kısıtlanmış ayarlara izin veriliyor».
+Google's Turkish help prints «…izin ver» (translator's note), a prefix of the AOSP label, so a
+phone printing either form is found. The span takes «için», no suffix.
+
+**The toast, then App info.** «O ekran» rather than «Bu ekran» keeps the sentence off App
+info, the page in front of the user while the toast is up. «kullanılamıyor» is AOSP's own word
+for an unavailable setting («Güvenliğiniz için bu ayar şu anda kullanılamıyor»). «ayarı» is the
+setting the card title names, and «arayın» matches AOSP's search label «Ara». Measured with
+`Wrap`, the toast fits 2 lines at 296 dp (277 + 261 dp) and at 320 dp (318 + 221 dp), with
+nothing lost; the English needs 3 lines at 296 dp.
+
+**The cards as title + line.** The battery card's title echoes the body of the dialog the card
+opens («… uygulamasının her zaman arka planda çalıştırılmasına izni vermeniz …»,
+`high_power_prompt_body`), and «bu ayar» in its line points back at it. The tile line now
+leans on its title for the "how", as the English does («açabilirsiniz»; «aç» is the app's
+Turn On). Xiaomi autostart's search word is its title's noun, the Xiaomi battery line ends on
+its title's «“Kısıtlama yok”», and the lock line opens the «Son uygulamalar ekranı» its title
+names. Huawei's line explains its title: turning «Otomatik olarak yönetiliyor» off is managing
+manually. The OPPO and vivo titles' «arka plan etkinliği» and «arka planda güç kullanımı» recur
+in their lines, and the two second sentences are byte-identical. Samsung's line names the list
+its title quotes, byte for byte. In the three two-span lines, the second «PlayTranslate»
+starts a new clause after «Xiaomi,» or «telefon,», so it does not read heavy.
+
+**Converbs.** «kapatıldıktan sonra» (Xiaomi autostart) is passive, so its subject is the app,
+the same as the subject of «yeniden başlamasını». The rewrite removed both converbs that round 1
+had to fix («siz kullanırken», «siz … çıktıktan»). I read the first pass's «oyun oynarken»
+(intro) and «PlayTranslate açıkken» (three bodies) again: the first can only mean the user,
+and the second carries its own subject.
+
+**Labels and search words.** Huawei, verified today on Huawei Turkey's own page
+(tr-tr00414587): «Ayarlar menüsünü açın, Uygulama başlatma öğesini arayın», «ilgili uygulama
+için Otomatik olarak yönetiliyor özelliğini devre dışı bırakın», «Oto-başlatma, İkincil
+başlatma veya Arka planda çalışma». The line matches all five labels in that order, and its
+«kapatın» for Huawei's «devre dışı bırakın» pairs with «açın» for the three switches. Samsung
+Turkey's «Pil», «Arka plan kullanım sınırları» and «Hiç oto. uykuya geçirilmeyen uygulamalar»
+are exact, and «uyku moduna alır» matches Samsung's «Uyku modundaki uygulamalar». Xiaomi: the
+search word «otomatik başlatma» is contained in the secondary HyperOS label «Arka Plan
+Otomatik Başlatma». «Kısıtlama yok», «Pil tasarrufu», «Pil» and «Güç» remain unverified: two
+searches found no Turkish source for the per-app entry, and the Kaspersky Turkish Xiaomi page
+the first pass listed as a lead now redirects to a landing page. One lead for whoever holds a
+Turkish HyperOS 2 phone: DonanımHaber (16 Feb 2025, HyperOS 2) writes «Batarya'ya dokunarak pil
+ayarlarını açın». The label «Batarya» beside the common noun «pil» suggests the Settings entry
+reads «Batarya», but that is the top-level entry, the article cites English sources, and it
+does not say it copies a screen. So «Pil» stays, and a reader shown «Batarya» still knows it.
+OPPO and vivo: no Turkish source (a ColorOS search found none). «otomatik başlatma» is the
+plain term, and Settings search suggests matches as one types, before the word's ending
+matters. The search words take the accusative unquoted («otomatik başlatmayı arayın»,
+«Uygulama başlatmayı arayın»), which is natural Turkish, and the suffix sits on fixed text,
+not a placeholder. Huawei's own page puts «öğesini» after the label instead; either reads well.
+«Ayarlarda» has no apostrophe, like the file's «Ayarlardan» and «Ayarlara».
+
+**The first pass's keys, final read.** Round 1's fixes landed. `kill_notice_restored` is now
+«Simge şu anda yeniden ekranda.»; read again after all three bodies, it names what the code
+checks, an icon on screen. `settings_support_keep_running_subtitle` is now «PlayTranslate
+kapatılmasın» (157 dp, whole at 216). `keep_running_xiaomi_lock_line`'s «Son uygulamalar
+ekranını açın» landed and survives the rewrite. The `keep_running_battery_line` and OPPO/vivo
+fixes landed, then the rewrite replaced those lines; the Huawei close-after-lock fix landed,
+and the key is now gone along with the English. The other first-pass keys pass again, as
+round 1 found them:
+- the kill notice set: the title's comma, the three attributions, «Seçenekleri gör», and
+  «Şimdi değil», which matches `btn_not_now`;
+- the Support rows and the email flow: the subtitle's tap clause is 228 dp of 249, and the
+  email toast fits 2 lines at 296 and 320 dp with the address whole on line 2;
+- the toolbar title, 237 dp of about 272 and byte-identical to the Support row title;
+- the intro, the empty label and the accessibility card;
+- the tile title, identical to `quick_tile_add_row_title`, and the ROM card titles.
+
+**Suffix coverage, all 44 values.** No case or possessive suffix touches a span. The app-name
+spans take «uygulaması / uygulamasının / uygulamasını», «için» or «kartını», or stand as bare
+nominatives («PlayTranslate açıkken», «PlayTranslate kapatılmasın»). The version follows «v»,
+and the address follows a colon. «Android,», «Xiaomi,», «Samsung,», «telefon,» and «sistem,»
+are bare subjects with the comma (two «Android hizmeti» sites excepted: Findings).
+
+**Casing, quotes, register.** «İkincil» is spelled right and nothing is pre-uppercased; a scan
+of all 44 values found no capital I standing for İ. Every quotation mark is “ or ”, and they
+pair up (the addendum, the three Xiaomi strings, Huawei, Samsung twice). Every line and the
+toast use siz, and card titles are bare imperatives like their neighbours.
+
+### Verdict (round 1)
+
+3 💬 (two fixes in three keys); no ❌, no ⚠️, no 🛑. To apply: the comma «Android, hizmeti» in
+`a11y_stuck_message` and `keep_running_accessibility_restart_line` (keep the two in step), and
+«pil ayarına (…) dokunun» in `keep_running_xiaomi_battery_line`. The other 41 of the 44 keys
+pass as they are.
+
+### Follow-up round 2 (2026-10-07), final review after applying round 1
+
+Mechanical layer re-run: `python3 TOOLS/mech_check.py F2/keys2.txt tr` reports `checked 1
+locales x 15 keys; problems: 0`, and the first pass's list (`…/scratchpad/keys.txt`) reports
+`checked 1 locales x 39 keys; problems: 0` (every key present; `<xliff:g>` spans and
+placeholders byte-identical to EN, both `app_name` and `app_name2` in the three two-span lines;
+`\n` counts match; no unescaped `'`/`"`, no stray tags, no double spaces).
+`python3 scripts/l10n_diff.py --locale app/src/main/res/values-tr/strings.xml` reports
+`values-tr missing=0 orphan=0 modified=0`, "in sync". The file parses (1047 entries, no
+duplicate `name=`), and its uncommitted diff touches only this sync's keys and banners.
+**No 🛑 build-breaking issues.**
+
+**Round-1 fixes:**
+- `a11y_stuck_message`: applied, byte-identical to the suggestion («ancak Android, hizmeti
+  durdurdu»). Nothing else in the string moved, and on a Xiaomi phone the alert's two
+  paragraphs now agree with the appended «sistem, hizmeti».
+- `keep_running_accessibility_restart_line`: applied, byte-identical («Android, hizmeti
+  durdurdu»), in step with the alert it repeats under `a11y_stuck_title`.
+- `keep_running_xiaomi_battery_line`: applied, byte-identical («pil ayarına (…) dokunun»). The
+  dative reads cleanly across the parenthesis, «dokunun» can only mean opening the entry, and
+  the line still ends on its title's «“Kısıtlama yok”».
+
+#### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| keep_running_vivo_autostart_line | 💬 | Ayarlarda otomatik başlatmayı arayın ve <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> için izin verin, ardından Pil ayarlarında arka planda yüksek güç kullanımına da izin verin. Bunlara izin verilmezse telefon, <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasını arka planda durdurabilir veya yeniden başlamasını engelleyebilir. | Ayarlarda otomatik başlatmayı arayın ve <xliff:g id="app_name" example="PlayTranslate">PlayTranslate</xliff:g> için izin verin, ardından Pil ayarlarında arka planda yüksek güç tüketimine de izin verin. Bunlara izin verilmezse telefon, <xliff:g id="app_name2" example="PlayTranslate">PlayTranslate</xliff:g> uygulamasını arka planda durdurabilir veya yeniden başlamasını engelleyebilir. | vivo's own Turkish user guide (a PDF on vivo's file server, de-gdpr-exstatic-vivofs.vivo.com/sFhAQhTYYDsNOJz1/1704157871051/acd3d4aeda86cad1dd02fb26818b40f1.pdf, made 2023-12-28, no model or OS version named) says, in its Pil section: «Arka plan güç tüketimi yönetimi'nde … belirli uygulamaların arka planda çalışmaya devam etmesine izin verin veya vermeyin». vivo's noun is «güç tüketimi»; «güç kullanımı» is ours. With vivo's noun, the line uses the words the Pil page shows, so the entry is easy to spot. Mind the harmony: «tüketimine de». Round 1 found no Turkish vivo source, so this is the first. It confirms «Pil» but has no autostart entry, so «otomatik başlatma» stays unverified (known issue 2). |
+| keep_running_vivo_autostart_title | 💬 | Otomatik başlatmaya ve arka planda güç kullanımına izin ver | Otomatik başlatmaya ve arka planda güç tüketimine izin ver | Same fix, applied together with the line so the title's noun still recurs in it. |
+
+#### Verdict (round 2)
+
+2 💬 (one optional fix in two keys); no ❌, no ⚠️, no 🛑. All three round-1 fixes landed.
+Optional: vivo's «güç tüketimi» in `keep_running_vivo_autostart_line` and
+`keep_running_vivo_autostart_title`. The other 14 of the 15 keys pass as they are. I read them
+as sets:
+- the addendum after its six hosts (the OverlayAlert body sits in a ScrollView, so its length
+  is safe);
+- the stuck alert with and without the Xiaomi paragraph;
+- every card's title and line;
+- the toast, which still wraps to 2 lines at 296 dp (277 + 261) and 320 dp (318 + 221).
+
+No suffix touches a span, every quote is “ ”, nothing is pre-uppercased, and none of the 15
+keys has a -ken clause. The AOSP label «Kısıtlanmış ayarlara izin verme» stands per the
+AOSP-wins rule: quoted and followed by «seçeneğini seçin», it reads as the item's name.
+
+## Delta review 2026-10-14 (Bilibili Index-Translate: 3 keys)
+
+Mechanical layer: `python3 scripts/l10n_diff.py --locale app/src/main/res/values-tr/strings.xml` reports `missing=0 orphan=0 modified=0`, "in sync". The three keys are present once each, beside the same neighbours as in English, and the file parses as XML. The one apostrophe is escaped (`Bilibili\'ye`). This delta has no `<xliff:g>`, placeholder, plural, markup, ASCII quote or dash. "Bilibili" stays in Latin script, twice in the note. **No 🛑 build-breaking issues.**
+
+Render code read before reviewing: the note is `tvProviderNote` (RowSubtitle, wraps, no `maxLines`, not uppercased), shown in place of the API-key section under the untranslated title "Bilibili Index-Translate". The picker line is a 13 sp wrapping TextView, used when the account takes no key. The keyless body appears under `tr_service_remove_title_fmt` for Lingva and Bilibili Index-Translate.
+
+No findings.
+
+Clean areas: The note keeps all three English facts: free and keyless; run by Bilibili, with no published limits; the captured text goes to Bilibili. «bu hizmet için» carries English's "for it". «kullanım sınırı» is in line with «günlük sınır» (`translation_error_daily_quota`) and the Samsung «Arka plan kullanım sınırları». «Yakalanan metin» is the captured-text term of `tr_service_order_footer` and `history_hide_translations_toggle_subtitle`, and «API anahtarı» is `llm_backend_api_key_label`. On suffixes, «Bilibili'ye» is right: the last vowel is i and the name ends in a vowel, so it takes -ye, with the escaped apostrophe the brand rule asks for. No suffix sits on anything variable. The keyless picker line keeps the sibling's first sentence and its «veya Özel… ile bir model kimliği yazın.» byte for byte. «Özel…» matches `llm_backend_model_custom_entry`. «Daha sonra tekrar deneyin» reuses the file's «tekrar deneyin» (`hidden_word_save_failed`, `settings_ocr_download_failed`), in the siz form. Read as one screen, the delete alert is «Lingva kaldırılsın mı?», then «Bu işlem hizmeti listeden kaldırır.», then the button «Kaldır». The body is the sibling without its key clause, and it keeps kaldırmak (remove) apart from silmek (delete), which the sibling uses only for the key.
+
+### Disposition (2026-10-14)
+
+No findings; nothing to apply.
+
+## Delta review 2026-10-27 (PlayTranslate Cloud: 24 keys; plus the owed review of 15 keys localized outside the sync)
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports "39 keys x 13 locales: 0 problems" and prints no line for tr (xliff spans byte-identical to EN, placeholder multiset, `<b>`/`\n`/`\{ \}`/`&lt; &gt; &amp;` counts, no raw `'` or `"`, no stray or double space, XML well-formed); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-tr/strings.xml` reports `values-tr missing=0 orphan=0 modified=0`, "in sync". `git diff` on the locale touches exactly the 24 Part A keys. **No 🛑 build-breaking issues.**
+
+### Findings
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| word_detail_group_conjugation, word_detail_group_declension, word_detail_group_forms | ⚠️ | `word_detail_group_conjugation`: `Çekim`<br>`word_detail_group_declension`: `Ad çekimi`<br>`word_detail_group_forms`: `Biçimler` | `word_detail_group_conjugation`: `ÇEKİM`<br>`word_detail_group_declension`: `AD ÇEKİMİ`<br>`word_detail_group_forms`: `BİÇİMLER` | Confirmed in code: `WordDetailBinder.addGroupHeader` sets `title.uppercase(Locale.ROOT)` on the `textAllCaps` header, and the root locale maps i to I, so these render «ÇEKIM», «AD ÇEKIMI», «BIÇIMLER» (checked with a locale-blind uppercase). The strings are spelled right; the transform is not Turkish-aware. Preferred fix, in code: uppercase with the UI locale instead of `Locale.ROOT` and keep these strings as they are. That one line also mends three headers outside the delta on the same sheet: `section_other_matches` «Diğer eşleşmeler» (now «DIĞER EŞLEŞMELER»), `word_detail_group_kanji` «Kanji» («KANJI») and `word_detail_group_hanzi` «Hanzi» («HANZI»). The suggested values are the string-only fallback if the code stays: `Locale.ROOT` leaves İ alone, and these keys are used nowhere else. They break the parameters' "do not pre-uppercase" rule, which assumes a locale-aware transform. Optional 💬 while touching them: «Fiil çekimi» / «İsim çekimi» (fallback «FİİL ÇEKİMİ» / «İSİM ÇEKİMİ»). Bare «Çekim» is the umbrella term for both tables, and the sheet's own POS chips say «Fiil» and «İsim» (`pos_verb`, `pos_noun`) where «Ad çekimi» says noun as «ad». |
+| anki_screenshot_crop_instruction | ⚠️ | `Ekran görüntüsünü kırpmak için kenarları sürükleyin` | `Görüntüyü kırpmak için kenarları sürükleyin` | The pill is one line with an end ellipsis (`RegionEditorControls.pill`: `isSingleLine`, `TruncateAt.END`, 14 sp, 16 dp padding inside 16 dp margins), so its text gets the host width minus 64 dp: 296 dp in the full-screen crop dialog on a 360 dp phone (`showScreenshotCropDialog`, opened from the in-app Anki sheets; the manifest locks no orientation), and about 272 dp on the floating workspace's crop page (12 dp insets) over a portrait game. Measured at 14 sp in Arial (a few percent wider than Roboto): 322 dp, against the English's 215. Turkish puts the verb last, so the ellipsis eats the instruction's verb («…kenarları sür…»). The suggestion is 269 dp. «görüntü» is the head noun of the file's «ekran görüntüsü» and unambiguous over the screenshot being cropped, and the «… için kenarları sürükleyin» frame of `region_overlay_drag_instruction` stays. Landscape fits either way. |
+| pt_cloud_ocr_row_subtitle | 💬 | `Sunucu düzeyinde OCR, cihaza sıfır yük` | `Sunucu düzeyinde OCR, cihazı hiç zorlamaz` | «cihaza sıfır yük» mirrors "zero device load" word for word. Turkish says a device is strained, as this file already does for the same idea («cihazı zorlayabilir», `tr_service_offline_footer`), and the engine notes under this row end on verbs («yavaşlamaz», «bulur», «kaçırabilir»). The subtitle wraps (switch-row subtitle, no maxLines), so the extra length costs nothing. |
+
+### Clean areas (checked, no findings)
+
+**Render code, read per surface.** Error pill: `TranslationErrorMessages.text` maps `BackendFailureKind.NOT_RUNNING` to `translation_error_not_running` with the backend's display name, and the only producer is `PtCloudErrors.classifyHttp` (a 404 with an empty body), so the span always holds «PlayTranslate Cloud»; the pill text is 14 sp, `maxLines = 2`. Cloud page (`activity_pt_cloud_settings.xml`): two `settings_row_switch` rows whose title and subtitle wrap; the key label over a single-line 13 sp monospace field; the status row, `pt_cloud_status_title` at weight 1 with the value at its end (`Text.PT.RowValue`, wrap_content), set by `healthStatusText`, «Kontrol ediliyor» on every resume and `_unchecked` only before the first answer; the cooldown line under it. Hub: the summary in `settings_row_hub.xml` is `singleLine` + `ellipsize="end"` at 13 sp, about screen width minus 144 dp (216 dp on a 360 dp phone), picked by `RootSettingsViewModel.cloudDigest`. Capture & overlay: `bindCloudOcrRow` puts `pt_cloud_ocr_row_subtitle` under the brand title in a wrapping switch-row subtitle. Translation services: `PtCloudBackend.status` shows the no-key line in `tvRowSubtitle2` (wraps) only while no key is saved. Floating menu: `updateCloudHeader` sets only the strip's contentDescription. Toast: `KeepRunningActivity.openFirst`, `LENGTH_LONG`, then App info. Part B: `WordDetailBinder.addGroupHeader`, `RegionEditorControls.pill`, `buildPillToggle`, `MagnifierLens.addLoadMoreRow`. None of the 39 is uppercased anywhere except the three headers in the first finding.
+
+**Error pill.** «çalışmıyor» joins the family's lower-case predicate after the colon («bağlanılamıyor», «yanıt vermiyor»), and nothing is attached to the span.
+
+**Cloud page, the switch pair.** «Metin tanıma» / «Metin çevirisi» read as a pair, and the first is the file's OCR term (`settings_header_ocr` «Metin tanıma (OCR)», `slow_ocr_prompt_title`) and the parameters' «metin tanıma». The -ma question is in the appendix. «Sunucudaki GPU ile daha güçlü OCR» and «Cihazınızın tüm gücü oyuna ayrılır» are natural, with the siz possessive. In «Ücretli çeviri modelleri dahil; her iş için en iyisi seçilir», «dahil» can only mean included (this file says on and enabled with «Açık» and «etkinleştirilmiş»), so the bundled-in lines carry none of the switch ambiguity that Russian's «включены» has in this delta.
+
+**Cloud page, the key.** «İstemci anahtarı» keeps the file's «anahtar» (`llm_backend_api_key_label` «API Anahtarı», `tr_service_key_tail_fmt` «Anahtar ••••»), «istemci» is the standard Turkish for client, and each label follows its own English casing. «yapıştırın» is the verb of `hint_deepl_key`. The hint is 32 characters in the 13 sp monospace field (0.6 em a glyph, about 250 dp), inside the 278 dp the single-line field leaves on a 360 dp phone.
+
+**Cloud page, the status row.** «Hizmet» is the file's word (`settings_cell_translation_services` «Çeviri hizmetleri»). The three pairs the brief names match their pill twins word for word, capitalized as standalone values: «Bağlanılamıyor» = `translation_error_unreachable`, «Beklenmeyen yanıt» = `translation_error_bad_response`, «Çalışmıyor» = `translation_error_not_running`. «Kontrol ediliyor» is AOSP's `ext_media_status_checking`, «Başlatılıyor» matches `probe_initializing` and AOSP's «Uygulamalar başlatılıyor», «Çalışıyor» / «Çalışmıyor» pair, and «Kontrol edilmedi» is natural for a check that has not run. The widest value, «Beklenmeyen yanıt (500)» (145 dp at 13 sp), sits on one line beside «Hizmet» (47 dp at 15 sp) in the 298 dp row, and the code takes no suffix inside its parentheses.
+
+**Settings hub.** «Kapalı» is `settings_cell_history_summary_off`, `capture_lifecycle_state_off` and AOSP's Off. Measured at 13 sp against the 216 dp a summary gets on a 360 dp phone: «Sunucu düzeyinde OCR ve çeviri» 191 dp, «Yalnızca sunucu düzeyinde OCR» 191, «Yalnızca çeviri» 84, «Kapalı» 37. «sunucu düzeyinde» is the Turkish pattern for "X-grade" (as «askerî düzeyde şifreleme» renders military-grade, from memory) and also reads as "at the server", the comment's gloss, and all three strings use it alike. «Yalnızca» is the file's "only".
+
+**Capture & overlay, OCR section.** Apart from «sıfır yük» (💬), the row has the engine notes' two-part shape and the hub's «Sunucu düzeyinde OCR».
+
+**Translation services.** «En iyi ücretli çeviri modelleri dahil» stands where the store rows read «Hesap gerekli», in the same noun-plus-predicate shape.
+
+**Floating menu labels.** «kullanılabilir» is AOSP's `media_route_status_available`, and «kullanılamıyor» is the file's `backend_status_unavailable_default` («Kullanılamıyor»). Colon frame, no suffix on the span.
+
+**Toast.** «O ekran açılamadı» says what the English now says (the app could not open the screen) and keeps the reviewed distal «O ekran», which points away from the App info page in front of the user. In «Bunun yerine ayarı telefonunuzun Ayarlar uygulamasında arayın», «Bunun yerine» keeps "instead", the definite «ayarı» is the setting the card names, «Ayarlar» is the Settings app as the cards' «Ayarlarda … arayın» use it, and «arayın» matches AOSP's search label «Ara» (`search_go`). Measured 2 lines at 296 dp (244 + 282 dp) and at 320 dp, so nothing is dropped.
+
+**Part B, word-detail headers.** The casing and the optional term pair are the first finding; «Biçimler» is natural for an English word's forms.
+
+**Part B, crop.** «Ekran görüntüsünü kırp» pairs with the remove button beside it (`anki_screenshot_remove_content_description` «Ekran görüntüsünü kaldır») as a bare imperative, like the file's other action labels. «kırp» is the usual Turkish photo-editor verb (from memory; the framework has no crop label), and it does not clash with the audio editor's «kırpılacak» (audio, not image). On the workspace page the header is hidden (`hidesHeader`), so the title is spoken, not seen. The instruction is the ⚠️ above.
+
+**Part B, thinking rows.** «Düşünme modu» and «Düşünme düzeyi» share «Düşünme», as both English comments require. The subtitles say «akıl yürütme» for the English "reasons / reasoning", keeping apart the two words the source keeps apart. «çıktı tokenleri» uses the file's «token» (`tr_service_status_usage_today_fmt`), with the harmony of its written vowel. «akıl yürütme de» adds "too", which is accurate, since the answer is billed as output tokens as well. «Yükseldikçe yavaşlar» is the idiomatic "the higher, the slower".
+
+**Part B, level segments.** «Kapalı», «Minimum», «Düşük», «Orta», «Yüksek». `buildPillToggle` gives each of four segments about 56 dp of text on a 360 dp phone and shrinks 13 sp to 10 sp before any ellipsis; the widest, «Minimum», is 53 dp at 13 sp, so nothing shrinks more than a step. «Kapalı» is the file's Off.
+
+**Part B, lens.** «Daha fazla yükle (2)» is the usual Turkish button text; the count sits in parentheses with no suffix, at 116 dp in the one-line 13 sp row.
+
+**File layout (cosmetic, not a string).** In the uncommitted diff the new block opens with a blank line, but no blank line separates `floating_menu_pt_cloud_unavailable` from `yomitan_page_description`, unlike the rest of the file (the ru block has it).
+
+**Outside the delta, not filed.** Under the status row the cloud page shows `cooldownLine`, whose description for PlayTranslate Cloud is the English constant in `PtCloudErrors` ("Not running", also "Rate limited", "Server error", "Bad key"), so a stopped service can show «Çalışmıyor» above "Not running · Yeniden deneme saati: 15:42". It is code, not a string, and every service's cooldown works the same way ("Connection failed" and "Rate limited" in the store backends).
+
+### Turkish suffix coverage, casing and -ma/-me titles
+
+- **Suffixes.** Every span sits behind a colon or inside parentheses: `translation_error_not_running` «PlayTranslate Cloud: çalışmıyor», `floating_menu_pt_cloud_available` / `_unavailable` «PlayTranslate Cloud: kullanılabilir» / «… kullanılamıyor», `pt_cloud_status_other` «Beklenmeyen yanıt (500)», `load_more_count` «Daha fazla yükle (2)». The bare acronyms take none either: «daha güçlü OCR.», «… düzeyinde OCR ve çeviri», and «Sunucudaki GPU ile», where «ile» written apart avoids the harmony a suffixed «GPU'yla» would need. The one suffixed loanword, «tokenleri», is a fixed word, not a variable.
+- **Casing.** Of the 39, only the three `word_detail_group_*` are uppercased at runtime, and through `Locale.ROOT` (first finding). Everything else renders as written: hub summaries, status values, switch titles, segment labels (`buildPillToggle` applies no transform), the crop pill. A scan of the 39 values finds no capital I, and «İstemci anahtarı» starts with the right İ.
+- **-ma/-me titles.** «Metin tanıma» is the one bare -ma title, on a switch row. It reads as the compound noun "text recognition", not as "don't recognize text": it is the file's OCR header verbatim and the shape of AOSP's own «Yüz tanıma» (`face_or_screen_lock_app_setting_name`), and the switch beside it and «…daha güçlü OCR» under it settle the sense. «Metin çevirisi» rather than «Metin çevirme» sidesteps the same trap (bare «çevirme» is also "don't translate"). «Düşünme modu» and «Düşünme düzeyi» are compounds and cannot read as imperatives, and «akıl yürütme» in the subtitles is a sentence subject with its own finite verb.
+- **Register.** siz in every imperative and possessive («yapıştırın», «arayın», «sürükleyin»; «Cihazınızın», «Size», «telefonunuzun»); the bare imperative appears only in the action label «Ekran görüntüsünü kırp», like its sibling.
+
+**Tally:** 2 ⚠️ (four keys), 1 💬 (plus the optional term 💬 in the first row's note); no ❌, no 🛑. The other 34 keys pass as they are.
+
+### Disposition (2026-10-27)
+
+- `word_detail_group_*` (⚠️): the strings stay correctly spelled and are NOT pre-uppercased, per the parameters doc's "do not pre-uppercase" rule; the root cause is code (`WordDetailBinder.addGroupHeader` uppercases with `Locale.ROOT`, verified at line 1862), which also breaks the out-of-delta DİĞER / KANJİ / HANZİ headers. Reported to the developer with the one-line fix (uppercase with the UI locale), not fixed in this sync. The optional 💬 is applied: `word_detail_group_conjugation` «Fiil çekimi» and `word_detail_group_declension` «İsim çekimi», matching the sheet's own POS chips (`pos_verb` «Fiil», `pos_noun` «İsim») and pairing the two headers as the Arabic sync did.
+- `anki_screenshot_crop_instruction` (⚠️): applied, «Görüntüyü kırpmak için kenarları sürükleyin».
+- `pt_cloud_ocr_row_subtitle` (💬): applied, «Sunucu düzeyinde OCR, cihazı hiç zorlamaz».
+- The cooldown line's English description is a code finding outside the delta, verified in code; reported, not fixed.
+
+### Round 2 (2026-10-27), final review after applying round 1
+
+Mechanical layer: `python3 SP/mechcheck.py <the 39 keys>` reports "39 keys x 13 locales: 0 problems" and prints no line for tr (xliff spans byte-identical to EN, placeholder multiset, markup and escape counts, no raw `'` or `"`, no stray or double space, XML well-formed); `python3 scripts/l10n_diff.py --locale app/src/main/res/values-tr/strings.xml` reports `values-tr missing=0 orphan=0 modified=0`, "in sync". `git diff` on the locale touches the 24 Part A keys and the three round-1 changes (`word_detail_group_conjugation`, `word_detail_group_declension`, `anki_screenshot_crop_instruction`), nothing else; every applied value byte-matches the round-1 text. **No 🛑 build-breaking issues.**
+
+Round-1 changes checked:
+- `word_detail_group_conjugation` «Fiil çekimi» and `word_detail_group_declension` «İsim çekimi»: wording confirmed. Only verbs get a CONJUGATION table (`RomanceParadigm.table`, es/fr/pt/de), and only German nominals get DECLENSION (`GermanParadigm.nominalTable`), so «Fiil» and «İsim» never mislabel a table. They match the sheet's chips `pos_verb` «Fiil» and `pos_noun` «İsim». Rendering: `addGroupHeader` still uppercases with `Locale.ROOT` (`WordDetailBinder.kt:1862`, unchanged), so they show as «FIIL ÇEKIMI» and «İSIM ÇEKIMI» (checked with Java's root vs Turkish uppercase). This is the recorded code finding, not re-raised; see the verdict.
+- `anki_screenshot_crop_instruction` «Görüntüyü kırpmak için kenarları sürükleyin»: confirmed. 269 dp at 14 sp in Arial, so it is one line both in the 296 dp dialog pill and in the 272 dp workspace pill (card inset 12 dp) on a 360 dp portrait phone. The verb is no longer cut, and «… için kenarları sürükleyin» is `region_overlay_drag_instruction`'s frame.
+- `pt_cloud_ocr_row_subtitle` «Sunucu düzeyinde OCR, cihazı hiç zorlamaz»: confirmed. It reads as one sentence, with the comma setting off the subject. It keeps the hub's «Sunucu düzeyinde OCR», puts no suffix on OCR, and ends on a verb like the engine notes under it («yavaşlamaz», «bulur», «kaçırabilir»). On a 360 dp phone it wraps to a second line (switch-row subtitle, no maxLines), which costs nothing.
+
+#### Findings (round 2)
+
+| name | severity | current | suggested | note |
+|---|---|---|---|---|
+| llm_backend_reasoning_subtitle | 💬 | `Modelin yanıtlamadan önce ne kadar akıl yürüteceği. Yükseldikçe yavaşlar ve akıl yürütme de çıktı tokenleri olarak ücretlendirilir.` | `Modelin yanıtlamadan önce ne kadar akıl yürüteceği. Düzey yükseldikçe model yavaşlar ve akıl yürütme de çıktı tokenleri olarak ücretlendirilir.` | «Yükseldikçe yavaşlar» drops both subjects, so the natural reading gives the two verbs one subject. Nothing on the row both rises and slows: the level rises, the model slows. The reader has to rebuild English's "Higher is slower". «Düzey» names the level from the title («Düşünme düzeyi»), and «model» is the first sentence's subject, as in the sibling's «Model … Daha yavaştır». The Russian names its level the same way («Чем выше уровень, тем медленнее»). The subtitle wraps (RowSubtitle, no maxLines), so two more words cost nothing. |
+
+#### Verdict (round 2)
+Passes, with one optional 💬. I re-read all 39 from scratch. Every span sits behind a colon or inside parentheses, and OCR and GPU take no suffix. siz is used in every instruction and possessive («yapıştırın», «arayın», «sürükleyin», «Cihazınızın», «telefonunuzun»); bare imperatives appear only on action labels («Ekran görüntüsünü kırp», «Daha fazla yükle»). No title reads as a prohibition: «Metin tanıma» is the file's OCR term, and «Metin çevirisi», «Düşünme modu» and «Düşünme düzeyi» are compounds. No other value of the 39 passes through an uppercase transform. Widths re-measured on a 360 dp phone: hub summaries at most 191 dp of about 216, status values at most 145 dp, the key hint 251 dp in monospace of about 278, and level segments drop at most one size step. Left open, both code, not strings. First, the recorded `Locale.ROOT` fix in `addGroupHeader`. Since the applied 💬, the headers render «FIIL ÇEKIMI», «İSIM ÇEKIMI» (a dotted İ beside dotless I in one word) and «BIÇIMLER», more visible than the «ÇEKIM» and «AD ÇEKIMI» round 1 saw, so that one-line fix is worth landing with this sync. Second, the cooldown line's English description from `PtCloudErrors`. The missing blank line before `yomitan_page_description` that round 1 noted (cosmetic) is still there.
+
+### After the final review (2026-10-27)
+
+At the developer's request, two changes landed after round 2. Neither has had an independent review yet.
+- **The header casing is fixed in code, not in the strings.** Group headers now take their capitals only from their style (`Text.PT.GroupHeader`, textAllCaps, which applies the UI language's rules). The code that uppercased them first with the root locale is deleted at all seven sites: word detail, the Anki sheets and pickers, the audio-source picker, the TTS voices header. «Fiil çekimi» therefore shows as FİİL ÇEKİMİ, and DİĞER EŞLEŞMELER, KANJİ and HANZİ show with their dots too (`GroupHeaderCasingTest`). The POS lines (`WordDetailBinder`, `WordAnkiReviewBinder`, `WordDefinitionsView` and the definitions WebView) still uppercase with the root locale, so «FIIL» survives there; they mix UI labels with dictionary tokens and need a per-token rule. That is reported as a follow-up.
+- `hint_deepl_key` is now «DeepL API anahtarınızı yapıştırın» (dropped «buraya»): the old hint measured 312 dp in the 276 dp one-line monospace field (Droid Sans Mono, 13 sp) and lost its verb; the new one measures 257 dp.
