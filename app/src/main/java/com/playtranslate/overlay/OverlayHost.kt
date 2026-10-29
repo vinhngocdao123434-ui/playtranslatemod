@@ -211,6 +211,18 @@ class OverlayHost(
         val capture = capturesInFlight[displayId]?.lastOrNull()
         val requestedAlpha = params.alpha
         if (capture != null) params.alpha = 0f
+        if (view is com.playtranslate.ui.TranslationOverlayView && com.playtranslate.Prefs(context).interactiveMode) {
+            params.flags = params.flags and android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            params.flags = params.flags or android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        }
+        if (view is com.playtranslate.ui.TranslationOverlayView && com.playtranslate.Prefs(context).interactiveMode) {
+            params.flags = params.flags and android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            params.flags = params.flags or android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        }
+        if (view is com.playtranslate.ui.TranslationOverlayView && com.playtranslate.Prefs(context).interactiveMode) {
+            params.flags = params.flags and android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            params.flags = params.flags or android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        }
         return try {
             wm.addView(view, params)
             if (focusable) mirrorSystemBars(view, hiddenBars)

@@ -411,8 +411,7 @@ class FloatingIconMenu(context: Context, showCloudHeader: Boolean) : FrameLayout
         // divider under it stack above the padded lanes.
         val cloudRowHeight = (26 * dp).toInt()
         val cloudDividerHeight = (1 * dp).toInt()
-        collapsedCardHeightPx = laneHeight + 2 * pad +
-            if (showCloudHeader) cloudRowHeight + cloudDividerHeight else 0
+        collapsedCardHeightPx = laneHeight + 2 * pad + (if (showCloudHeader) cloudRowHeight + cloudDividerHeight else 0) + (96 * dp).toInt()
 
         // ── Secondary lane (left): three icon-only square buttons ─────────
         val editIcon = ImageView(context).apply {
@@ -866,15 +865,15 @@ class FloatingIconMenu(context: Context, showCloudHeader: Boolean) : FrameLayout
             contentArea.animate().cancel()
             contentArea.alpha = 0f
             contentArea.visibility = View.VISIBLE
-            contentArea.animate().alpha(1f).setDuration(200).start()
+            contentArea.animate().alpha(1f).setDuration(0).start()
             primaryLane.animate().cancel()
-            primaryLane.animate().alpha(0f).setDuration(160).withEndAction {
+            primaryLane.animate().alpha(0f).setDuration(0).withEndAction {
                 if (expanded) primaryLane.visibility = View.GONE
             }.start()
             // Fade the drag-finger hint out while the panel is open.
             if (instructionPill.isVisible) {
                 instructionPill.animate().cancel()
-                instructionPill.animate().alpha(0f).setDuration(160).withEndAction {
+                instructionPill.animate().alpha(0f).setDuration(0).withEndAction {
                     if (expanded) { instructionPill.visibility = View.GONE; instructionPill.alpha = 1f }
                 }.start()
             }
@@ -882,39 +881,39 @@ class FloatingIconMenu(context: Context, showCloudHeader: Boolean) : FrameLayout
             // the card is expanded (its placement stays valid for collapse).
             if (recordAudioBtn.isVisible) {
                 recordAudioBtn.animate().cancel()
-                recordAudioBtn.animate().alpha(0f).setDuration(160).withEndAction {
+                recordAudioBtn.animate().alpha(0f).setDuration(0).withEndAction {
                     if (expanded) { recordAudioBtn.visibility = View.GONE; recordAudioBtn.alpha = 1f }
                 }.start()
             }
         } else {
             // Fade the panel's table out, then hide it.
             contentArea.animate().cancel()
-            contentArea.animate().alpha(0f).setDuration(160).withEndAction {
+            contentArea.animate().alpha(0f).setDuration(0).withEndAction {
                 if (!expanded) contentArea.visibility = View.GONE
             }.start()
             primaryLane.animate().cancel()
             primaryLane.visibility = View.VISIBLE
-            primaryLane.animate().alpha(1f).setDuration(200).start()
+            primaryLane.animate().alpha(1f).setDuration(0).start()
             // Fade the drag-finger hint back in if the current region warrants it.
             if (activeRegion?.isFullScreen != false) {
                 instructionPill.animate().cancel()
                 instructionPill.alpha = 0f
                 instructionPill.visibility = View.VISIBLE
-                instructionPill.animate().alpha(1f).setDuration(200).start()
+                instructionPill.animate().alpha(1f).setDuration(0).start()
             }
             // And the record bar, where positionRecordAudioButton left it.
             if (showRecordAudio) {
                 recordAudioBtn.animate().cancel()
                 recordAudioBtn.alpha = 0f
                 recordAudioBtn.visibility = View.VISIBLE
-                recordAudioBtn.animate().alpha(1f).setDuration(200).start()
+                recordAudioBtn.animate().alpha(1f).setDuration(0).start()
             }
         }
 
         widthAnimator?.cancel()
         var cancelled = false
         widthAnimator = ValueAnimator.ofInt(startRight, targetRight).apply {
-            duration = 260
+            duration = 0
             interpolator = DecelerateInterpolator() // ease-out
             addUpdateListener { a ->
                 val w = a.animatedValue as Int
@@ -1529,7 +1528,7 @@ class FloatingIconMenu(context: Context, showCloudHeader: Boolean) : FrameLayout
                     .alpha(1f)
                     .scaleX(1f)
                     .scaleY(1f)
-                    .setDuration(150)
+                    .setDuration(0)
                     .setInterpolator(DecelerateInterpolator())
                     .start()
             }
@@ -1539,7 +1538,7 @@ class FloatingIconMenu(context: Context, showCloudHeader: Boolean) : FrameLayout
             positionRecordAudioButton(cardLeft, cardTop, clear)
             if (animateEntrance && recordAudioBtn.isVisible) {
                 recordAudioBtn.alpha = 0f
-                recordAudioBtn.animate().alpha(1f).setDuration(150).start()
+                recordAudioBtn.animate().alpha(1f).setDuration(0).start()
             }
 
             // The degraded-mode warning sits its margin above the clear

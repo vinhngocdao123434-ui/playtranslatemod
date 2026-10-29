@@ -1,85 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="?attr/ptBg">
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/ptSurface"
-        app:navigationIcon="@drawable/ic_close"
-        app:navigationIconTint="?attr/ptText"
-        app:titleTextColor="?attr/ptText" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/ptDivider" />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/pt_section_h_padding"
-            android:paddingTop="4dp"
-            android:paddingBottom="20dp">
-
-            <include layout="@layout/section_tts_speed"
-                android:id="@+id/speedSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Engine" android:textColor="?attr/ptText" android:textStyle="bold" android:layout_marginTop="16dp"/>
-            <Spinner android:id="@+id/spinnerEngine" android:layout_width="match_parent" android:layout_height="48dp" android:background="?attr/ptCard" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Language" android:textColor="?attr/ptText" android:textStyle="bold" android:layout_marginTop="16dp"/>
-            <Spinner android:id="@+id/spinnerLanguage" android:layout_width="match_parent" android:layout_height="48dp" android:background="?attr/ptCard" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Voice" android:textColor="?attr/ptText" android:textStyle="bold" android:layout_marginTop="16dp"/>
-            <Spinner android:id="@+id/spinnerVoice" android:layout_width="match_parent" android:layout_height="48dp" android:background="?attr/ptCard" />
-
-            <include layout="@layout/settings_group_header"
-                android:id="@+id/headerVoices" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="?attr/ptCard"
-                app:cardCornerRadius="@dimen/pt_radius"
-                app:cardElevation="0dp"
-                app:strokeColor="?attr/ptDivider"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:id="@+id/voiceRows"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-            </com.google.android.material.card.MaterialCardView>
-
+        android:id="@+id/toolbar" android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="?attr/ptSurface" app:navigationIcon="@drawable/ic_close"
+        app:navigationIconTint="?attr/ptText" app:titleTextColor="?attr/ptText" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/ptDivider" />
+    <androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+            <include layout="@layout/section_tts_speed" android:id="@+id/speedSection" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" />
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Engine" android:textColor="?attr/ptText" android:textStyle="bold" />
+            <Spinner android:id="@+id/spinnerEngine" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="16dp" android:backgroundTint="?attr/ptText" />
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Language" android:textColor="?attr/ptText" android:textStyle="bold" />
+            <Spinner android:id="@+id/spinnerLanguage" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="16dp" android:backgroundTint="?attr/ptText" />
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Voice" android:textColor="?attr/ptText" android:textStyle="bold" />
+            <Spinner android:id="@+id/spinnerVoice" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginBottom="16dp" android:backgroundTint="?attr/ptText" />
+            
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTestVoice" android:layout_width="match_parent" android:layout_height="56dp"
+                android:text="🔊 Nghe Thử" app:backgroundTint="?attr/ptCard" android:textColor="?attr/ptAccent"
+                app:strokeColor="?attr/ptAccent" app:strokeWidth="1dp" android:layout_marginBottom="24dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/ptDivider" />
-
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/ptDivider" />
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/btn_save"
-        android:textAllCaps="false" />
-
+        android:id="@+id/btnSave" android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_margin="16dp" android:text="@string/btn_save" />
 </LinearLayout>

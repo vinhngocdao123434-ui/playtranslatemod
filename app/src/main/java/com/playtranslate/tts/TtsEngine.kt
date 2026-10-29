@@ -259,6 +259,45 @@ object TtsEngine {
     }
 
     /** Stop any in-progress utterance. */
+    
+    suspend fun speakText(context: Context, text: String, locale: java.util.Locale, voiceNameOverride: String? = null): SpeakResult {
+        lock.withLock {
+            var engine = currentEngine(context) ?: return SpeakResult.NoEngine
+            if (voiceNameOverride != null) { engine.voices?.firstOrNull { it.name == voiceNameOverride }?.let { engine.voice = it } } else { engine.language = locale }
+            applyUserRate(context, engine)
+            val utteranceId = "pt-tts-${++utteranceCounter}"
+            drainPending()
+            engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        }
+        return SpeakResult.Spoken
+    }
+    
+    
+    suspend fun speakText(context: android.content.Context, text: String, locale: java.util.Locale, voiceNameOverride: String? = null): SpeakResult {
+        lock.withLock {
+            var engine = currentEngine(context) ?: return SpeakResult.NoEngine
+            if (voiceNameOverride != null) { engine.voices?.firstOrNull { it.name == voiceNameOverride }?.let { engine.voice = it } } else { engine.language = locale }
+            applyUserRate(context, engine)
+            val utteranceId = "pt-tts-${++utteranceCounter}"
+            drainPending()
+            engine.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        }
+        return SpeakResult.Spoken
+    }
+    
+    
+    suspend fun speakText(context: android.content.Context, text: String, locale: java.util.Locale, voiceNameOverride: String? = null): SpeakResult {
+        lock.withLock {
+            var engine = currentEngine(context) ?: return SpeakResult.NoEngine
+            if (voiceNameOverride != null) { engine.voices?.firstOrNull { it.name == voiceNameOverride }?.let { engine.voice = it } } else { engine.language = locale }
+            applyUserRate(context, engine)
+            val utteranceId = "pt-tts-${++utteranceCounter}"
+            drainPending()
+            engine.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        }
+        return SpeakResult.Spoken
+    }
+    
     fun stop() {
         tts?.stop()
     }

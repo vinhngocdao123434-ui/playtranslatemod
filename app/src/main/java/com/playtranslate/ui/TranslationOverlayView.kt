@@ -244,6 +244,9 @@ class TranslationOverlayView(
 
     private val skeletonBars = mutableListOf<View>()
     private var shimmerAnimator: ValueAnimator? = null
+    private var lastTtsText = ""
+    private var lastTtsText = ""
+    private var lastTtsText = ""
 
     /** Cached full-view pinhole mask bitmap. Created on size change, recycled on detach. */
     private var pinholeMaskBitmap: Bitmap? = null
@@ -621,6 +624,69 @@ class TranslationOverlayView(
 
                 child.setTag(R.id.tag_bg_color, box.bgColor)
 
+                if (com.playtranslate.Prefs(context).interactiveMode && !box.isFurigana && box.translatedText.isNotBlank()) {
+                    child.isClickable = true
+                    child.setOnClickListener { v ->
+                        val ctx = v.context; val dpp = ctx.resources.displayMetrics.density
+                        val popupView = android.widget.LinearLayout(ctx).apply {
+                            orientation = 1; setPadding((16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt())
+                            background = android.graphics.drawable.GradientDrawable().apply { setColor(android.graphics.Color.parseColor("#E6000000")); cornerRadius = 12 * dpp; setStroke((1*dpp).toInt(), android.graphics.Color.parseColor("#4DD0C2")) }
+                            addView(android.widget.TextView(ctx).apply { text = "RAW:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f })
+                            addView(android.widget.TextView(ctx).apply { text = box.sourceText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY RAW"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Raw", box.sourceText)); android.widget.Toast.makeText(ctx, "Copied Raw", 0).show() } })
+                            addView(android.widget.TextView(ctx).apply { text = "TRANSLATION:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f; setPadding(0, (12*dpp).toInt(), 0, 0) })
+                            addView(android.widget.TextView(ctx).apply { text = box.translatedText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY TRANS"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Trans", box.translatedText)); android.widget.Toast.makeText(ctx, "Copied Trans", 0).show() } })
+                        }
+                        android.widget.PopupWindow(popupView, -2, -2, true).apply { isOutsideTouchable = true; elevation = 10 * dpp; showAsDropDown(v) }
+                    }
+                }
+    
+
+                if (com.playtranslate.Prefs(context).interactiveMode && !box.isFurigana && box.translatedText.isNotBlank()) {
+                    child.isClickable = true
+                    child.setOnClickListener { v ->
+                        val ctx = v.context; val dpp = ctx.resources.displayMetrics.density
+                        val popupView = android.widget.LinearLayout(ctx).apply {
+                            orientation = 1; setPadding((16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt())
+                            background = android.graphics.drawable.GradientDrawable().apply { setColor(android.graphics.Color.parseColor("#E6000000")); cornerRadius = 12 * dpp; setStroke((1*dpp).toInt(), android.graphics.Color.parseColor("#4DD0C2")) }
+                            addView(android.widget.TextView(ctx).apply { text = "RAW:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f })
+                            addView(android.widget.TextView(ctx).apply { text = box.sourceText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY RAW"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Raw", box.sourceText)); android.widget.Toast.makeText(ctx, "Copied Raw", 0).show() } })
+                            addView(android.widget.TextView(ctx).apply { text = "TRANSLATION:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f; setPadding(0, (12*dpp).toInt(), 0, 0) })
+                            addView(android.widget.TextView(ctx).apply { text = box.translatedText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY TRANS"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Trans", box.translatedText)); android.widget.Toast.makeText(ctx, "Copied Trans", 0).show() } })
+                        }
+                        android.widget.PopupWindow(popupView, -2, -2, true).apply { isOutsideTouchable = true; elevation = 10 * dpp; showAsDropDown(v) }
+                    }
+                }
+    
+
+                if (com.playtranslate.Prefs(context).interactiveMode && !box.isFurigana && box.translatedText.isNotBlank()) {
+                    child.isClickable = true
+                    child.setOnClickListener { v ->
+                        val ctx = v.context; val dpp = ctx.resources.displayMetrics.density
+                        val popupView = android.widget.LinearLayout(ctx).apply {
+                            orientation = 1; setPadding((16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt(), (16*dpp).toInt())
+                            background = android.graphics.drawable.GradientDrawable().apply { setColor(android.graphics.Color.parseColor("#E6000000")); cornerRadius = 12 * dpp; setStroke((1*dpp).toInt(), android.graphics.Color.parseColor("#4DD0C2")) }
+                            addView(android.widget.TextView(ctx).apply { text = "RAW:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f })
+                            addView(android.widget.TextView(ctx).apply { text = box.sourceText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY RAW"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Raw", box.sourceText)); android.widget.Toast.makeText(ctx, "Copied Raw", 0).show() } })
+                            addView(android.widget.TextView(ctx).apply { text = "TRANSLATION:"; setTextColor(android.graphics.Color.LTGRAY); textSize = 12f; setPadding(0, (12*dpp).toInt(), 0, 0) })
+                            addView(android.widget.TextView(ctx).apply { text = box.translatedText; setTextColor(android.graphics.Color.WHITE); textSize = 16f; setPadding(0, 0, 0, (8*dpp).toInt()) })
+                            addView(android.widget.Button(ctx).apply { text = "COPY TRANS"; setTextColor(android.graphics.Color.BLACK); setBackgroundColor(android.graphics.Color.parseColor("#4DD0C2"))
+                                setOnClickListener { (ctx.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).setPrimaryClip(android.content.ClipData.newPlainText("Trans", box.translatedText)); android.widget.Toast.makeText(ctx, "Copied Trans", 0).show() } })
+                        }
+                        android.widget.PopupWindow(popupView, -2, -2, true).apply { isOutsideTouchable = true; elevation = 10 * dpp; showAsDropDown(v) }
+                    }
+                }
+    
+
                 if (mode == RenderMode.ROTATE) {
                     // Narrow vertical box with grow off / non-stackable script: lay out with
                     // swapped dimensions (width=rectH, height=rectW) so auto-sizing picks a
@@ -667,6 +733,66 @@ class TranslationOverlayView(
             }
         }
 
+        
+        if (com.playtranslate.Prefs(context).ttsZoneEnabled) {
+            val parts = com.playtranslate.Prefs(context).ttsZoneRectStr.split(",").map { it.toFloatOrNull() ?: 0f }
+            if (parts.size == 4) {
+                val zone = android.graphics.RectF(parts[0], parts[1], parts[2], parts[3])
+                val ttsText = java.lang.StringBuilder()
+                for (b in boxes) {
+                    if (b.translatedText.isBlank() || b.isFurigana) continue
+                    val boxRect = android.graphics.RectF(b.bounds.left / screenshotW.toFloat(), b.bounds.top / screenshotH.toFloat(), b.bounds.right / screenshotW.toFloat(), b.bounds.bottom / screenshotH.toFloat())
+                    if (android.graphics.RectF.intersects(zone, boxRect)) ttsText.append(b.translatedText).append(". ")
+                }
+                val textToSpeak = ttsText.toString().trim()
+                if (textToSpeak.isNotBlank() && textToSpeak != lastTtsText) {
+                    lastTtsText = textToSpeak
+                    val locale = java.util.Locale.forLanguageTag(com.playtranslate.Prefs(context).targetLang)
+                    kotlinx.coroutines.GlobalScope.launch { com.playtranslate.tts.TtsEngine.speakText(context, textToSpeak, locale) }
+                }
+            }
+        }
+    
+        
+        if (com.playtranslate.Prefs(context).ttsZoneEnabled) {
+            val parts = com.playtranslate.Prefs(context).ttsZoneRectStr.split(",").map { it.toFloatOrNull() ?: 0f }
+            if (parts.size == 4) {
+                val zone = android.graphics.RectF(parts[0], parts[1], parts[2], parts[3])
+                val ttsText = java.lang.StringBuilder()
+                for (b in boxes) {
+                    if (b.translatedText.isBlank() || b.isFurigana) continue
+                    val boxRect = android.graphics.RectF(b.bounds.left / screenshotW.toFloat(), b.bounds.top / screenshotH.toFloat(), b.bounds.right / screenshotW.toFloat(), b.bounds.bottom / screenshotH.toFloat())
+                    if (android.graphics.RectF.intersects(zone, boxRect)) ttsText.append(b.translatedText).append(". ")
+                }
+                val textToSpeak = ttsText.toString().trim()
+                if (textToSpeak.isNotBlank() && textToSpeak != lastTtsText) {
+                    lastTtsText = textToSpeak
+                    val locale = java.util.Locale.forLanguageTag(com.playtranslate.Prefs(context).targetLang)
+                    kotlinx.coroutines.GlobalScope.launch { com.playtranslate.tts.TtsEngine.speakText(context, textToSpeak, locale) }
+                }
+            }
+        }
+    
+        
+        if (com.playtranslate.Prefs(context).ttsZoneEnabled) {
+            val parts = com.playtranslate.Prefs(context).ttsZoneRectStr.split(",").map { it.toFloatOrNull() ?: 0f }
+            if (parts.size == 4) {
+                val zone = android.graphics.RectF(parts[0], parts[1], parts[2], parts[3])
+                val ttsText = java.lang.StringBuilder()
+                for (b in boxes) {
+                    if (b.translatedText.isBlank() || b.isFurigana) continue
+                    val boxRect = android.graphics.RectF(b.bounds.left / screenshotW.toFloat(), b.bounds.top / screenshotH.toFloat(), b.bounds.right / screenshotW.toFloat(), b.bounds.bottom / screenshotH.toFloat())
+                    if (android.graphics.RectF.intersects(zone, boxRect)) ttsText.append(b.translatedText).append(". ")
+                }
+                val textToSpeak = ttsText.toString().trim()
+                if (textToSpeak.isNotBlank() && textToSpeak != lastTtsText) {
+                    lastTtsText = textToSpeak
+                    val locale = java.util.Locale.forLanguageTag(com.playtranslate.Prefs(context).targetLang)
+                    kotlinx.coroutines.GlobalScope.launch { com.playtranslate.tts.TtsEngine.speakText(context, textToSpeak, locale) }
+                }
+            }
+        }
+    
         if (hasPlaceholders) startShimmer()
     }
 
