@@ -50,6 +50,22 @@ enum class OverlayMode {
             else R.string.overlay_mode_option_furigana
     }
 
+    var interactiveMode: Boolean
+        get() = sp.getBoolean("interactive_mode", false)
+        set(v) = sp.edit { putBoolean("interactive_mode", v) }
+
+    var ttsZoneEnabled: Boolean
+        get() = sp.getBoolean("tts_zone_enabled", false)
+        set(v) = sp.edit { putBoolean("tts_zone_enabled", v) }
+
+    var ttsZoneRectStr: String
+        get() = sp.getString("tts_zone_rect", "0.0,0.0,1.0,1.0") ?: "0.0,0.0,1.0,1.0"
+        set(v) = sp.edit { putString("tts_zone_rect", v) }
+
+    var ttsEnginePackage: String?
+        get() = sp.getString("tts_engine_package", null)
+        set(v) = sp.edit { putString("tts_engine_package", v) }
+
     companion object {
         fun fromStorageName(name: String?): OverlayMode =
             entries.find { it.name == name } ?: TRANSLATION
@@ -93,6 +109,22 @@ data class RegionEntry(
 /** Floating-icon snap position for a single display. [edge] encoding:
  *  0=LEFT, 1=RIGHT, 2=TOP, 3=BOTTOM. */
 data class IconPosition(val edge: Int, val fraction: Float) {
+    var interactiveMode: Boolean
+        get() = sp.getBoolean("interactive_mode", false)
+        set(v) = sp.edit { putBoolean("interactive_mode", v) }
+
+    var ttsZoneEnabled: Boolean
+        get() = sp.getBoolean("tts_zone_enabled", false)
+        set(v) = sp.edit { putBoolean("tts_zone_enabled", v) }
+
+    var ttsZoneRectStr: String
+        get() = sp.getString("tts_zone_rect", "0.0,0.0,1.0,1.0") ?: "0.0,0.0,1.0,1.0"
+        set(v) = sp.edit { putString("tts_zone_rect", v) }
+
+    var ttsEnginePackage: String?
+        get() = sp.getString("tts_engine_package", null)
+        set(v) = sp.edit { putString("tts_engine_package", v) }
+
     companion object {
         /** Default icon placement: right edge, vertically centered. Used by
          *  [Prefs.iconPositionForDisplay] for displays the user hasn't
@@ -1813,6 +1845,22 @@ class Prefs internal constructor(
         }
         sp.edit { putString(KEY_REGION_LIST, arr.toString()) }
     }
+
+    var interactiveMode: Boolean
+        get() = sp.getBoolean("interactive_mode", false)
+        set(v) = sp.edit { putBoolean("interactive_mode", v) }
+
+    var ttsZoneEnabled: Boolean
+        get() = sp.getBoolean("tts_zone_enabled", false)
+        set(v) = sp.edit { putBoolean("tts_zone_enabled", v) }
+
+    var ttsZoneRectStr: String
+        get() = sp.getString("tts_zone_rect", "0.0,0.0,1.0,1.0") ?: "0.0,0.0,1.0,1.0"
+        set(v) = sp.edit { putString("tts_zone_rect", v) }
+
+    var ttsEnginePackage: String?
+        get() = sp.getString("tts_engine_package", null)
+        set(v) = sp.edit { putString("tts_engine_package", v) }
 
     companion object {
         const val MIN_CAPTURE_INTERVAL_SEC = 0.5f
