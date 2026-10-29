@@ -1863,6 +1863,22 @@ class Prefs internal constructor(
         set(v) = sp.edit { putString("tts_engine_package", v) }
 
     companion object {
+    var interactiveMode: Boolean
+        get() = sp.getBoolean("interactive_mode", false)
+        set(v) = sp.edit { putBoolean("interactive_mode", v) }
+
+    var ttsZoneEnabled: Boolean
+        get() = sp.getBoolean("tts_zone_enabled", false)
+        set(v) = sp.edit { putBoolean("tts_zone_enabled", v) }
+
+    var ttsZoneRectStr: String
+        get() = sp.getString("tts_zone_rect", "0.0,0.0,1.0,1.0") ?: "0.0,0.0,1.0,1.0"
+        set(v) = sp.edit { putString("tts_zone_rect", v) }
+
+    var ttsEnginePackage: String?
+        get() = sp.getString("tts_engine_package", null)
+        set(v) = sp.edit { putString("tts_engine_package", v) }
+
         const val MIN_CAPTURE_INTERVAL_SEC = 0.5f
         const val DEFAULT_CAPTURE_INTERVAL_SEC = 1.0f
 
