@@ -9,23 +9,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout User Repo
         uses: actions/checkout@v4
+        with:
+          path: user_repo
 
-      - name: Fix Submodules for ZIP downloads
+      - name: Checkout Original Repo
         run: |
-          if [ -f .gitmodules ]; then
-            git config --file .gitmodules --get-regexp path | awk '{ print $2 }' > paths.txt
-            git config --file .gitmodules --get-regexp url | awk '{ print $2 }' > urls.txt
-            paste paths.txt urls.txt | while read path url; do
-              if [ ! -d "$path/.git" ]; then
-                echo "Manually cloning $url to $path"
-                rm -rf "$path"
-                git clone --recursive "$url" "$path"
-              fi
-            done
-          fi
-
+          git clone --recursive https://github.com/dominostars/playtranslate.git original_repo
+          
+      - name: Sync User Changes
+        run: |
+          rsync -a --exclude='.git' user_repo/ original_repo/
+          
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -33,6 +29,7 @@ jobs:
           java-version: '17'
 
       - name: Build Debug APK
+        working-directory: original_repo
         run: |
           chmod +x ./gradlew
           ./gradlew assembleDebug --no-daemon
@@ -41,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playtranslate-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: original_repo/app/build/outputs/apk/debug/app-debug.apk
